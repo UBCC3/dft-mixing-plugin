@@ -37,6 +37,8 @@ def run_scf_lcom(name, **kwargs):
     scf_lcom can be called via :py:func:`~driver.energy`. For scf plugins.
 
     >>> energy('scf_lcom')
+    
+    This plugin creates a LCOMSuperFunctional and computes its energy
 
     """
     lowername = name.lower()
