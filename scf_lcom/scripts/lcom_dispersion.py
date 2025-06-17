@@ -34,13 +34,20 @@ class LcomDispersion(EmpiricalDispersion):
         )
 
     def compute_energy(self, molecule: psi4.core.Molecule, wfn: psi4.core.Wavefunction = None) -> float:
-        # return sum(map(lambda p: p[1] * p[0].compute_energy(molecule, wfn), self.parents_coefs))
-        return sum((coef * dispersion for (coef, dispersion) in self.parents_coefs))
+        return sum((coef * dispersion.compute_energy(molecule, wfn)
+                        for (dispersion, coef) in self.parents_coefs))
 
     def compute_gradient(self,
                          molecule: psi4.core.Molecule,
                          wfn: psi4.core.Wavefunction = None) -> psi4.core.Matrix:
+        
+        # Not sure if this is really correct under all dispersions, but
+        # if the gradient is referring to first derrivatives, then
+        # this should be a sum of all gradient computations
         raise RuntimeError("Not yet implemented")
+        
+    
+    
 
     def compute_hessian(self,
                         molecule: psi4.core.Molecule,
