@@ -31,10 +31,24 @@
 import psi4
 import psi4.driver.p4util as p4util
 import psi4.driver.procrouting.dft.dft_builder as dft_builder
+import psi4.driver.procrouting.proc as proc
 from psi4.driver.procrouting import proc_util
-from scripts.dft_router import build_lcom_functional
+from scripts.dft_router import (
+    build_lcom_functional,
+    lcom_build_functional_and_disp
+)
 
 run_scf = psi4.driver.procedures['energy']['scf']
+
+
+# Patcher Class to monkey patch python symbols
+# class FunctionPatcher:
+    
+
+
+
+
+
 
 def run_scf_lcom(name, **kwargs):
     r"""Function encoding sequence of PSI module and plugin calls so that
@@ -46,23 +60,26 @@ def run_scf_lcom(name, **kwargs):
     of DFT superfunctionals.
     """
     
-    # Monkey patch the scf function (for lcom dft suppport, then call run_scf) to avoid reimplementing
+    # Monkey patch the scf function (for lcom dft suppport, then call run_scf to avoid reimplementing
     # everything for scf energy calculation
-    original_func = dft_builder.build_superfunctional_from_dictionary
+    original_dict_builder = dft_builder.build_superfunctional_from_dictionary
+    original_func_disp_builder = proc.build_functional_and_disp
     
     try:
         # replace the psi4 builder with our implementation
         dft_builder.build_superfunctional_from_dictionary = build_lcom_functional
+        proc.build_functional_and_disp = lcom_build_functional_and_disp
         
         # Now just run scf normally
         return run_scf(name, kwargs)
 
     except Exception as e:
-        raise e
+        raise RuntimeError("Error: failed to compute SCF. Reason: ") from e
         
     finally:
         # Regardless, restore the original function
-        dft_builder.build_superfunctional_from_dictionary = original_func
+        dft_builder.build_superfunctional_from_dictionary = original_dict_builder
+        proc.build_functional_and_disp = original_func_disp_builder
 
 # Integration with driver routines
 psi4.driver.procedures['energy']['scf_lcom'] = run_scf_lcom

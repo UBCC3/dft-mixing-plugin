@@ -11,7 +11,7 @@ from qcengine.programs.empirical_dispersion_resources import dashcoeff, get_disp
 # Legacy build_from_dict
 legacy_build_superfunc_from_dict = build_superfunctional_from_dictionary
 
-def check_consistency(func_dictionary):
+def _check_consistency(func_dictionary):
     """
     This checks the consistency of the definitions of exchange and correlation components
     of the functional, including detecting duplicate requests for LibXC params, inconsistent
@@ -97,7 +97,7 @@ def check_consistency(func_dictionary):
                     raise ValidationError(
                         f"SCF: Dispersion type ({disp['type']}) should be among ({_dispersion_aliases.keys()})")      
         
-        # 3b) check dispersion type present and known
+        # 3b.2) check dispersion type present and known (if it is a dict)
         elif ("type" not in disp or disp["type"] not in _dispersion_aliases):
             raise ValidationError(
                 f"SCF: Dispersion type ({disp['type']}) should be among ({_dispersion_aliases.keys()})")
@@ -114,7 +114,7 @@ def check_consistency(func_dictionary):
                     f"SCF: All citations should have the form '    A. Student, B. Prof, J. Goodstuff Vol, Page, Year\n', not : {cit}"
                 )
                 
-def merge_superfunctionals(parent: psi4.core.SuperFunctional, child: psi4.core.SuperFunctional, 
+def _merge_superfunctionals(parent: psi4.core.SuperFunctional, child: psi4.core.SuperFunctional, 
                             coef : float = 1.0) -> None:
     '''
         Helper function to mix a child superfunctional into a parent superfunctional.
@@ -128,14 +128,26 @@ def merge_superfunctionals(parent: psi4.core.SuperFunctional, child: psi4.core.S
     # Merge functionals
     for child_fnctls, parent_add_func in func_handlers:
         for child_fnctl in child_fnctl:
-            child_fnctl.set_alpha(coef * child_fnctl.alpha())    
-            parent_add_func(child_fnctl)
+            child_fnctl.set_alpha(coef * child_fnctl.alpha())        
             
-    # After merging parent, need to merge global exchange (HF) params
-    # For now, only support alpha merging and cannot merge diffeerent omegas
-    
-    # Merge correlation mp2 params
-
+            # TODO: Optimize this
+            # This could have been optimized :P, right now it is O(n^2) w.r.t number of functionals
+            
+            parent_masterlist = parent.x_functionals + parent.c_functionals
+            
+            # Next, check if we can find a compatible functional to add to
+            # (Needs to be the same fnctl (name) and have the same LR cutoff (omega))        
+            needs_addition = True
+            for potential_tgt in parent_masterlist:
+                if potential_tgt.name() != child_fnctl.name(): continue
+                if potential_tgt.omega() != child_fnctl.omega(): continue
+                if potential_tgt.tweaks() != child_fnctl.tweaks(): continue
+                needs_addition = False
+                potential_tgt.set_alpha(potential_tgt.alpha() + child_fnctl.alpha())
+            
+            if needs_addition: 
+                parent_add_func(child_fnctl)    
+            
 
 def build_lcom_functional(func_dict: dict, npoints, deriv,
                           restricted, sup_coef : float = 1.0) -> tuple[psi4.core.SuperFunctional, list[dict]]:
@@ -165,7 +177,7 @@ def build_lcom_functional(func_dict: dict, npoints, deriv,
         with dispersion name.
         If there are no dispersion, return an empty list.
     '''
-    check_consistency(func_dict)
+    _check_consistency(func_dict)
     
     # Base Case: normal version, call legacy version
     if "lcom_functionals" not in func_dict:
@@ -209,6 +221,9 @@ def build_lcom_functional(func_dict: dict, npoints, deriv,
     mp2_total_os = 0.0
     mp2_total_ss = 0.0
     
+    # Total alpha (exact/HF)
+    total_alpha = 0.0
+    
     for (name, func_params) in lcom_funcs.items():
         if (isinstance(func_params, (int, float))):
             # Must also be able to find the functional in the functional list 
@@ -226,11 +241,40 @@ def build_lcom_functional(func_dict: dict, npoints, deriv,
         child_sup, disp = build_lcom_functional(lcom_func, npoints, deriv,
                                                 restricted, sup_coef=child_coef)
         
+        # Refer back to original implementation, not really sure what is going on here
+        if mp2_alpha != 0 and ((mp2_total_os != 0 or mp2_total_ss != 0) != child_sup.is_c_scs_hybrid()):
+            raise RuntimeError("SCF: Sorry, I don't know how to combine MP2s with non-matching coefficients yet!")
+        
+        # For this version, just stop early if we encounter a range separated hybrid
+        if child_sup.x_beta() != 0:
+            raise RuntimeError("SCF: Don't really know how to handle multi range dispersion at this point!")
+        
+        # Combine exact HF coeffs
+        total_alpha += child_sup.x_alpha()    
+    
+        # Combine MP2 coeffs
+        mp2_alpha += lcom_coef * child_sup.c_alpha()
+        mp2_total_os += lcom_coef * child_sup.c_alpha() * child_sup.c_os_alpha()
+        mp2_total_ss += lcom_coef * child_sup.c_alpha() * child_sup.c_ss_alpha()
+
         # Merge (scaled) dispersions into dispersion master list
         dispersion.extend(disp)
         
         # Merge child superfunctional into parent's        
-        merge_superfunctionals(sup, child_sup, lcom_coef)
+        _merge_superfunctionals(sup, child_sup, lcom_coef)
+       
+    # Setup HF coeffs
+    sup.set_x_alpha(total_alpha)
+    
+    # Set MP2 Energies
+    if mp2_alpha != 0:
+        sup.set_c_alpha(mp2_alpha)
+        sup.set_c_os_alpha(mp2_total_os / mp2_alpha)
+        sup.set_c_ss_alpha(mp2_total_ss / mp2_alpha) 
+    
+    sup.set_max_points(npoints)
+    sup.set_deriv(deriv)
+    sup.allocate()
                       
     return sup, dispersion
 
@@ -271,12 +315,4 @@ def lcom_build_functional_and_disp(name, restricted, save_pairwise_disp=False, *
     _disp_functor.print_out()
     return superfunc, _disp_functor    
     
-
-
-
-
-
-
-
-
 
