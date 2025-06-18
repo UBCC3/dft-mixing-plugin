@@ -43,7 +43,7 @@ class LcomDispersion(EmpiricalDispersion):
         Each tuple represents a parent dispersion scheme, which is
         linearly combined using the coefficient contained in the last float.
     """
-    def __init__(self, parents_coefs: list[tuple[EmpiricalDispersion, float]]):
+    def __init__(self, parents_coefs: list[tuple[EmpiricalDispersion, float]] = []):
         self.parents_coefs = parents_coefs
         for (parent, coef) in parents_coefs:
             if not (isinstance(coef, float) or isinstance(coef, int)):
@@ -51,14 +51,16 @@ class LcomDispersion(EmpiricalDispersion):
             if not issubclass(type(parent), EmpiricalDispersion):
                 raise RuntimeError("LCOM parent dispersion must be an instance of EmpiricalDispersion")
 
+    def add_empirical_disp(self, disp: EmpiricalDispersion, coef: float) -> None:
+        self.parents_coefs.append((disp, coef))
+
     def print_out(self):
         should_add_coef = len(self.parents_coefs) != 1 or self.parents_coefs[0][1] != 1.0
         for (p, c) in self.parents_coefs:
             # TODO: Make this less hack
             if should_add_coef: psi4.core.print_out("    With a coefficient of %.5f...\n" % c)
             p.print_out()
-    
-    
+                
     def removeNlDisp(self):
         return LcomDispersion(
             *filter(lambda p: p[0].engine != 'nl', self.parents_coefs)
