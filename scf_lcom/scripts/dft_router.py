@@ -90,8 +90,15 @@ def check_consistency(func_dictionary):
             )
     if "dispersion" in func_dictionary:
         disp = func_dictionary["dispersion"]
+        # 3b.1) Case where dispersion is a list
+        if isinstance(disp, list):
+            for lcom_disp in disp:
+                if ("type" not in disp or disp["type"] not in _dispersion_aliases):
+                    raise ValidationError(
+                        f"SCF: Dispersion type ({disp['type']}) should be among ({_dispersion_aliases.keys()})")      
+        
         # 3b) check dispersion type present and known
-        if "type" not in disp or disp["type"] not in _dispersion_aliases:
+        elif ("type" not in disp or disp["type"] not in _dispersion_aliases):
             raise ValidationError(
                 f"SCF: Dispersion type ({disp['type']}) should be among ({_dispersion_aliases.keys()})")
     # 3c) check dispersion params complete
@@ -128,7 +135,6 @@ def merge_superfunctionals(parent: psi4.core.SuperFunctional, child: psi4.core.S
     # For now, only support alpha merging and cannot merge diffeerent omegas
     
     # Merge correlation mp2 params
-
 
 
 def build_lcom_functional(func_dict: dict, npoints, deriv,
@@ -188,6 +194,8 @@ def build_lcom_functional(func_dict: dict, npoints, deriv,
             disp_list.append(disp_copy)
             
         return sup, disp_list
+
+    # ============= RECURSIVE PART ======================
 
     # Special case if dict has lcom_functionals (overrides other functions)
     sup = psi4.core.SuperFunctional.blank()
