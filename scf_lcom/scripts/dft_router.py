@@ -190,6 +190,11 @@ def build_lcom_functional(func_dict: dict, npoints, deriv,
             
             # For each dispersion, then multiply the coefficients by sup_coef
             for disp in disp_list:
+                
+                # NL special case
+                if "nlc" in disp or disp["type"] == 'nl':
+                    raise RuntimeError("SCF: Sorry, I don't know how to combine dispersion with VV10 yet!")
+                
                 disp['lcom_coef'] = sup_coef * disp.setdefault('lcom_coef', 1.0)
                 disp.setdefault("citation", False)
     
@@ -198,6 +203,11 @@ def build_lcom_functional(func_dict: dict, npoints, deriv,
         
         # Convert disp into a compatible type with our interface       
         if isinstance(disp, dict):          # disp is a dict           
+            
+            # Nl special case
+            if "nlc" in disp or disp["type"] == 'nl':
+                    raise RuntimeError("SCF: Sorry, I don't know how to combine dispersion with VV10 yet!")
+            
             # Since this is a reference to the original disp mapping, need to copy it
             disp_copy = disp.copy()    
             
@@ -240,6 +250,15 @@ def build_lcom_functional(func_dict: dict, npoints, deriv,
         child_coef = lcom_coef * sup_coef
         child_sup, disp = build_lcom_functional(lcom_func, npoints, deriv,
                                                 restricted, sup_coef=child_coef)
+        
+        # Very Complicated: Parameters are nonlinear; VV10 is treated specially in code
+        if child_sup.needs_vv10(): raise RuntimeError("SCF: Sorry, I don't know how to combine VV10 yet!")
+        # GRAC fnctls are not added by the build func; They shouldn't be in the SF
+        if child_sup.needs_grac(): raise RuntimeError("SCF: Somehow, the provided functional has GRAC. This shouldn't happen!")
+        # Only one MP2 parameter set; if the LR is different, we're a bit screwed
+        if sup.is_c_hybrid() and child_sup.is_c_hybrid() and sup.c_omega() != child_sup.c_omega():
+            raise RuntimeError("SCF: Sorry, I don't know how to combine MP2 with different omega yet!")
+
         
         # Refer back to original implementation, not really sure what is going on here
         if mp2_alpha != 0 and ((mp2_total_os != 0 or mp2_total_ss != 0) != child_sup.is_c_scs_hybrid()):
