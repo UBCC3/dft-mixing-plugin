@@ -118,17 +118,36 @@ def _check_consistency(func_dictionary):
                 )
                 
 def _merge_superfunctionals(parent: psi4.core.SuperFunctional, child: psi4.core.SuperFunctional, 
-                            coef : float = 1.0) -> None:
+                            xc_func_dict: dict, coef : float = 1.0, ) -> None:
     '''
         Helper function to mix a child superfunctional into a parent superfunctional.
-        Modifies the parent functional.
+        Modifies the parent functional (must be the master functional)
+        
+        Notes:
+        - coef is the absolute weight with relation to the parent.
+        
+        Also updates the global parameters for a more consistent handling. 
     '''
+    
+    # EARLY STOPPING
+    
+    if child.needs_vv10(): raise RuntimeError("SCF: Sorry, I don't know how to combine VV10 yet!")
+    # GRAC fnctls are not added by the build func; They shouldn't be in the SF
+    if child.needs_grac(): raise RuntimeError("SCF: Somehow, the provided functional has GRAC. This shouldn't happen!")
+    # Only one MP2 parameter set; if the LR is different, we're a bit screwed
+    if parent.is_c_hybrid() and child.is_c_hybrid() and parent.c_omega() != child.c_omega():
+        raise RuntimeError("SCF: Sorry, I don't know how to combine MP2 with different omega yet!")
+    # For this version, just stop early if we encounter a range separated hybrid
+    if child.x_omega() != 0:
+        raise RuntimeError("SCF: Don't really know how to handle multi range dispersion at this point!")
+    
+    # @TODO: Update this to use RangeStep in a later version for range separated hybrid
     
     # Assign functional groups to functional adders.
     func_handlers = [(child.x_functionals(), parent.add_x_functional),
                      (child.c_functionals(), parent.add_c_functional)]
-    
-    # Merge functionals
+   
+    # Combine LibXC functionals 
     for child_fnctls, parent_add_func in func_handlers:
         for child_fnctl in child_fnctls:
             child_fnctl.set_alpha(coef * child_fnctl.alpha())        
@@ -136,23 +155,121 @@ def _merge_superfunctionals(parent: psi4.core.SuperFunctional, child: psi4.core.
             # TODO: Optimize this
             # This could have been optimized :P, right now it is O(n^2) w.r.t number of functionals
             
-            parent_masterlist = parent.x_functionals() + parent.c_functionals()
+            # parent_masterlist = parent.x_functionals() + parent.c_functionals()
             
             # Next, check if we can find a compatible functional to add to
             # (Needs to be the same fnctl (name) and have the same LR cutoff (omega))        
-            needs_addition = True
-            for potential_tgt in parent_masterlist:
-                if potential_tgt.name() != child_fnctl.name(): continue
-                if potential_tgt.omega() != child_fnctl.omega(): continue
-                if potential_tgt.tweaks() != child_fnctl.tweaks(): continue
-                needs_addition = False
-                print(f"PAR COEF {potential_tgt.alpha()} CHILD COEF{child_fnctl.alpha()}")
-                potential_tgt.set_alpha(potential_tgt.alpha() + child_fnctl.alpha())
-                break
+            # needs_addition = True
             
-            if needs_addition: 
-                parent_add_func(child_fnctl)    
+            # Now just simply check if the functional has an entry in
+            # the parent dict. (No need to loop over everything)
+            xc_func_key = (child_fnctl.name(), child_fnctl.omega(), frozenset(child_fnctl.tweaks))
+            if xc_func_key in xc_func_dict:
+                # Add the coefficient
+                target_fnctl = xc_func_dict[xc_func_key]
+                target_fnctl.set_alpha(target_fnctl.alpha() + child_fnctl.alpha())
+                
+            else: 
+                xc_func_dict[xc_func_key] = child_fnctl
+                parent_add_func(child_fnctl) 
+                 
+            # for potential_tgt in parent_masterlist:
+            #     if potential_tgt.name() != child_fnctl.name(): continue
+            #     if potential_tgt.omega() != child_fnctl.omega(): continue
+            #     if potential_tgt.tweaks() != child_fnctl.tweaks(): continue
+            #     needs_addition = False
+            #     print(f"PAR COEF {potential_tgt.alpha()} CHILD COEF{child_fnctl.alpha()}")
+            #     potential_tgt.set_alpha(potential_tgt.alpha() + child_fnctl.alpha())
+            #     break
             
+            # if needs_addition: 
+            #     parent_add_func(child_fnctl)    
+             
+    # Merge x_hf coeffcients, total x_hf_alpha = linear combination sum of children
+    parent.set_x_alpha(parent.x_alpha() + coef * child.x_alpha())
+    parent.set_x_beta(parent.x_beta() + coef * child.x_beta())
+    
+    # Note: to combine css and cos, we need to sum the multiplication of alpha and c_os_alpha
+    # For modifying alpha, it will come in the end instead (set it to 1.0)
+    # Only modify if child is not scs.
+    if (coef * child.c_alpha() != 0):
+        parent.set_c_os_alpha(parent.c_os_alpha() + coef * child.c_alpha()* child.c_os_alpha())
+        parent.set_c_ss_alpha(parent.c_os_alpha() + coef * child.c_alpha()* child.c_os_alpha()) 
+        parent.set_c_alpha(1.0)
+        
+    # Merge x_hf coeffcients, total x_hf_alpha = linear combination sum of children
+    parent.set_x_alpha(parent.x_alpha() + coef * child.x_alpha())
+    
+def _print_out_lcom(xc_func_map):
+    '''
+        Prints out the final LCOM parameters (already combined), as well as the 
+        final HF parameters.
+    '''
+
+
+
+
+def _decompose_xc_helper():
+    '''
+        Helper function to decompose XC functionals into X and C parts.
+    '''
+    
+    
+
+
+def build_lcom_helper(  func_dict: dict,
+                        npoints, deriv, 
+                        restricted,
+                        xc_func_map: dict,
+                        master_sup: psi4.core.SuperFunctional, 
+                        sup_coef : float = 1.0, ) \
+                    -> None:
+    '''
+        Recursive helper to build a lcom functional.
+        Modifies a shared map between all build calls that maps 
+        functional LIBXC name to the PSI4 Functional object.
+        
+        This function only **retrieves** individual LibXC PSI4 functionals,
+        and does not create any new superfunctional, unless they are the 
+        base PSI4 versions.
+    '''
+    _check_consistency(func_dict)
+    print(func_dict)
+    
+    # Base Case: normal version, call legacy version (BOTH X, C and XC)
+    if "lcom_functionals" not in func_dict:
+        
+        # Now do the superfunctional, ignore dispersions since it is already done in the top level          
+        leaf_sup, _ = legacy_build_superfunc_from_dict(func_dict, npoints, deriv, restricted)
+
+        # All we do now is just adding coefficients to the functional map and also add it 
+        # to the superfunctional.
+        
+        _merge_superfunctionals(master_sup, leaf_sup, xc_func_map, sup_coef)    
+        return
+            
+    # ============= RECURSIVE PART ======================
+
+    # Special case if dict has lcom_functionals (overrides other functions)
+    # sup = psi4.core.SuperFunctional.blank()
+    lcom_funcs = func_dict["lcom_functionals"]
+    for (name, func_params) in lcom_funcs.items():
+        if (isinstance(func_params, (int, float))):
+            # Must also be able to find the functional in the functional list 
+            # (should have been checked) before
+            lcom_func = functionals[name.lower()]
+            lcom_coef = func_params
+        
+        else:
+            lcom_coef = func_params["coef"]
+            lcom_func = func_params
+            lcom_func["name"] = name
+        
+        # "Compile functional" as a superfunctional. (is a list)
+        child_coef = lcom_coef * sup_coef
+        print("CHILD FUNCS",name, lcom_func)
+        build_lcom_helper(lcom_func, npoints, deriv, restricted, xc_func_map, master_sup, sup_coef=child_coef)
+    return
 
 
 def build_lcom_functional(func_dict: dict, npoints, deriv, restricted) -> tuple[psi4.core.SuperFunctional, list[dict]]:
@@ -182,152 +299,69 @@ def build_lcom_functional(func_dict: dict, npoints, deriv, restricted) -> tuple[
         with dispersion name.
         If there are no dispersion, return an empty list.
     '''
-
-def build_lcom_helper(  func_dict: dict,
-                        npoints, deriv, 
-                        xc_func_map: dict,
-                        restricted,
-                        sup_coef : float = 1.0, ) \
-                    -> tuple[psi4.core.SuperFunctional, list[dict]]:
-    '''
-        Recursive helper to build a lcom functional.
-        Modifies a shared map between all build calls that maps 
-        functional LIBXC name to the PSI4 Functional object.
-    '''
-    _check_consistency(func_dict)
-    print(func_dict)
     
-    # Base Case: normal version, call legacy version
+    # Not really sure why PSI4 doesn't store the functionals as a map instead...
+    # (why use a list)
+    
+    # Do a legacy build if the function does not have lcom functional.
     if "lcom_functionals" not in func_dict:
         disp_list = []
+        sup, disp = legacy_build_superfunc_from_dict(func_dict, npoints, deriv, restricted) 
         
-        # If dispersion is a list of dispersions + coefs, need to get rid of disp
-        # This is so that list of dispersion is preserved
-        if (isinstance(func_dict.get("dispersion"), list)):
-            disp_list : list[dict] = func_dict.pop("dispersion")
+        if disp:
+            disp_list.append(disp)
             
-            # For each dispersion, then multiply the coefficients by sup_coef
-            for disp in disp_list:
-                
-                # NL special case
-                if "nlc" in disp or disp["type"] == 'nl':
-                    raise RuntimeError("SCF: Sorry, I don't know how to combine dispersion with VV10 yet!")
-                
-                disp['lcom_coef'] = sup_coef * disp.setdefault('lcom_coef', 1.0)
-                disp.setdefault("citation", False)
-    
-        # Now do the superfunctional           
-        sup, disp = legacy_build_superfunc_from_dict(func_dict, npoints, deriv, restricted)
-        
-        # Convert disp into a compatible type with our interface       
-        if isinstance(disp, dict):          # disp is a dict           
-            
-            # Nl special case
-            if "nlc" in disp or disp["type"] == 'nl':
-                    raise RuntimeError("SCF: Sorry, I don't know how to combine dispersion with VV10 yet!")
-            
-            # Since this is a reference to the original disp mapping, need to copy it
-            disp_copy = disp.copy()    
-            
-            # Set default value for coefficient
-            disp_copy['lcom_coef'] = sup_coef
-            disp_list.append(disp_copy)
-            
-        print("C FNCTLS", [ (func.alpha(), func.name()) for func in sup.c_functionals()])
-        print("X FNCTLS", [ (func.alpha(), func.name()) for func in sup.x_functionals()])   
-        print("SUP BETA", sup.x_beta())
         return sup, disp_list
+    
+    
+    # Now get PSI4 environment variable to determine whether to decompose XC functionals or not
 
-    # ============= RECURSIVE PART ======================
+    # Build the actual superfunctional
+    master_sup = psi4.core.SuperFunctional.blank()
+    
+    # Dynamic programming to map the tuple (fnctl_name, omega, tweaks) -> lcom_coef 
+    # in the final superfunctional.
+    xc_func_map : dict[tuple[str, float, frozenset], float] = {}
+    build_lcom_helper(func_dict, npoints, deriv, restricted, xc_func_map, master_sup, 1.0)
 
-    # Special case if dict has lcom_functionals (overrides other functions)
-    sup = psi4.core.SuperFunctional.blank()
-    print("PRE SUP BETA", sup.x_beta())
-    lcom_funcs = func_dict["lcom_functionals"]
-    
-    hf_params = []
-    dispersion = []
-    
-    # MP2 XC parameters
-    mp2_alpha = 0.0
-    mp2_total_os = 0.0
-    mp2_total_ss = 0.0
-    
-    # Total alpha (exact/HF)
-    total_alpha = 0.0
-    total_beta = 0.0
-    
-    for (name, func_params) in lcom_funcs.items():
-        if (isinstance(func_params, (int, float))):
-            # Must also be able to find the functional in the functional list 
-            # (should have been checked) before
-            lcom_func = functionals[name.lower()]
-            lcom_coef = func_params
-        
-        else:
-            lcom_coef = func_params["coef"]
-            lcom_func = func_params
-            lcom_func["name"] = name
-        
-        # "Compile functional" as a superfunctional. (is a list)
-        child_coef = lcom_coef * sup_coef
-        print("CHILD FUNCS",name, lcom_func)
-        child_sup, disp = build_lcom_functional(lcom_func, npoints, deriv,
-                                                restricted, sup_coef=child_coef)
-        
-        # Very Complicated: Parameters are nonlinear; VV10 is treated specially in code
-        if child_sup.needs_vv10(): raise RuntimeError("SCF: Sorry, I don't know how to combine VV10 yet!")
-        # GRAC fnctls are not added by the build func; They shouldn't be in the SF
-        if child_sup.needs_grac(): raise RuntimeError("SCF: Somehow, the provided functional has GRAC. This shouldn't happen!")
-        # Only one MP2 parameter set; if the LR is different, we're a bit screwed
-        if sup.is_c_hybrid() and child_sup.is_c_hybrid() and sup.c_omega() != child_sup.c_omega():
-            raise RuntimeError("SCF: Sorry, I don't know how to combine MP2 with different omega yet!")
+    # Master should be built, now set c_alpha to 1.0
+    master_sup.set_c_alpha(1.0)
 
-        
-        # Refer back to original implementation, not really sure what is going on here
-        if mp2_alpha != 0 and ((mp2_total_os != 0 or mp2_total_ss != 0) != child_sup.is_c_scs_hybrid()):
-            raise RuntimeError("SCF: Sorry, I don't know how to combine MP2s with non-matching coefficients yet!")
-        
-        # For this version, just stop early if we encounter a range separated hybrid
-        print("CHILD SUP XBETA",child_sup.x_beta())
-        if child_sup.x_omega() != 0:
-            raise RuntimeError("SCF: Don't really know how to handle multi range dispersion at this point!")
-        
-        # We know it is not range separated, so can safely combine beta
-        total_beta += child_sup.x_beta()
-        
-        # Combine exact HF coeffs
-        total_alpha += child_sup.x_alpha()    
-    
-        # Combine MP2 coeffs
-        mp2_alpha += lcom_coef * child_sup.c_alpha()
-        mp2_total_os += lcom_coef * child_sup.c_alpha() * child_sup.c_os_alpha()
-        mp2_total_ss += lcom_coef * child_sup.c_alpha() * child_sup.c_ss_alpha()
+    # After collecting all functionals, print them out
 
-        # Merge (scaled) dispersions into dispersion master list
-        dispersion.extend(disp)
+    master_sup.set_max_points(npoints)
+    master_sup.set_deriv(deriv)
+    master_sup.allocate()
+    master_sup.set_name(func_dict["name"].upper())
+    master_sup.set_xclib_description(psi4.core.LibXCFunctional.xclib_description())
+    
+    dispersions = []
+    
+    # Now handle dispersions (only read top level), 
+    # Assume the format of a list of dicts with a coef field inside them.
+    if "lcom_dispersion" in func_dict:
+        dispersions : list[dict ]= func_dict["lcom_dispersion"]
         
-        # Merge child superfunctional into parent's        
-        _merge_superfunctionals(sup, child_sup, lcom_coef)
-       
-    # Setup HF coeffs
-    sup.set_x_alpha(total_alpha)
-    sup.set_x_beta(total_beta)
-    
-    # Set MP2 Energies
-    if mp2_alpha != 0:
-        sup.set_c_alpha(mp2_alpha)
-        sup.set_c_os_alpha(mp2_total_os / mp2_alpha)
-        sup.set_c_ss_alpha(mp2_total_ss / mp2_alpha) 
-    
-    sup.set_max_points(npoints)
-    sup.set_deriv(deriv)
-    sup.allocate()
-    
-    print("C FNCTLS", [ (func.alpha(), func.name()) for func in sup.c_functionals()])
-    print("X FNCTLS", [ (func.alpha(), func.name()) for func in sup.x_functionals()])
-    print("SUP BETA", sup.x_beta())
-    return sup, dispersion
+        # Separate coefficients from dictionary
+        for dispersion in dispersions:
+            if "citation" not in dispersion:
+                dispersion["citation"] = False
+                
+            if "nlc" in dispersion:
+                sup.set_vv10_b(-1.0)
+                sup.set_do_vv10(dispersion["nlc"])
+                
+            if dispersion["type"] == 'nl':
+                sup.set_vv10_b(dispersion["params"]["b"])
+                sup.set_vv10_c(dispersion["params"]["c"])
+            
+        # Now validate vv10 and kill if there's more from vv10
+        n_disp_vv10 = sum(map(lambda d: "nlc" in d or d["type"] == 'nl', dispersions))
+        if n_disp_vv10 > 1:
+            raise RuntimeError('Multiple dispersion coefficients with VV10. Cannot combine VV10')
+        
+    return master_sup, dispersions        
+        
 
 # PATCHED CODE TO SUPPORT COMBINING DISPERSION
 def lcom_build_functional_and_disp(name, restricted, save_pairwise_disp=False, **kwargs):
@@ -336,6 +370,10 @@ def lcom_build_functional_and_disp(name, restricted, save_pairwise_disp=False, *
         modified_disp_params = psi4.core.get_option("SCF", "DFT_DISPERSION_PARAMETERS")
     else:
         modified_disp_params = None
+
+    # Check if we should decompose_xc, this is a bit hacky
+    if kwargs["decompose_xc"]:
+        name["decompose_xc"] = True
 
     # Figure out functional
     # Returns with a list of dispersion_type, or None at all.
@@ -348,6 +386,8 @@ def lcom_build_functional_and_disp(name, restricted, save_pairwise_disp=False, *
     
     # Handle dispersion
     for disp in disp_type:
+        
+        coef = disp.pop('lcom_coef', 1.0)
         if isinstance(name, dict):
             emp_disp = EmpiricalDispersion(name_hint='',
                                             level_hint=disp_type["type"],
@@ -361,7 +401,7 @@ def lcom_build_functional_and_disp(name, restricted, save_pairwise_disp=False, *
                                             save_pairwise_disp=save_pairwise_disp,
                                             engine=kwargs.get('engine', None))
             
-        _disp_functor.add_empirical_disp(emp_disp)
+        _disp_functor.add_empirical_disp(emp_disp, coef)
 
     _disp_functor.print_out()
     return superfunc, _disp_functor    
