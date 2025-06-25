@@ -163,7 +163,12 @@ def _merge_superfunctionals(parent: psi4.core.SuperFunctional, child: psi4.core.
             
             # Now just simply check if the functional has an entry in
             # the parent dict. (No need to loop over everything)
-            xc_func_key = (child_fnctl.name(), child_fnctl.omega(), frozenset(child_fnctl.tweaks))
+            
+            # !TODO: Need to implement support for tweaks, though, it is a private field
+            # I don't think making this a plugin is no longer sustainable
+            # probably going back to fork : (
+            
+            xc_func_key = (child_fnctl.name(), child_fnctl.omega(), frozenset({}))
             if xc_func_key in xc_func_dict:
                 # Add the coefficient
                 target_fnctl = xc_func_dict[xc_func_key]
@@ -200,19 +205,19 @@ def _merge_superfunctionals(parent: psi4.core.SuperFunctional, child: psi4.core.
     # Merge x_hf coeffcients, total x_hf_alpha = linear combination sum of children
     parent.set_x_alpha(parent.x_alpha() + coef * child.x_alpha())
     
-def _print_out_lcom(xc_func_map):
-    '''
-        Prints out the final LCOM parameters (already combined), as well as the 
-        final HF parameters.
-    '''
+# def _print_out_lcom(xc_func_map):
+#     '''
+#         Prints out the final LCOM parameters (already combined), as well as the 
+#         final HF parameters.
+#     '''
 
 
 
 
-def _decompose_xc_helper():
-    '''
-        Helper function to decompose XC functionals into X and C parts.
-    '''
+# def _decompose_xc_helper():
+#     '''
+#         Helper function to decompose XC functionals into X and C parts.
+#     '''
     
     
 
@@ -243,9 +248,9 @@ def build_lcom_helper(  func_dict: dict,
         leaf_sup, _ = legacy_build_superfunc_from_dict(func_dict, npoints, deriv, restricted)
 
         # All we do now is just adding coefficients to the functional map and also add it 
-        # to the superfunctional.
-        
+        # to the superfunctional.        
         _merge_superfunctionals(master_sup, leaf_sup, xc_func_map, sup_coef)    
+
         return
             
     # ============= RECURSIVE PART ======================
@@ -372,7 +377,7 @@ def lcom_build_functional_and_disp(name, restricted, save_pairwise_disp=False, *
         modified_disp_params = None
 
     # Check if we should decompose_xc, this is a bit hacky
-    if kwargs["decompose_xc"]:
+    if "decompose_xc" in kwargs and kwargs["decompose_xc"]:
         name["decompose_xc"] = True
 
     # Figure out functional
