@@ -14,8 +14,8 @@ from qcengine.programs.empirical_dispersion_resources import dashcoeff, get_disp
 import uuid
 import re
 
-Base = declarative_base()
- 
+Base = declarative_base() 
+
 class Sources(Base):
     __tablename__ = "sources"
 
@@ -26,7 +26,6 @@ class Sources(Base):
     functionals = relationship("Functional", back_populates="source_ref")
     dispersion_configs = relationship("DispersionConfig", back_populates="source_ref")
     dispersion_bases = relationship("DispersionBase", back_populates="source_ref")
-
 
 class Functional(Base):
     __tablename__ = "functional"
@@ -48,7 +47,6 @@ class Functional(Base):
     @hybrid_property
     def is_lcom(self):
         return self.fnctl_data is None
-
 
 class FunctionalCoeffs(Base):
     __tablename__ = "functionalcoeffs"
@@ -122,9 +120,81 @@ class FunctionalDatabase:
     def get_source_resolution_stack(self) -> list[str]:
         return self.source_resol_stack.copy()
     
-    def add_json_source(fnctl_coef_json, disp_param_json=None, disp_mixing_json=None):
+    def add_json_source(source: str, 
+                        fnctl_base_json : dict,
+                        fnctl_coef_json : dict,  
+                        disp_param_json : dict = None, 
+                        disp_mixing_json: dict = None):        
         pass
     
+    
+    def _resolve_fnctl_coefficients(self, source: str, multi_fnctl_components: dict):
+        '''
+            Imports functionals from a JSON file and also validates
+            the JSON file format.
+        '''
+        
+    
+    def _store_fnctl_coef_json(self, source: str, fnctl_coef_json: dict):
+        '''
+            Imports functionals from a JSON file and also validates
+            the JSON file format.
+        '''
+        
+        fnctl_list = []
+        fnctl_coef_list = []
+        
+        # Since we are doing this as a single transaction,  
+        # need to rollback the entire pr
+        warning_lists = []
+
+        for multi_fnctl_name, multi_args in fnctl_coef_json.items():
+            # Typecheck the types
+            assert type(multi_fnctl_name) == str, "Error: incompatible type for fnctl_name"
+            
+            components = multi_args["fnctls"]
+            
+            # Create the new functional first, then queue up.
+            new_fnctl : Functional = Functional(
+                    source=source,
+                    fnctl_name=multi_fnctl_name, 
+                    citation=multi_args.get("citation", ""),
+                    description=multi_args.get("description", "")
+                )
+                
+            multi_fnctl_id = new_fnctl.fnctl_id
+            fnctl_list.append(new_fnctl)
+                        
+            for child_fnctl_name, coef in components.items():
+                
+                child_fnctl_name = child_fnctl_name.lower()
+                with self.Session() as session:
+                    
+                    # Lookup existing functionals.
+                    child_fnctl : Functional = (session.query(Functional)
+                            .filter(Functional.fnctl_name.lower() == child_fnctl_name)
+                            .first()
+                    )
+                    
+                    if child_fnctl is None:
+                        raise RuntimeError(f"Error: Cannot find functional {child_fnctl_name} in database!")
+                    
+                    child_id = child_fnctl.fnctl_id
+                                 
+                                        
+                    
+                    
+                
+                    
+            
+                    new_coef_entry = FunctionalCoeffs(
+                        parent_fnctl_id = multi_fnctl_id,
+                        child_fnctl_id = child_id, 
+                        coef=coef
+                    )
+                    
+                    session.add(new_coef_entry)
+
     def _import_psi4_fnctls_disp(self) -> None:
         '''
             Helper function to import PSI4 dispersions and functions
@@ -227,8 +297,9 @@ class FunctionalDatabase:
                 session.add(subdisp)
                 session.add(disp_config)
                 session.commit()
-                
-
+        
+    def _transform_db_func_format(self, functional_name: str, source: str = None):
+        pass  
     
     def query_functional(self, functional_name: str, disp_config: str | None = None) -> dict:
         '''
