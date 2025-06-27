@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+import sqlalchemy.orm
 from sqlalchemy import Column, String, Double, ForeignKey, UUID, JSON, UniqueConstraint
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -13,6 +14,7 @@ from qcengine.programs.empirical_dispersion_resources import dashcoeff, get_disp
 
 import uuid
 import re
+import warnings
 
 Base = declarative_base() 
 
@@ -98,10 +100,9 @@ class DispersionConfig(Base):
     functional = relationship("Functional", back_populates="dispersion_configs")
     subdisp = relationship("DispersionBase", back_populates="used_in_configs")
 
-
 class FunctionalDatabase:
     
-    def __init__(self, database_config : str | Path = None):
+    def __init__(self, database_config : Path):
         '''
             Creates a functional database from scratch, or reads from
             an existing database configuration (in a yaml file.)
@@ -109,8 +110,8 @@ class FunctionalDatabase:
         self.source_resol_stack : list[str] = []
         
         # Import from existing database if path is specified 
-        if database_config is not None:
-            return
+        if database_config is None:
+            raise ValueError("Error: database configurations cannot be None")
         
         # Otherwise, load from PSI4, then followed by sdftd3
         self._import_psi4_fnctls_disp()
@@ -125,28 +126,64 @@ class FunctionalDatabase:
                         fnctl_coef_json : dict,  
                         disp_param_json : dict = None, 
                         disp_mixing_json: dict = None):        
+        
+        # Need to add feedback if process went successfully, or
+        # some functionals 
         pass
     
     
+    def _get_session(self) -> sqlalchemy.orm.Session:
+        return self.Session()
+    
     def _resolve_fnctl_coefficients(self, source: str, multi_fnctl_components: dict):
-        '''
-            Imports functionals from a JSON file and also validates
-            the JSON file format.
-        '''
+        raise NotImplementedError("Have not implemented this yet!")
         
     
-    def _store_fnctl_coef_json(self, source: str, fnctl_coef_json: dict):
+    # Stores
+    def _store_fnctl_base_json(self, 
+                        source: str,
+                        fnctl_base_json : dict,) -> None:
+        pass
+
+    def _store_disp_json(self, 
+                        source: str,
+                        disp_param_json : dict = None, 
+                        disp_mixing_json: dict = None) -> None:
+        pass
+    
+    def _store_fnctl_coef_json(self, 
+                               source: str,
+                               fnctl_coef_json: dict) -> None:
         '''
             Imports functionals from a JSON file and also validates
             the JSON file format.
+            
+            We accept the following JSON format
+            ```json
+                data: 
+                    {
+                        <multi_fnctl_name>:
+                            // Mandatory
+                            // This is a dictionary of functional components and their coeffcients
+                            "fnctls": {
+                                <fnctl_name>: coef,
+                                ...
+                            },    
+                            
+                            // Optional, citation of functional
+                            // Defaults to an empty string
+                            "citation": str,
+                            
+                            // Optional, description of functional
+                            // Defaults to an empty string
+                            "description": str
+                    }
+                    
+            ```
         '''
-        
-        fnctl_list = []
-        fnctl_coef_list = []
-        
         # Since we are doing this as a single transaction,  
-        # need to rollback the entire pr
-        warning_lists = []
+        # need to rollback the entire process
+        error_lists : list[Exception] = []
 
         for multi_fnctl_name, multi_args in fnctl_coef_json.items():
             # Typecheck the types
@@ -163,37 +200,40 @@ class FunctionalDatabase:
                 )
                 
             multi_fnctl_id = new_fnctl.fnctl_id
-            fnctl_list.append(new_fnctl)
                         
             for child_fnctl_name, coef in components.items():
-                
                 child_fnctl_name = child_fnctl_name.lower()
-                with self.Session() as session:
-                    
-                    # Lookup existing functionals.
-                    child_fnctl : Functional = (session.query(Functional)
-                            .filter(Functional.fnctl_name.lower() == child_fnctl_name)
-                            .first()
-                    )
-                    
-                    if child_fnctl is None:
-                        raise RuntimeError(f"Error: Cannot find functional {child_fnctl_name} in database!")
-                    
-                    child_id = child_fnctl.fnctl_id
-                                 
-                                        
-                    
-                    
+                try:
+                    with self._get_session() as session:
+                        
+                        # Lookup existing functionals.
+                        child_fnctl : Functional = (session.query(Functional)
+                                .filter(Functional.fnctl_name.lower() == child_fnctl_name)
+                                .first()
+                        )
+                        
+                        if child_fnctl is None:
+                            raise RuntimeError(f"Error: Cannot find functional {child_fnctl_name} in database!")
+                        
+                        # !TODO: for future support, resolve coefficients.                 
+                        if child_fnctl.is_lcom:
+                            raise RuntimeError(f"Error: Cannot create multi-functional by specifying multi-functional, need base functionals.")
+                        
+                        child_id = child_fnctl.fnctl_id
+                        new_coef_entry = FunctionalCoeffs(
+                            parent_fnctl_id = multi_fnctl_id,
+                            child_fnctl_id = child_id, 
+                            coef=coef
+                        )
+                        
+                        session.add(new_coef_entry)
                 
-                    
-            
-                    new_coef_entry = FunctionalCoeffs(
-                        parent_fnctl_id = multi_fnctl_id,
-                        child_fnctl_id = child_id, 
-                        coef=coef
-                    )
-                    
-                    session.add(new_coef_entry)
+                except Exception as e:
+                    error_lists.append(e)
+        
+        if len(error_lists) > 0:
+            raise ExceptionGroup("Some errors were encountered:", error_lists)            
+        return
 
     def _import_psi4_fnctls_disp(self) -> None:
         '''
@@ -201,7 +241,7 @@ class FunctionalDatabase:
             into the database.
         '''
         self.source_resol_stack.append("psi4")
-        with self.Session() as session:
+        with self._get_session() as session:
             src = Sources(name="psi4")
             src_id = src.id
             session.add(src)
@@ -226,7 +266,7 @@ class FunctionalDatabase:
             func_description = func_dict.get("description", "")
             func_data = func_dict
             
-            with self.Session() as session:
+            with self._get_session() as session:
                 fnctl = Functional(
                     source = src_id,
                     fnctl_data=func_data,
@@ -250,7 +290,7 @@ class FunctionalDatabase:
             
             parent_func, _ = match.groups()
             # Search for parent_func id
-            with self.Session() as session:
+            with self._get_session() as session:
                 fnctl : Functional = (session.query(Functional)
                             .filter(Functional.fnctl_name.lower() == parent_func.lower())
                             .first())
@@ -267,7 +307,7 @@ class FunctionalDatabase:
             disp_description = func_disp.get("description", "")
             disp_params = func_disp.get("params", {})
             
-            with self.Session() as session:
+            with self._get_session() as session:
                 
                 # Add base dispersion
                 subdisp = DispersionBase(
@@ -298,32 +338,117 @@ class FunctionalDatabase:
                 session.add(disp_config)
                 session.commit()
         
-    def _transform_db_func_format(self, functional_name: str, source: str = None):
-        pass  
-    
-    def query_functional(self, functional_name: str, disp_config: str | None = None) -> dict:
+    def _get_only_functional(self, 
+                             functional_name: str, 
+                             source: str) -> (
+                                tuple[Functional, list[tuple[Functional, float]]]
+                             ):
         '''
-            Query a functional within a database. 
-            Returns a dictionary that is compatible with the 
-            PSI4 dft_functionals interface or the scf_lcom
-            plugin interface.
+            Queries a functional and returns the functional data
+            and (if any) returns a list of tuples containing 
+            the subcomponent functional and coefficients.
+            
+            The subcomponent functional is guranteed to be 
+            base functionals.
+            
+            If queried functional is a base functional, 
+            the function returns an empty list.
         '''
-        self.source_resol_stack.append("psi4")
-
-        func_dict = {}
-        func_dict["name"]
-
         
-        
-        
-        
-        if disp_config is None:
-            return func_dict
-        
-        
-        
-
-
-
-
+        with self._get_session() as session:        
+            query_func : Functional = (
+                            session.query(Functional)
+                            .join(Sources)
+                            .filter(Functional.fnctl_name == functional_name,
+                                    Sources.name == source)  
+                            .first()
+                        )
+            
+            session.commit()
         pass
+    
+        # If not lcom, we are done!
+        if not query_func.is_lcom:
+            return query_func, []
+        
+        parent_func = query_func
+        parent_func_id = query_func.fnctl_id
+        # If it is lcom, we need more work!
+        with self._get_session() as session:        
+            
+            func_coefs : list[tuple[Functional, float]] = (
+                            session.query(Functional, FunctionalCoeffs.coef)
+                            .join(FunctionalCoeffs, FunctionalCoeffs.parent_fnctl_id == Functional.fnctl_id)
+                            .filter(
+                                FunctionalCoeffs.parent_fnctl_id == parent_func_id,
+                            )  
+                            .all()
+                        )
+            
+            # Validate, cannot have a lcom functional in the result
+            if any(func.is_lcom for (func, _) in func_coefs):
+                raise RuntimeError("Error: Somehow we have a multifunctional here")
+
+            session.commit()
+
+        return parent_func, func_coefs
+    
+    def _get_dispersion(self, functional_name: str, dispersion_name: str, source: str):
+            
+        with self._get_session() as session:
+            disp_list : list[tuple[DispersionBase, float]] = (
+                session.query(DispersionBase, DispersionConfig.subdisp_coef)
+                    .join(Functional, DispersionConfig.fnctl_id == Functional.fnctl_id)
+                    .join(Sources, DispersionConfig.source == Sources.name) 
+                    .join(DispersionBase, DispersionBase.subdisp_id == DispersionConfig.subdisp_id)
+                    .filter(
+                        Functional.fnctl_name == functional_name,
+                        Sources.name == source,
+                        DispersionConfig.disp_name == dispersion_name                        
+                    ).all()       
+            )
+            
+            session.commit()
+            
+        return disp_list
+            
+    def _format_to_psi4(self, 
+                        par_functional : Functional,
+                        functional_coeffs: list[tuple[Functional, float]],
+                        dispersion_coeffs: list[tuple[DispersionBase, float]] = []):
+        '''
+            Formats query results to PSI4 lcom plugin format.
+        '''    
+        
+        func_dict = {}
+        func_dict["name"] = par_functional.fnctl_name
+        func_dict["citation"] = par_functional.citation
+        func_dict["description"] = par_functional.description
+        
+        if len(functional_coeffs) > 1:
+            lcom_fucntionals = {}
+            for (child_fnctl, coef) in functional_coeffs:
+                child_name = child_fnctl.fnctl_name
+                child_data = child_fnctl.fnctl_data.copy()
+                lcom_fucntionals[child_name] = child_data
+                lcom_fucntionals[child_name]["coef"] = coef    
+            
+            func_dict["lcom_functionals"] = lcom_fucntionals
+            
+            
+        if len(dispersion_coeffs) > 1:
+            lcom_disps = []
+            for (base_disp, coef) in dispersion_coeffs:
+                disp_dict = {}
+                disp_dict["params"] = base_disp.disp_params
+                disp_dict["type"] = base_disp.subdisp_name
+                disp_dict["citation"] = base_disp.citation
+                disp_dict["description"] = base_disp.description
+                disp_dict["lcom_coef"] = coef
+                lcom_disps.append(disp_dict)
+            
+            func_dict["lcom_dispersion"] = lcom_disps
+        
+        return func_dict
+    
+   
