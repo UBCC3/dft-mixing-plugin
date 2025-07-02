@@ -15,13 +15,14 @@ from psi4.driver.procrouting.dft.dft_builder import (
 legacy_build_superfunc_from_dict = build_superfunctional_from_dictionary
 
 class LCOMSuperFunctionalBuilder:
-    def __init__(self, func_dict: dict, npoints, deriv, restricted):
+    def __init__(self, func_dict: dict, npoints, deriv, restricted, decomp_xc = False):
         self._npoints = npoints
         self._deriv = deriv
         self._restricted = restricted
 
         self._master_sup = psi4.core.SuperFunctional.blank()
         self._disps = []
+        self.decomp_xc = decomp_xc
         
         # Maps (parent_func, xc_func) -> tweak
         self._tweak_mapper : dict[tuple[str, str], dict] = {}
@@ -153,7 +154,7 @@ class LCOMSuperFunctionalBuilder:
         c_funcs = []
         
         # Special case where child is a xc_func, decompose XC functionals.
-        if child.is_libxc_func():
+        if child.is_libxc_func() and self.decomp_xc:
             
             xc_psi_func = child_fnctl.c_functionals()[0]
             xc_name = xc_psi_func.name()
