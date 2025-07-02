@@ -108,7 +108,7 @@ class LCOMSuperFunctionalBuilder:
             for func_name, args in master_xc_funcs.items():
                 if "tweak" in args:
                     tweak = args['tweak']
-                    self._tweak_mapper[(leaf_sup.name(), func_name)] = tweak
+                    self._tweak_mapper[(leaf_sup.name(), ("XC_"+func_name).upper())] = tweak
                     
             return
 
@@ -169,6 +169,7 @@ class LCOMSuperFunctionalBuilder:
         x_funcs = []
         c_funcs = []
         
+
         # Special case where child is a xc_func, decompose XC functionals.
         if child.is_libxc_func() and self.decomp_xc:
             
@@ -179,7 +180,10 @@ class LCOMSuperFunctionalBuilder:
             xc_coef = xc_psi_func.alpha()
             xc_decomp : list[tuple[float, str]] = libxc_func.aux_funcs()
             
-            if xc_decomp is None:
+            has_tweak = xc_name.upper() in self._tweak_mapper
+            
+            # Do NOT decompose if cannot decompose, or HAS a tweak
+            if xc_decomp is None and has_tweak:
                 c_funcs.append(xc_psi_func)
                 
             else:    
@@ -211,14 +215,14 @@ class LCOMSuperFunctionalBuilder:
         func_handlers = [
             (x_funcs, parent.add_x_functional),
             (c_funcs, parent.add_c_functional),
-        ]
+        ]g
 
         for child_fnctls, parent_add_func in func_handlers:
             for child_fnctl in child_fnctls:
                 child_fnctl.set_alpha(coef * child_fnctl.alpha())
 
                 # Check for tweaks: 
-                tweak = self._tweak_mapper.get((child.name(), child_fnctl.name()), {})
+                tweak = self._tweak_mapper.get((child.name().upper(), child_fnctl.name()), {})
 
                 key = (child_fnctl.name(), child_fnctl.omega(), frozenset(tweak))
                 if key in self._xc_func_map:
