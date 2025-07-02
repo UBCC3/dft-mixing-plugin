@@ -139,6 +139,7 @@ def lcom_build_functional_and_disp(name, restricted, save_pairwise_disp=False, *
 
     # Figure out functional
     # Returns with a list of dispersion_type, or None at all.
+    _check_consistency(name)
     superfunc, disp_type = build_superfunctional(name, restricted)
 
     if len(disp_type) == 0:
