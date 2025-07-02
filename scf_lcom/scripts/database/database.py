@@ -30,6 +30,7 @@ class Sources(Base):
     dispersion_bases = relationship("DispersionBase", back_populates="source_ref")
 
 class Functional(Base):
+    
     __tablename__ = "functional"
 
     fnctl_id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
@@ -106,6 +107,10 @@ class FunctionalDatabase:
         '''
             Creates a functional database from scratch, or reads from
             an existing database configuration (in a yaml file.)
+            
+            Yaml contains:
+            1. Path to database
+            
         '''     
         self.source_resol_stack : list[str] = []
         
@@ -115,8 +120,6 @@ class FunctionalDatabase:
         
         # Otherwise, load from PSI4, then followed by sdftd3
         self._import_psi4_fnctls_disp()
-        
-        pass
     
     def get_source_resolution_stack(self) -> list[str]:
         return self.source_resol_stack.copy()
@@ -130,26 +133,153 @@ class FunctionalDatabase:
         # Need to add feedback if process went successfully, or
         # some functionals 
         pass
-    
-    
+
     def _get_session(self) -> sqlalchemy.orm.Session:
         return self.Session()
     
     def _resolve_fnctl_coefficients(self, source: str, multi_fnctl_components: dict):
-        raise NotImplementedError("Have not implemented this yet!")
-        
+        raise NotImplementedError("Have not implemented this yet!")        
     
     # Stores
     def _store_fnctl_base_json(self, 
                         source: str,
                         fnctl_base_json : dict,) -> None:
-        pass
+        raise NotImplementedError("Error: Have not implemented this yet...")
 
     def _store_disp_json(self, 
                         source: str,
-                        disp_param_json : dict = None, 
-                        disp_mixing_json: dict = None) -> None:
-        pass
+                        disp_param_json : dict = None) -> None:
+        
+        error_list = []
+        
+        # Add all base dispersions first
+        for parent_func, avail_disps in disp_param_json.items():
+            for disp_name, disp_info in avail_disps.items():
+                try:
+                    with self._get_session() as session:
+                        # Query for functional id
+                        fnctl_id, source_id = (
+                            session.query(Functional.fnctl_id, Sources.id)
+                            .join(Sources)
+                            .filter(Functional.fnctl_name == parent_func,
+                                    Sources.name == source)
+                            .first()
+                        )
+
+                        # Create new Base Disperison
+                        base_disp = DispersionBase(
+                            fnctl_id = fnctl_id, 
+                            subdisp_name = disp_info["type"],
+                            disp_params = disp_info["disp_params"],
+                            citation = disp_info.get("citation", ""),
+                            description = disp_info.get("citation", "")
+                        )
+                        
+                        # Create new DispersionConfig
+                        base_disp_cfg = DispersionBase(
+                            fnctl_id = fnctl_id, 
+                            subdisp_name = disp_info["type"],
+                            citation = disp_info.get("citation", ""),
+                            description = disp_info.get("citation", ""),
+                            disp_name = disp_info["type"],
+                            subdisp_id = base_disp.subdisp_id
+                        )
+                        
+                        session.add(base_disp)
+                        session.add(base_disp_cfg)
+                        session.commit()
+                        
+                except Exception as e:
+                    error_list.append(e)    
+                    
+        if len(error_list > 1):
+            raise ExceptionGroup("[ERROR] Several errors were found: ", error_list)
+        
+    def _store_disp_coeffs(self, 
+                        source: str,
+                        disp_param_json : dict = None) -> None:
+        
+        error_list = []
+        
+        # Add all base dispersions first
+        for parent_func, disp_config_dict in disp_param_json.items():
+            for disp_config_name, disp_config_info in disp_config_dict.items():
+                
+                    disp_config_cit : str = disp_config_info.get("citation", "")
+                    disp_config_desc : str = disp_config_info.get("description", "")
+                    disp_config_coeffs : dict[str, float] = disp_config_info.get("coefficients", None)
+                    
+                    if disp_config_coeffs is None:
+                        # Error out, then skip this disp_config
+                        err = RuntimeError(f"[ERROR] No coefficients were specified for disp_config {disp_config_name}")
+                        error_list.append(err)
+                        continue
+
+                        
+                    for subdisp_name, subdisp_coef in disp_config_coeffs.items():
+                        try:
+                            with self._get_session() as session:
+                                # Query for functional id
+                                fnctl_id, source_id = (
+                                    session.query(Functional.fnctl_id, Sources.id)
+                                    .join(Sources)
+                                    .filter(Functional.fnctl_name == parent_func,
+                                            Sources.name == source)
+                                    .first()
+                                )
+                            session.commit()
+
+                        except Exception as e:
+                            error_list.append(e)    
+                    
+        if len(error_list > 1):
+            raise ExceptionGroup("[ERROR] Several errors were found: ", error_list)
+                    
+    def _store_disp_mixing(self, 
+                            source: str,
+                            disp_coeffs_json : dict = None) -> None:
+            
+            error_list = []
+            
+            # Add all base dispersions first
+            for parent_func, avail_disps in disp_coeffs_json.items():
+                for disp_name, disp_info in avail_disps.items():
+                    try:
+                        with self._get_session() as session:
+                            # Query for functional id
+                            fnctl_id, source_id = (
+                                session.query(Functional.fnctl_id, Sources.id)
+                                .join(Sources)
+                                .filter(Functional.fnctl_name == parent_func,
+                                        Sources.name == source)
+                                .first()
+                            )
+
+                            # Create new Base Disperison
+                            base_disp = DispersionBase(
+                                fnctl_id = fnctl_id, 
+                                subdisp_name = disp_info["type"],
+                                disp_params = disp_info["disp_params"],
+                                citation = disp_info.get("citation", ""),
+                                description = disp_info.get("citation", "")
+                            )
+                            
+                            # Create new DispersionConfig
+                            base_disp_cfg = DispersionBase(
+                                fnctl_id = fnctl_id, 
+                                subdisp_name = disp_info["type"],
+                                citation = disp_info.get("citation", ""),
+                                description = disp_info.get("citation", ""),
+                                disp_name = disp_info["type"],
+                                subdisp_id = base_disp.subdisp_id
+                            )
+                            
+                            session.add(base_disp)
+                            session.add(base_disp_cfg)
+                            session.commit()
+                            
+                    except Exception as e:
+                        error_list.append(e) 
     
     def _store_fnctl_coef_json(self, 
                                source: str,
@@ -165,7 +295,7 @@ class FunctionalDatabase:
                         <multi_fnctl_name>:
                             // Mandatory
                             // This is a dictionary of functional components and their coeffcients
-                            "fnctls": {
+                            "functionals": {
                                 <fnctl_name>: coef,
                                 ...
                             },    
@@ -179,6 +309,76 @@ class FunctionalDatabase:
                             "description": str
                     }
                     
+                    
+                // json file
+                {
+                    "multifunc1_config1": {
+                        "functionals": {
+                            "BLYP": 0.25,
+                            "B97-0": 0.25,
+                            ...
+                        }        
+                        
+                        "citation": 
+                
+                    }
+                    
+                    "multifunc1_config2": {
+                        "functionals": {
+                            "BLYP": 0.25,
+                            "B97-0": 0.25,
+                            ...
+                        }        
+                        
+                        "citation": 
+                
+                    }
+                    
+                // dispersion_params.json
+                {
+                    "functional_name": {
+                        "d2": {
+                            params: {}
+                            citation (optional): ""
+                            description (optional): ""
+                        }
+                        
+                        "d3": {
+                            params: {}
+                            citation (optional): ""
+                            description (optional): ""
+                        }
+                    }
+                }
+                
+                // dispersion_coeffs.json
+                {
+                    "functional_name": {
+                        "disp_config1": {
+                            coeffs: {
+                                "D2": 0.25,
+                                "D3": 0.25,
+                                etc.
+                            }
+                            description:
+                            citation:
+                        },
+                        
+                        "disp_config2": {
+                            "D2": 0.25,
+                            "D3": 0.75,
+                            etc.
+                        },
+                        
+                        "D2": {
+                            "D2": 0.25,
+                        },
+                    }
+                }
+
+                func_dictionary = func_database.query(func_name, func_disperion)
+                psi4.energy('scf_lcom', dft_functional = func_dictionary)
+                
             ```
         '''
         # Since we are doing this as a single transaction,  
@@ -365,7 +565,6 @@ class FunctionalDatabase:
                         )
             
             session.commit()
-        pass
     
         # If not lcom, we are done!
         if not query_func.is_lcom:
