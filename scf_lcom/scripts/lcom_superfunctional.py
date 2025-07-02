@@ -15,6 +15,13 @@ from psi4.driver.procrouting.dft.dft_builder import (
 legacy_build_superfunc_from_dict = build_superfunctional_from_dictionary
 
 class LCOMSuperFunctionalBuilder:
+    '''
+        Wrapper class for psi4 SuperFunctional.
+        
+        Accepts
+    
+    
+    '''
     def __init__(self, func_dict: dict, npoints, deriv, restricted, decomp_xc = False):
         self._npoints = npoints
         self._deriv = deriv
@@ -120,6 +127,15 @@ class LCOMSuperFunctionalBuilder:
             child_coef = lcom_coef * sup_coef
             self._build_lcom_helper(lcom_func, child_coef)
 
+    
+    def print_info(self):
+        '''
+            Prints out information of the combined superfunctional
+            (resolved mixing).
+            which includes the final exchange params.
+        '''    
+        pass
+
     def _merge_superfunctionals(self, child: psi4.core.SuperFunctional, coef: float):
         parent = self._master_sup
 
@@ -191,7 +207,7 @@ class LCOMSuperFunctionalBuilder:
             x_funcs.extend(child.x_functionals())
             c_funcs.extend(child.c_functionals())
 
-
+        # Now just memoize the functionals.
         func_handlers = [
             (x_funcs, parent.add_x_functional),
             (c_funcs, parent.add_c_functional),
