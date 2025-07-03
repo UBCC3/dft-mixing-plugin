@@ -16,6 +16,9 @@ import uuid
 import re
 import warnings
 
+# Config parser
+import yaml
+
 Base = declarative_base() 
 
 class Sources(Base):
@@ -117,14 +120,33 @@ class FunctionalDatabase:
         # Import from existing database if path is specified 
         if database_config is None:
             raise ValueError("Error: database configurations cannot be None")
+      
+        # Import configs
+        with open(database_config) as f:
+            config = yaml.safe_load(f)
+
+        DB_PATH = config["db_path"]
         
-        # Otherwise, load from PSI4, then followed by sdftd3
-        self._import_psi4_fnctls_disp()
+        # Check if db exists
+        db_exists = os.path.exists(DB_PATH)
+        
+        db_uri = f'sqlite:///{DB_PATH}'
+        # Create a SQL database for this
+        engine = sqlalchemy.create_engine(db_uri)
+        
+        Base.metadata.create_all(engine)
+        
+        self.Session = sqlalchemy.orm.sessionmaker(bind=engine)
+        
+        # If database does not exist, create a new database
+        # with PSI4 columns filled in
+        if not db_exists:
+            self._import_psi4_fnctls_disp()
     
     def get_source_resolution_stack(self) -> list[str]:
         return self.source_resol_stack.copy()
     
-    def add_json_source(source: str, 
+    def add_json_source(self, source: str, 
                         fnctl_base_json : dict,
                         fnctl_coef_json : dict,  
                         disp_param_json : dict = None, 
@@ -133,6 +155,50 @@ class FunctionalDatabase:
         # Need to add feedback if process went successfully, or
         # some functionals 
         pass
+    
+    def query_functional_disp(self, func_name : str, 
+                            disp_config_name : str = None,
+                            source: str = None, 
+                            fmt: str = "psi4") -> dict:
+        '''
+            Queries for a functional, and returns it in a specified format
+            (PSI4 JSON format by default). 
+            
+            If `disp_config_name` is given as an argument, it will
+            add that dispersion configuration to the queried
+            functional.
+            
+            By default, the database queries for the top of the 
+            source stack by default, and keep progressing
+            
+            For example, if the source stack was specified as:
+                - sourceA
+                - dftd4     (hidden)
+                - psi4      (hidden)
+                
+            it will query for sourceA first, then dftd4 if not found, then psi4.
+            
+            If `source` was given (reccomended), it will immediately search for
+            that source. 
+        '''
+        
+        par_func, functional_coefs = self._get_only_functional(func_name, source)
+        
+        if disp_config_name is not None:
+            disp_coefs = self._get_dispersion(func_name, disp_config_name, source)
+        else:
+            disp_coefs = []
+            
+        # Assemble functional and dispersion
+        if format == "psi4":
+            return self._format_to_psi4(par_func, functional_coefs, disp_coefs)
+        
+        
+        
+        
+        
+        
+        
 
     def _get_session(self) -> sqlalchemy.orm.Session:
         return self.Session()
@@ -633,9 +699,11 @@ class FunctionalDatabase:
                 lcom_fucntionals[child_name]["coef"] = coef    
             
             func_dict["lcom_functionals"] = lcom_fucntionals
+        
+        elif len(functional_coeffs) == 1:
+            func_dict = par_functional.fnctl_data        
             
-            
-        if len(dispersion_coeffs) > 1:
+        if len(dispersion_coeffs) > 0:
             lcom_disps = []
             for (base_disp, coef) in dispersion_coeffs:
                 disp_dict = {}
@@ -646,8 +714,11 @@ class FunctionalDatabase:
                 disp_dict["lcom_coef"] = coef
                 lcom_disps.append(disp_dict)
             
-            func_dict["lcom_dispersion"] = lcom_disps
-        
+            if len(dispersion_coeffs) == 1:
+                func_dict["dispersion"] = lcom_disps[0]
+            else:
+                func_dict["lcom_dispersion"] = lcom_disps
+            
         return func_dict
     
    
