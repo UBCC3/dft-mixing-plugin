@@ -1,3 +1,4 @@
+import logging.config
 import os
 from pathlib import Path
 
@@ -12,12 +13,21 @@ from psi4.driver.procrouting.dft.dft_builder import functionals
 # Default dispersions
 from qcengine.programs.empirical_dispersion_resources import dashcoeff, get_dispersion_aliases, new_d4_api
 
+# blacklisted functionals
+from .exceptions import blacklist_funcs
+
 import uuid
 import re
 import warnings
+import json
+
+import logging
 
 # Config parser
 import yaml
+
+
+logger = logging.getLogger(__name__)
 
 Base = declarative_base() 
 
@@ -136,7 +146,7 @@ class FunctionalDatabase:
         
         Base.metadata.create_all(engine)
         
-        self.Session = sqlalchemy.orm.sessionmaker(bind=engine)
+        self.Session = sqlalchemy.orm.sessionmaker(bind=engine, expire_on_commit=False)
         
         # If database does not exist, create a new database
         # with PSI4 columns filled in
@@ -190,15 +200,11 @@ class FunctionalDatabase:
             disp_coefs = []
             
         # Assemble functional and dispersion
-        if format == "psi4":
+        if fmt.lower() == "psi4":
             return self._format_to_psi4(par_func, functional_coefs, disp_coefs)
-        
-        
-        
-        
-        
-        
-        
+
+        raise RuntimeError("Error: Invalid format!")
+
 
     def _get_session(self) -> sqlalchemy.orm.Session:
         return self.Session()
@@ -509,25 +515,27 @@ class FunctionalDatabase:
         self.source_resol_stack.append("psi4")
         with self._get_session() as session:
             src = Sources(name="psi4")
-            src_id = src.id
             session.add(src)
             session.commit()
+            src_id = src.id
           
+        logger.info(f"src_id: {src_id}")
+    
         parent_functionals = {
-            functionals[func_name] \
+            func_name : functionals[func_name] \
                 for func_name in functionals \
                 if "dispersion" not in functionals[func_name]
         }
         
         dispersion_functionals = {
-            functionals[func_name] \
+            func_name : functionals[func_name] \
                 for func_name in functionals \
                 if "dispersion" in functionals[func_name]
         }
         
         # Add parent functionals        
         for func_name, func_dict in parent_functionals.items():
-            func_name = func_dict["name"]
+            func_name = func_name
             func_citation = func_dict.get("citation", "No citations available")
             func_description = func_dict.get("description", "")
             func_data = func_dict
@@ -544,25 +552,46 @@ class FunctionalDatabase:
                 session.add(fnctl)
                 session.commit()
             
+            
+        error_fnctls = {}
+            
         # Now add dispersions, only add those whose parent functionals we added before
         for func_name, func_dict in dispersion_functionals.items():
-            func_name = func_dict["name"]
+            
+            # Skip blacklisted functionals for now
+            if func_name.lower() in blacklist_funcs:
+                continue
+            
+            func_name = func_name
             
             # Extract the parent part of fnctl
             pattern = r"([-\d\w()]+)-([\w\d()]+)\)?$"
             match = re.match(pattern, func_name)
+            
+            # END immediately if in blacklisted functionals
+            # if func_name.lower() in blacklist_funcs:
+            #     logger.error(f'Skipping functional {func_name} since the dispersion is weird')
+            #     continue
+            
             if not match: 
-                raise RuntimeError(f"Error: somehow encountered a non dash-coeff functional {func_name}")
+                logger.error(f"Dispersion causing error, Skipping functional {func_name}:{func_dict} ")
+                error_fnctls[func_name] = func_dict
+                continue
+                # raise RuntimeError(f"Error: somehow encountered a non dash-coeff functional {func_name}")
             
             parent_func, _ = match.groups()
             # Search for parent_func id
             with self._get_session() as session:
                 fnctl : Functional = (session.query(Functional)
-                            .filter(Functional.fnctl_name.lower() == parent_func.lower())
+                            .filter(sqlalchemy.func.lower(Functional.fnctl_name) == parent_func.lower())
                             .first())
                 
                 if fnctl is None:
-                    raise RuntimeError(f"Error: no parent functional corresponds to the functional {func_name}")
+                    logger.error(f"Skipping functional {func_name}:{func_dict}")
+                    session.commit()
+                    error_fnctls[func_name] = func_dict
+                    continue
+                    raise RuntimeError(f"Error: no parent functional corresponds to the functional {func_name} : {func_dict}")
                 
                 func_id = fnctl.fnctl_id
                 session.commit()
@@ -575,8 +604,11 @@ class FunctionalDatabase:
             
             with self._get_session() as session:
                 
+                subdisp_id = str(uuid.uuid4())
+                
                 # Add base dispersion
                 subdisp = DispersionBase(
+                    subdisp_id=subdisp_id,
                     fnctl_id=func_id,
                     disp_params=disp_params,
                     subdisp_name=disp_name,
@@ -584,8 +616,6 @@ class FunctionalDatabase:
                     citation=disp_citation,
                     description=disp_description,
                 )
-                
-                subdisp_id = subdisp.subdisp_id
                 
                 # Add a configuration consisting of only ONE dispersion.
                 # under the name of the dispersion itself so PSI4 can run 
@@ -595,7 +625,7 @@ class FunctionalDatabase:
                     fnctl_id=func_id,
                     source=src_id,
                     citation=disp_citation,
-                    func_description=disp_description,
+                    description=disp_description,
                     disp_name=disp_name,
                     subdisp_id=subdisp_id,    
                 )
@@ -625,12 +655,15 @@ class FunctionalDatabase:
             query_func : Functional = (
                             session.query(Functional)
                             .join(Sources)
-                            .filter(Functional.fnctl_name == functional_name,
+                            .filter(sqlalchemy.func.lower(Functional.fnctl_name) == functional_name.lower(),
                                     Sources.name == source)  
                             .first()
                         )
             
             session.commit()
+    
+        if query_func is None:
+            raise RuntimeError('Error: Cannot find functional.')
     
         # If not lcom, we are done!
         if not query_func.is_lcom:
@@ -700,7 +733,7 @@ class FunctionalDatabase:
             
             func_dict["lcom_functionals"] = lcom_fucntionals
         
-        elif len(functional_coeffs) == 1:
+        else:
             func_dict = par_functional.fnctl_data        
             
         if len(dispersion_coeffs) > 0:
@@ -718,7 +751,10 @@ class FunctionalDatabase:
                 func_dict["dispersion"] = lcom_disps[0]
             else:
                 func_dict["lcom_dispersion"] = lcom_disps
-            
+        
+        if func_dict is None:
+            logger.error(f"FUNC DICT FORMATTING IS NONE {func_dict}")
+        
         return func_dict
     
    

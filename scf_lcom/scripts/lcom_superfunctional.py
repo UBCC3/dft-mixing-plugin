@@ -16,11 +16,7 @@ legacy_build_superfunc_from_dict = build_superfunctional_from_dictionary
 
 class LCOMSuperFunctionalBuilder:
     '''
-        Wrapper class for psi4 SuperFunctional.
         
-        Accepts
-    
-    
     '''
     def __init__(self, func_dict: dict, npoints, deriv, restricted, decomp_xc = False):
         self._npoints = npoints
@@ -215,7 +211,7 @@ class LCOMSuperFunctionalBuilder:
         func_handlers = [
             (x_funcs, parent.add_x_functional),
             (c_funcs, parent.add_c_functional),
-        ]g
+        ]
 
         for child_fnctls, parent_add_func in func_handlers:
             for child_fnctl in child_fnctls:
