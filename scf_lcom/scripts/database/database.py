@@ -26,7 +26,6 @@ import logging
 # Config parser
 import yaml
 
-
 logger = logging.getLogger(__name__)
 
 Base = declarative_base() 
@@ -49,7 +48,7 @@ class Functional(Base):
     fnctl_id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     source = Column(String(36), ForeignKey('sources.id'), nullable=False)
     fnctl_data = Column(JSON(), nullable=True, default=None)
-    fnctl_name = Column(String(40), nullable=False, unique=True)
+    fnctl_master_name = Column(String(40), nullable=False, unique=True)
     citation = Column(String(512), nullable=False, default="")
     description = Column(String(512), nullable=False, default="")
 
@@ -535,7 +534,7 @@ class FunctionalDatabase:
         
         # Add parent functionals        
         for func_name, func_dict in parent_functionals.items():
-            func_name = func_name
+            func_name = func_name.lower()
             func_citation = func_dict.get("citation", "No citations available")
             func_description = func_dict.get("description", "")
             func_data = func_dict
@@ -552,7 +551,6 @@ class FunctionalDatabase:
                 session.add(fnctl)
                 session.commit()
             
-            
         error_fnctls = {}
             
         # Now add dispersions, only add those whose parent functionals we added before
@@ -562,7 +560,7 @@ class FunctionalDatabase:
             if func_name.lower() in blacklist_funcs:
                 continue
             
-            func_name = func_name
+            func_name = func_name.lower()
             
             # Extract the parent part of fnctl
             pattern = r"([-\d\w()]+)-([\w\d()]+)\)?$"
@@ -693,21 +691,29 @@ class FunctionalDatabase:
     
     def _get_dispersion(self, functional_name: str, dispersion_name: str, source: str):
             
+        logger.warning(f"Querying: fname: {functional_name}, disp: {dispersion_name}, source: {source} ")
+        
         with self._get_session() as session:
             disp_list : list[tuple[DispersionBase, float]] = (
                 session.query(DispersionBase, DispersionConfig.subdisp_coef)
                     .join(Functional, DispersionConfig.fnctl_id == Functional.fnctl_id)
-                    .join(Sources, DispersionConfig.source == Sources.name) 
+                    .join(Sources, DispersionConfig.source == Sources.id) 
                     .join(DispersionBase, DispersionBase.subdisp_id == DispersionConfig.subdisp_id)
+                    # .all()
                     .filter(
-                        Functional.fnctl_name == functional_name,
-                        Sources.name == source,
-                        DispersionConfig.disp_name == dispersion_name                        
+                        sqlalchemy.func.lower(Functional.fnctl_name) == functional_name.lower(),
+                        sqlalchemy.func.lower(Sources.name) == source.lower(),
+                        sqlalchemy.func.lower(DispersionConfig.disp_name) == dispersion_name.lower()                        
                     ).all()       
             )
             
+            logger.warning(disp_list)
+            
             session.commit()
             
+        if len(disp_list) == 0:
+            raise RuntimeError("Error: Dispersion Not Found!")
+             
         return disp_list
             
     def _format_to_psi4(self, 
@@ -735,6 +741,9 @@ class FunctionalDatabase:
         
         else:
             func_dict = par_functional.fnctl_data        
+            
+            
+        logger.warning(f"Dipsersion Coeffs: {dispersion_coeffs}") 
             
         if len(dispersion_coeffs) > 0:
             lcom_disps = []

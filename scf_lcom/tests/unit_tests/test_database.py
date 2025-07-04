@@ -2,7 +2,14 @@ import pytest
 import os
 import yaml
 
+import logging
+
+from psi4.driver.procrouting.dft.dft_builder import functionals
+
 from scripts.database import FunctionalDatabase
+from .db_sample_data import lcom_func_dataset
+
+logger = logging.getLogger(__name__)
 
 class TestBase:
     @pytest.fixture
@@ -11,49 +18,93 @@ class TestBase:
         config_path = tmp_path / 'test_data_config.yaml'
         db_path = tmp_path / 'test.db'        
 
-        config = {"db_path": db_path}
+        config = {"db_path": str(db_path)}
         
         # Load in database path
         with open(config_path, 'w') as f:
-            config = yaml.safe_dump(config)
+            config = yaml.safe_dump(config, f)
         
         func_db = FunctionalDatabase(config_path)
 
         yield func_db
         
-    def test_base_queries(self, initialize_db):
+    def test_base_queries(self, initialize_db):        
+        func_db : FunctionalDatabase = initialize_db
+
+        # Test queries
+        func_dict = func_db.query_functional_disp('b3lyp', source='psi4')
+        
+        logging.info(func_dict)
+        
+        ref_dict = functionals['b3lyp']
+        for attr in ref_dict:
+            if attr != 'dispersion':
+                assert (func_dict[attr] == func_dict[attr]), f"Error, mismatch at {attr}"    
+        
+        print(func_dict) 
+        
+    def test_base_w_dispersion(self, initialize_db):
         
         func_db : FunctionalDatabase = initialize_db
 
         # Test queries
-        func_db.
+        disp = 'd2'
         
-        return     
-    
+        ref_dict = functionals['b3lyp-d2']
+        logger.warning(ref_dict)
+        
+        func_dict = func_db.query_functional_disp('b3lyp', disp, source="psi4")
+        logger.warning(func_dict)
 
-# class TestFunctional:
-    
-#     @pytest.fixture
-#     def test_load_functional_exceptions():
-#         pass
-    
-#     def test_load_fully_success():
-#         pass
-    
-#     def test_queries():
-#         pass
+        assert ('dispersion' in func_dict), "No dispersion found!"
 
-# class TestDispersion:
+        for attr in ref_dict:
+            if attr != 'dispersion':
+                assert (func_dict[attr] == func_dict[attr]), f"Error, mismatch at {attr}"    
+            
+            else: 
+                disp = func_dict['dispersion']
+                for disp_attr in ref_dict['dispersion']:
+                    assert(disp[disp_attr] == ref_dict[disp_attr])
+                    
+class TestFunctional:
     
-#     @pytest.fixture
-#     def load_functionalf_dispersion():
-#         pass
+    @pytest.fixture
+    def test_load_fully_success(tmp_path):
+        # Initializes the database for the first time
+        config_path = tmp_path / 'test_data_config.yaml'
+        db_path = tmp_path / 'test.db'        
+
+        config = {"db_path": str(db_path)}
+        
+        # Load in database path
+        with open(config_path, 'w') as f:
+            config = yaml.safe_dump(config, f)
+        
+        func_db = FunctionalDatabase(config_path)
+        func_db._store_fnctl_coef_json("test", lcom_func_dataset)
+
+        yield func_db
     
-#     def test_load_fully_success():
-#         pass
+    def test_queries(test_load_fully_success):
+        
+        func_db = test_load_fully_success
+        
     
-#     def test_queries():
-#         pass
+        
+        
+        
+        
+        pass
+
+class TestDispersion:
+    
+    @pytest.fixture
+    def load_functional_dispersion():
+        pass
+    
+    def test_queries():
+        pass
 
 
 
