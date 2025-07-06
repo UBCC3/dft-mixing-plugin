@@ -29,7 +29,6 @@ import yaml
 logger = logging.getLogger(__name__)
 
 Base = declarative_base() 
-
 class Sources(Base):
     __tablename__ = "sources"
 
@@ -42,13 +41,12 @@ class Sources(Base):
     dispersion_bases = relationship("DispersionBase", back_populates="source_ref")
 
 class Functional(Base):
-    
     __tablename__ = "functional"
 
     fnctl_id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     source = Column(String(36), ForeignKey('sources.id'), nullable=False)
     fnctl_data = Column(JSON(), nullable=True, default=None)
-    fnctl_master_name = Column(String(40), nullable=False, unique=True)
+    fnctl_name = Column(String(40), nullable=False, unique=True)
     citation = Column(String(512), nullable=False, default="")
     description = Column(String(512), nullable=False, default="")
 
@@ -63,6 +61,12 @@ class Functional(Base):
     def is_lcom(self):
         return self.fnctl_data is None
 
+class FunctionalAlias(Base):
+    __tablename__ = "functionalalias"
+    alias_id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    fnctl_id = Column(String(36), ForeignKey('functional.fnctl_id'), nullable=False)
+    alias_name = Column(String(40), nullable=False)
+
 class FunctionalCoeffs(Base):
     __tablename__ = "functionalcoeffs"
 
@@ -74,13 +78,14 @@ class FunctionalCoeffs(Base):
     parent = relationship("Functional", foreign_keys=[parent_fnctl_id], back_populates="child_coeffs")
     child = relationship("Functional", foreign_keys=[child_fnctl_id], back_populates="parent_coeffs")
 
-
 class DispersionBase(Base):
     __tablename__ = "dispersionbase"
 
     subdisp_id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     fnctl_id = Column(String(36), ForeignKey('functional.fnctl_id'), nullable=False)
     disp_params = Column(JSON(), nullable=True)
+    
+    # Note that this cannot be the aliased name, must be the master name.
     subdisp_name = Column(String(40), nullable=False)
     source = Column(String(36), ForeignKey('sources.id'), nullable=False)
     citation = Column(String(512), nullable=False, default="")
@@ -90,7 +95,6 @@ class DispersionBase(Base):
     source_ref = relationship("Sources", back_populates="dispersion_bases")
     functional = relationship("Functional", back_populates="dispersion_bases")
     used_in_configs = relationship("DispersionConfig", back_populates="subdisp")
-
 
 class DispersionConfig(Base):
     __tablename__ = "dispersionconfig"
@@ -112,6 +116,12 @@ class DispersionConfig(Base):
     source_ref = relationship("Sources", back_populates="dispersion_configs")
     functional = relationship("Functional", back_populates="dispersion_configs")
     subdisp = relationship("DispersionBase", back_populates="used_in_configs")
+
+class DispersionAlias(Base):
+    __tablename__ = "dispersionalias"
+    alias_id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    disp_config_id = Column(String(36), ForeignKey('dispersionconfig.fnctl_id'), nullable=False)
+    alias_name = Column(String(40), nullable=False)
 
 class FunctionalDatabase:
     
@@ -266,46 +276,6 @@ class FunctionalDatabase:
         if len(error_list > 1):
             raise ExceptionGroup("[ERROR] Several errors were found: ", error_list)
         
-    def _store_disp_coeffs(self, 
-                        source: str,
-                        disp_param_json : dict = None) -> None:
-        
-        error_list = []
-        
-        # Add all base dispersions first
-        for parent_func, disp_config_dict in disp_param_json.items():
-            for disp_config_name, disp_config_info in disp_config_dict.items():
-                
-                    disp_config_cit : str = disp_config_info.get("citation", "")
-                    disp_config_desc : str = disp_config_info.get("description", "")
-                    disp_config_coeffs : dict[str, float] = disp_config_info.get("coefficients", None)
-                    
-                    if disp_config_coeffs is None:
-                        # Error out, then skip this disp_config
-                        err = RuntimeError(f"[ERROR] No coefficients were specified for disp_config {disp_config_name}")
-                        error_list.append(err)
-                        continue
-
-                        
-                    for subdisp_name, subdisp_coef in disp_config_coeffs.items():
-                        try:
-                            with self._get_session() as session:
-                                # Query for functional id
-                                fnctl_id, source_id = (
-                                    session.query(Functional.fnctl_id, Sources.id)
-                                    .join(Sources)
-                                    .filter(Functional.fnctl_name == parent_func,
-                                            Sources.name == source)
-                                    .first()
-                                )
-                            session.commit()
-
-                        except Exception as e:
-                            error_list.append(e)    
-                    
-        if len(error_list > 1):
-            raise ExceptionGroup("[ERROR] Several errors were found: ", error_list)
-                    
     def _store_disp_mixing(self, 
                             source: str,
                             disp_coeffs_json : dict = None) -> None:
@@ -359,97 +329,7 @@ class FunctionalDatabase:
             Imports functionals from a JSON file and also validates
             the JSON file format.
             
-            We accept the following JSON format
-            ```json
-                data: 
-                    {
-                        <multi_fnctl_name>:
-                            // Mandatory
-                            // This is a dictionary of functional components and their coeffcients
-                            "functionals": {
-                                <fnctl_name>: coef,
-                                ...
-                            },    
-                            
-                            // Optional, citation of functional
-                            // Defaults to an empty string
-                            "citation": str,
-                            
-                            // Optional, description of functional
-                            // Defaults to an empty string
-                            "description": str
-                    }
-                    
-                    
-                // json file
-                {
-                    "multifunc1_config1": {
-                        "functionals": {
-                            "BLYP": 0.25,
-                            "B97-0": 0.25,
-                            ...
-                        }        
-                        
-                        "citation": 
-                
-                    }
-                    
-                    "multifunc1_config2": {
-                        "functionals": {
-                            "BLYP": 0.25,
-                            "B97-0": 0.25,
-                            ...
-                        }        
-                        
-                        "citation": 
-                
-                    }
-                    
-                // dispersion_params.json
-                {
-                    "functional_name": {
-                        "d2": {
-                            params: {}
-                            citation (optional): ""
-                            description (optional): ""
-                        }
-                        
-                        "d3": {
-                            params: {}
-                            citation (optional): ""
-                            description (optional): ""
-                        }
-                    }
-                }
-                
-                // dispersion_coeffs.json
-                {
-                    "functional_name": {
-                        "disp_config1": {
-                            coeffs: {
-                                "D2": 0.25,
-                                "D3": 0.25,
-                                etc.
-                            }
-                            description:
-                            citation:
-                        },
-                        
-                        "disp_config2": {
-                            "D2": 0.25,
-                            "D3": 0.75,
-                            etc.
-                        },
-                        
-                        "D2": {
-                            "D2": 0.25,
-                        },
-                    }
-                }
 
-                func_dictionary = func_database.query(func_name, func_disperion)
-                psi4.energy('scf_lcom', dft_functional = func_dictionary)
-                
             ```
         '''
         # Since we are doing this as a single transaction,  
@@ -532,24 +412,43 @@ class FunctionalDatabase:
                 if "dispersion" in functionals[func_name]
         }
         
+
+        func_master_set = {}
+        dispersion_master_set = {}
+        
         # Add parent functionals        
         for func_name, func_dict in parent_functionals.items():
-            func_name = func_name.lower()
+            alias_name = func_name
+            master_name = func_dict["name"]
             func_citation = func_dict.get("citation", "No citations available")
             func_description = func_dict.get("description", "")
             func_data = func_dict
             
-            with self._get_session() as session:
-                fnctl = Functional(
-                    source = src_id,
-                    fnctl_data=func_data,
-                    fnctl_name=func_name,
-                    citation=func_citation,
-                    description=func_description,
-                )
-                
-                session.add(fnctl)
-                session.commit()
+            if master_name.lower() not in func_master_set:
+                with self._get_session() as session:
+
+                    fnctl = Functional(
+                        source = src_id,
+                        fnctl_data=master_name,
+                        fnctl_name=func_name,
+                        citation=func_citation,
+                        description=func_description,
+                    )
+                    
+                    session.add(fnctl)
+                    session.commit()
+
+                func_master_set[master_name.lower()] = fnctl.fnctl_id
+        
+            # Add an alias
+            else: 
+                with self._get_session() as session:
+                    alias = FunctionalAlias(
+                        fnctl_id = func_master_set[master_name.lower()],
+                        alias_name = alias_name
+                    )
+                    session.add(alias)
+                    session.commit()
             
         error_fnctls = {}
             
@@ -560,7 +459,9 @@ class FunctionalDatabase:
             if func_name.lower() in blacklist_funcs:
                 continue
             
-            func_name = func_name.lower()
+            # For dispersion, ALWAYS link towards master name
+            # func_name is with dashcoeff
+            func_name = func_dict["name"]
             
             # Extract the parent part of fnctl
             pattern = r"([-\d\w()]+)-([\w\d()]+)\)?$"
@@ -577,7 +478,7 @@ class FunctionalDatabase:
                 continue
                 # raise RuntimeError(f"Error: somehow encountered a non dash-coeff functional {func_name}")
             
-            parent_func, _ = match.groups()
+            parent_func, disp_alias = match.groups()
             # Search for parent_func id
             with self._get_session() as session:
                 fnctl : Functional = (session.query(Functional)

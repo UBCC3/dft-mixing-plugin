@@ -1,0 +1,91 @@
+            We accept the following JSON format
+            ```json
+                data: 
+                    {
+                        <multi_fnctl_name>:
+                            // Mandatory
+                            // This is a dictionary of functional components and their coeffcients
+                            "functionals": {
+                                <fnctl_name>: coef,
+                                ...
+                            },    
+                            
+                            // Optional, citation of functional
+                            // Defaults to an empty string
+                            "citation": str,
+                            
+                            // Optional, description of functional
+                            // Defaults to an empty string
+                            "description": str
+                    }
+                    
+                    
+                // json file
+                {
+                    "multifunc1_config1": {
+                        "functionals": {
+                            "BLYP": 0.25,
+                            "B97-0": 0.25,
+                            ...
+                        }        
+                        
+                        "citation": 
+                
+                    }
+                    
+                    "multifunc1_config2": {
+                        "functionals": {
+                            "BLYP": 0.25,
+                            "B97-0": 0.25,
+                            ...
+                        }        
+                        
+                        "citation": 
+                
+                    }
+                    
+                // dispersion_params.json
+                {
+                    "functional_name": {
+                        "d2": {
+                            params: {}
+                            citation (optional): ""
+                            description (optional): ""
+                        }
+                        
+                        "d3": {
+                            params: {}
+                            citation (optional): ""
+                            description (optional): ""
+                        }
+                    }
+                }
+                
+                // dispersion_coeffs.json
+                {
+                    "functional_name": {
+                        "disp_config1": {
+                            coeffs: {
+                                "D2": 0.25,
+                                "D3": 0.25,
+                                etc.
+                            }
+                            description:
+                            citation:
+                        },
+                        
+                        "disp_config2": {
+                            "D2": 0.25,
+                            "D3": 0.75,
+                            etc.
+                        },
+                        
+                        "D2": {
+                            "D2": 0.25,
+                        },
+                    }
+                }
+
+                func_dictionary = func_database.query(func_name, func_disperion)
+                psi4.energy('scf_lcom', dft_functional = func_dictionary)
+                

@@ -1,6 +1,9 @@
 import psi4
 import pylibxc
 
+import logging
+logger = logging.getLogger(__name__)
+
 # Constants from pylibxc (as defined in the source)
 # (https://gitlab.com/libxc/libxc/-/blob/devel/src/xc.h#L37-40)
 
@@ -16,7 +19,22 @@ legacy_build_superfunc_from_dict = build_superfunctional_from_dictionary
 
 class LCOMSuperFunctionalBuilder:
     '''
+        Adapter for PSI4's functional implementation,
+        mainly to construct a proper PSI4 compatible
+        superfunctional from a given functional description
+        more cleanly. 
         
+        Main operation would be to initialize the object
+        with a dictionary via constructor.
+        
+        Operation:
+        - Constructor: constructs the wrapper over the
+            given functional description
+        
+        - `get_psi4_func_dispersion`: 
+            Gives a PSI4 compatible format (SuperFunctional) 
+            and dispersion dictionary list that can be passed back to the PSI4 module 
+    
     '''
     def __init__(self, func_dict: dict, npoints, deriv, restricted, decomp_xc = False):
         self._npoints = npoints
@@ -31,7 +49,7 @@ class LCOMSuperFunctionalBuilder:
         self._tweak_mapper : dict[tuple[str, str], dict] = {}
         self._xc_func_map: dict[tuple[str, float, frozenset], psi4.core.LibXCFunctional] = {}
         
-        self.build(func_dict)
+        self._build(func_dict)
 
     def get_psi_func_dispersion(self) -> tuple[psi4.core.SuperFunctional, list[dict]]:
         return self._master_sup, self._disps
@@ -56,7 +74,12 @@ class LCOMSuperFunctionalBuilder:
 
         self._build_lcom_helper(func_dict, 1.0)
 
-        self._master_sup.set_c_alpha(1.0)
+
+        # Only set if we have non-zero OS and SS, or alpha was not tampered
+        if (self._master_sup.c_alpha() != 0 
+            and self._master_sup.c_ss_alpha() != 0
+            and self._master_sup.c_os_alpha() != 0):
+            self._master_sup.set_c_alpha(1.0)
         self._master_sup.set_max_points(self._npoints)
         self._master_sup.set_deriv(self._deriv)
         self._master_sup.allocate()
@@ -87,25 +110,30 @@ class LCOMSuperFunctionalBuilder:
             if n_disp_vv10 > 1:
                 raise RuntimeError('Multiple dispersion coefficients with VV10. Cannot combine VV10')
 
+
+        logger.warning(f"{self._xc_func_map}")
+        logger.warning(f"{self._tweak_mapper}")
+
         # set dispersions
         self._disps = dispersions
 
     def _build_lcom_helper(self, func_dict: dict, sup_coef: float):
         if "lcom_functionals" not in func_dict:
+            
             leaf_sup, _ = legacy_build_superfunc_from_dict(func_dict, self._npoints, self._deriv, self._restricted)
-            self._merge_superfunctionals(leaf_sup, sup_coef)
             
             master_xc_funcs = {}
-            master_xc_funcs.update(func_dict.get("x_functionals"), {})
-            master_xc_funcs.update(func_dict.get("c_functionals"), {})
-            master_xc_funcs.update(func_dict.get("xc_functionals"), {})
+            master_xc_funcs.update(func_dict.get("x_functionals", {}))
+            master_xc_funcs.update(func_dict.get("c_functionals", {}))
+            master_xc_funcs.update(func_dict.get("xc_functionals", {}))
             
             # Get tweakers
             for func_name, args in master_xc_funcs.items():
                 if "tweak" in args:
                     tweak = args['tweak']
                     self._tweak_mapper[(leaf_sup.name(), ("XC_"+func_name).upper())] = tweak
-                    
+            
+            self._merge_superfunctionals(leaf_sup, sup_coef)
             return
 
         # Special case if dict has lcom_functionals (overrides other functions)
@@ -134,6 +162,10 @@ class LCOMSuperFunctionalBuilder:
 
     def _merge_superfunctionals(self, child: psi4.core.SuperFunctional, coef: float):
         parent = self._master_sup
+
+        logger.warning(f"Child functional name: {child.name()}")
+        logger.warning(f"Child X funcs: {child.x_functionals()}" )
+        logger.warning(f"Child C funcs: { child.c_functionals()}")
 
         if child.needs_vv10():
             raise RuntimeError("SCF: Sorry, I don't know how to combine VV10 yet!")
@@ -165,25 +197,24 @@ class LCOMSuperFunctionalBuilder:
         x_funcs = []
         c_funcs = []
         
-
         # Special case where child is a xc_func, decompose XC functionals.
         if child.is_libxc_func() and self.decomp_xc:
             
-            xc_psi_func = child_fnctl.c_functionals()[0]
+            xc_psi_func = child.c_functionals()[0]
             xc_name = xc_psi_func.name()
             libxc_func = pylibxc.LibXCFunctional(xc_name, self._restricted)
         
             xc_coef = xc_psi_func.alpha()
-            xc_decomp : list[tuple[float, str]] = libxc_func.aux_funcs()
+            xc_decomp : list[tuple[str, float]] = libxc_func.aux_funcs()
             
-            has_tweak = xc_name.upper() in self._tweak_mapper
-            
+            has_tweak = (child.name().upper(), xc_name.upper()) in self._tweak_mapper
+             
             # Do NOT decompose if cannot decompose, or HAS a tweak
             if xc_decomp is None and has_tweak:
                 c_funcs.append(xc_psi_func)
                 
             else:    
-                for internal_coef, func_name in xc_decomp:
+                for func_name, internal_coef in xc_decomp:
                     psi_fname = ("XC_" + func_name).upper()
                     internal_libxc_func = pylibxc.LibXCFunctional(func_name, self._restricted)
                     psi_internal_func = psi4.core.LibXCFunctional(psi_fname, self._restricted)
@@ -217,10 +248,15 @@ class LCOMSuperFunctionalBuilder:
             for child_fnctl in child_fnctls:
                 child_fnctl.set_alpha(coef * child_fnctl.alpha())
 
+                logger.warning(f"TEST TWEAK {(child.name().upper(), child_fnctl.name())}")
+                logger.warning(f"TWEAK MAPER {self._tweak_mapper}")
+
                 # Check for tweaks: 
                 tweak = self._tweak_mapper.get((child.name().upper(), child_fnctl.name()), {})
 
-                key = (child_fnctl.name(), child_fnctl.omega(), frozenset(tweak))
+                logger.warning(f"TWEAK GET {tweak}")
+
+                key = (child_fnctl.name(), child_fnctl.omega(), frozenset(tweak.items()))
                 if key in self._xc_func_map:
                     target_fnctl = self._xc_func_map[key]
                     target_fnctl.set_alpha(target_fnctl.alpha() + child_fnctl.alpha())
