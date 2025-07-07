@@ -1,0 +1,61 @@
+# Any line starting with the # character is a comment line
+#! Sample HF/cc-pVDZ H2O computation
+
+memory 600 mb   
+import scf_lcom
+import psi4
+
+molecule h2o {
+  O 
+  H 1 0.96
+  H 1 0.96 2 104.5
+}
+
+set basis cc-pVDZ
+
+func1 = {
+  "name": "func1",
+  "coef": 1.0,
+  "lcom_functionals":{
+    "B3LYP": 1.0
+  }
+}
+
+func2 = {
+  "name": "func2",
+  "coef": 1.0,
+  "lcom_functionals":{
+    "BLYP": 1.0
+  }
+}
+
+dft_functional1 = {
+  "name": "test",
+  "lcom_functionals":{
+      "func1": func1, 
+      "func2": func2
+ }
+}
+
+
+dft_functional2 = {
+  "name": "test",
+  "lcom_functionals":{
+      "B3LYP": 1.0, 
+      "BLYP": 1.0
+  }
+}
+
+set scf_lcom {
+  print 1
+}
+
+print(psi4.driver.procedures['energy']['scf_lcom'])
+E1 = energy('scf_lcom', dft_functional=dft_functional1, decompose_xc=False)
+print(psi4.variable('DFT TOTAL ENERGY'))
+
+E1 = energy('scf_lcom', dft_functional=dft_functional2, decompose_xc=False)
+print(psi4.variable('DFT TOTAL ENERGY'))
+
+E2 = energy('scf', dft_functional="B3LYP")
+E3 = energy('scf', dft_functional="BLYP")
