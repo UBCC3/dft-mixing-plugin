@@ -5,7 +5,10 @@ This repository consists of two independent plugins made for PSI4, the functiona
 
 ## Installation Instructions
 
-Source `pathconfig.sh` to apply the changes from the plugin to PSI4. To make this permanent, you would need to add this to your `~/.bashrc` file. 
+Source `scf_lcom/pathconfig.sh` to apply the changes from the plugin to PSI4. To make this permanent, you would need to add this to your `~/.bashrc` file. 
+```
+source scf_lcom/pathconfig.sh
+```
 
 ## Plugins Overview
 
