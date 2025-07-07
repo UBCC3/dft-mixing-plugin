@@ -68,7 +68,7 @@ class DispersionBase(Base):
     
     # Note that this cannot be the aliased name, must be the master name.
     subdisp_name = Column(String(40), nullable=False)
-    source = Column(String(36), ForeignKey('sources.id'), nullable=False)
+    disp_base_source = Column(String(36), ForeignKey('sources.id'), nullable=False)
     citation = Column(String(512), nullable=False, default="")
     description = Column(String(512), nullable=False, default="")
 
@@ -82,7 +82,7 @@ class DispersionConfig(Base):
 
     disp_id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     fnctl_id = Column(String(36), ForeignKey('functional.fnctl_id'), primary_key=True)
-    source = Column(String(36), ForeignKey('sources.id'), nullable=False)
+    disp_config_source = Column(String(36), ForeignKey('sources.id'), nullable=False)
     citation = Column(String(512), nullable=False, default="")
     description = Column(String(512), nullable=False, default="")
     disp_name = Column(String(40), nullable=False)

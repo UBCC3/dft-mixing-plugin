@@ -5,7 +5,6 @@ class SourceResolutionError(Exception):
 class DBNotFoundError(Exception):
     pass
 
-
 class DBDuplicateError(Exception):
     pass
 
