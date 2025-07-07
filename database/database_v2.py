@@ -249,28 +249,53 @@ class FunctionalDatabase:
     
     def _add_dispersion_alias(self,
                               session : sqlalchemy.orm.Session, 
+                              functional_name: str, 
                               dispersion_name: str,
-                              dispersion_alias: str) -> str:
+                              dispersion_alias: str):
         '''
             Adds an alias of a dispersion to the database.
         '''
+        new_alias = DispersionAlias(
+            func_name = functional_name,
+            disp_name = dispersion_name, 
+            alias_name = dispersion_alias
+        )
         
+        session.add(new_alias)        
     
     def _resolve_dispersion_alias(self,
                                   session : sqlalchemy.orm.Session,
+                                  functional_canon: str,
                                   dispersion_name: str) -> str:
         '''
             Returns the canonical name of a dispersion.
         '''
-        logger.warning("Not implemented yet")
+        
+        canon_name = ( session.query(DispersionAlias.disp_name)
+                        .filter(DispersionAlias.func_name == functional_canon,
+                                DispersionAlias.alias_name == dispersion_name)
+                        .first())
+
+        if canon_name is None:
+            raise DBNotFoundError("Error: Cannot resolve alias!")
+        
+        return canon_name[0]   
         
     def _add_functional_alias(self, 
                               session: sqlalchemy.orm.Session,
                               functional_name: str, 
-                              alias_name: str) -> str:
+                              functional_alias : str):
         '''
-            Adds an alias to the database.
+            Adds a functional alias to the database,
+            maps it to the canonical name.
         '''
+        new_alias = FunctionalAlias(
+            func_name = functional_name,
+            alias_name = functional_alias
+        )
+        
+        session.add(new_alias)      
+        
     
     def _resolve_functional_alias(self, 
                                   session,
@@ -278,8 +303,14 @@ class FunctionalDatabase:
         '''
             Returns the canonical name of a functional.
         '''
-        logger.warning("Not implemented yet")
-        return functional_name
+        canon_name = ( session.query(FunctionalAlias.func_name)
+                        .filter(DispersionAlias.alias_name == functional_name)
+                        .first())
+
+        if canon_name is None:
+            raise DBNotFoundError("Error: Cannot resolve alias!")
+        
+        return canon_name[0]   
     
     # ==================================
     #               GETTERS

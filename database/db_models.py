@@ -45,7 +45,7 @@ class Functional(Base):
 class FunctionalAlias(Base):
     __tablename__ = "functionalalias"
     alias_id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    fnctl_alias = Column(String(36), nullable=False)
+    func_name = Column(String(36), nullable=False)
     alias_name = Column(String(40), nullable=False)
 
 class FunctionalCoeffs(Base):
@@ -101,6 +101,7 @@ class DispersionConfig(Base):
 class DispersionAlias(Base):
     __tablename__ = "dispersionalias"
     alias_id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    func_name =  Column(String(36), nullable=False)
     disp_name = Column(String(36), nullable=False)
     alias_name = Column(String(40), nullable=False)
     
