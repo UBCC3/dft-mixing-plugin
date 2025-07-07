@@ -1,0 +1,683 @@
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/CMakeDetermineSystem.cmake:205 (message)"
+      - "CMakeLists.txt:33 (project)"
+    message: |
+      The system is: Linux - 6.8.0-60-generic - x86_64
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:33 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+      Compiler: /home/kenrickmh/anaconda3/envs/p4env311/bin/x86_64-conda-linux-gnu-c++ 
+      Build flags: -fvisibility-inlines-hidden;-fmessage-length=0;-march=nocona;-mtune=haswell;-ftree-vectorize;-fPIC;-fstack-protector-strong;-fno-plt;-O2;-ffunction-sections;-pipe;-isystem;/home/kenrickmh/anaconda3/envs/p4env311/include;-march=native
+      Id flags:  
+      
+      The output was:
+      1
+      /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/bin/ld: /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/libstdc++.so: undefined reference to `dladdr@GLIBC_2.2.5'
+      collect2: error: ld returned 1 exit status
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:33 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+      Compiler: /home/kenrickmh/anaconda3/envs/p4env311/bin/x86_64-conda-linux-gnu-c++ 
+      Build flags: -fvisibility-inlines-hidden;-fmessage-length=0;-march=nocona;-mtune=haswell;-ftree-vectorize;-fPIC;-fstack-protector-strong;-fno-plt;-O2;-ffunction-sections;-pipe;-isystem;/home/kenrickmh/anaconda3/envs/p4env311/include;-march=native
+      Id flags: -c 
+      
+      The output was:
+      0
+      
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CMakeCXXCompilerId.o"
+      
+      The CXX compiler identification is GNU, found in:
+        /home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/3.31.2/CompilerIdCXX/CMakeCXXCompilerId.o
+      
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:74 (try_compile)"
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:33 (project)"
+    checks:
+      - "Detecting CXX compiler ABI info"
+    directories:
+      source: "/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-Iimn5j"
+      binary: "/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-Iimn5j"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "-fvisibility-inlines-hidden -fmessage-length=0 -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/kenrickmh/anaconda3/envs/p4env311/include -march=native"
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_CXX_SCAN_FOR_MODULES: "OFF"
+      CMAKE_EXE_LINKER_FLAGS: "-Wl,-O2 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,--disable-new-dtags -Wl,--gc-sections -Wl,--allow-shlib-undefined -Wl,-rpath,/home/kenrickmh/anaconda3/envs/p4env311/lib -Wl,-rpath-link,/home/kenrickmh/anaconda3/envs/p4env311/lib -L/home/kenrickmh/anaconda3/envs/p4env311/lib"
+    buildResult:
+      variable: "CMAKE_CXX_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: '/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-Iimn5j'
+        
+        Run Build Command(s): /home/kenrickmh/anaconda3/envs/p4env311/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_1b897/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_1b897.dir/build.make CMakeFiles/cmTC_1b897.dir/build
+        gmake[1]: Entering directory '/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-Iimn5j'
+        Building CXX object CMakeFiles/cmTC_1b897.dir/CMakeCXXCompilerABI.cpp.o
+        /home/kenrickmh/anaconda3/envs/p4env311/bin/x86_64-conda-linux-gnu-c++   -fvisibility-inlines-hidden -fmessage-length=0 -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/kenrickmh/anaconda3/envs/p4env311/include -march=native    -v -o CMakeFiles/cmTC_1b897.dir/CMakeCXXCompilerABI.cpp.o -c /home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/CMakeCXXCompilerABI.cpp
+        Reading specs from /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/specs
+        could not find specs file conda.specs
+        COLLECT_GCC=/home/kenrickmh/anaconda3/envs/p4env311/bin/x86_64-conda-linux-gnu-c++
+        Target: x86_64-conda-linux-gnu
+        Configured with: ../configure --prefix=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho --with-slibdir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib --libdir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib --mandir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/man --build=x86_64-conda-linux-gnu --host=x86_64-conda-linux-gnu --target=x86_64-conda-linux-gnu --enable-languages=c,c++,fortran,objc,obj-c++ --enable-__cxa_atexit --disable-libmudflap --enable-libgomp --disable-libssp --enable-libquadmath --enable-libquadmath-support --enable-lto --enable-target-optspace --enable-plugin --enable-gold --disable-nls --disable-bootstrap --disable-multilib --enable-long-long --with-sysroot=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/x86_64-conda-linux-gnu/sysroot --with-build-sysroot=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/work/cf-compilers/x86_64-conda-linux-gnu/sysroot --with-native-system-header-dir=/usr/include --with-gxx-include-dir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib/gcc/x86_64-conda-linux-gnu/13.3.0/include/c++ --with-pkgversion='conda-forge gcc 13.3.0-2' --with-bugurl=https://github.com/conda-forge/ctng-compilers-feedstock/issues/new/choose --enable-libsanitizer --enable-default-pie --enable-threads=posix
+        Thread model: posix
+        Supported LTO compression algorithms: zlib
+        gcc version 13.3.0 (conda-forge gcc 13.3.0-2) 
+        COLLECT_GCC_OPTIONS='-fvisibility-inlines-hidden' '-fmessage-length=0' '-mtune=haswell' '-ftree-vectorize' '-fPIC' '-fstack-protector-strong' '-fno-plt' '-O2' '-ffunction-sections' '-pipe' '-isystem' '/home/kenrickmh/anaconda3/envs/p4env311/include' '-march=native' '-v' '-o' 'CMakeFiles/cmTC_1b897.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-dumpdir' 'CMakeFiles/cmTC_1b897.dir/'
+         /home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/cc1plus -quiet -v -iprefix /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/ -isysroot /home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot -D_GNU_SOURCE -isystem /home/kenrickmh/anaconda3/envs/p4env311/include /home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/CMakeCXXCompilerABI.cpp -march=alderlake -mmmx -mpopcnt -msse -msse2 -msse3 -mssse3 -msse4.1 -msse4.2 -mavx -mavx2 -mno-sse4a -mno-fma4 -mno-xop -mfma -mno-avx512f -mbmi -mbmi2 -maes -mpclmul -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512cd -mno-avx512er -mno-avx512pf -mno-avx512vbmi -mno-avx512ifma -mno-avx5124vnniw -mno-avx5124fmaps -mno-avx512vpopcntdq -mno-avx512vbmi2 -mgfni -mvpclmulqdq -mno-avx512vnni -mno-avx512bitalg -mno-avx512bf16 -mno-avx512vp2intersect -mno-3dnow -madx -mabm -mno-cldemote -mclflushopt -mclwb -mno-clzero -mcx16 -mno-enqcmd -mf16c -mfsgsbase -mfxsr -mno-hle -msahf -mno-lwp -mlzcnt -mmovbe -mmovdir64b -mmovdiri -mno-mwaitx -mno-pconfig -mpku -mno-prefetchwt1 -mprfchw -mptwrite -mrdpid -mrdrnd -mrdseed -mno-rtm -mserialize -mno-sgx -msha -mshstk -mno-tbm -mno-tsxldtrk -mvaes -mwaitpkg -mno-wbnoinvd -mxsave -mxsavec -mxsaveopt -mxsaves -mno-amx-tile -mno-amx-int8 -mno-amx-bf16 -mno-uintr -mhreset -mno-kl -mno-widekl -mavxvnni -mno-avx512fp16 -mno-avxifma -mno-avxvnniint8 -mno-avxneconvert -mno-cmpccxadd -mno-amx-fp16 -mno-prefetchi -mno-raoint -mno-amx-complex -quiet -dumpdir CMakeFiles/cmTC_1b897.dir/ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mtune=haswell -O2 -version -fvisibility-inlines-hidden -fmessage-length=0 -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -ffunction-sections -o - |
+         /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/bin/as -v --64 -o CMakeFiles/cmTC_1b897.dir/CMakeCXXCompilerABI.cpp.o
+        GNU assembler version 2.43 (x86_64-conda-linux-gnu) using BFD version (GNU Binutils) 2.43
+        GNU C++17 (conda-forge gcc 13.3.0-2) version 13.3.0 (x86_64-conda-linux-gnu)
+        	compiled by GNU C version 14.2.0, GMP version 6.2.1, MPFR version 4.1.0, MPC version 1.2.1, isl version isl-0.24-GMP
+        
+        GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+        ignoring nonexistent directory "/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/include"
+        ignoring duplicate directory "/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/../../lib/gcc/x86_64-conda-linux-gnu/13.3.0/include/c++"
+        ignoring duplicate directory "/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/../../lib/gcc/x86_64-conda-linux-gnu/13.3.0/include/c++/x86_64-conda-linux-gnu"
+        ignoring duplicate directory "/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/../../lib/gcc/x86_64-conda-linux-gnu/13.3.0/include/c++/backward"
+        ignoring duplicate directory "/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/../../lib/gcc/x86_64-conda-linux-gnu/13.3.0/include"
+        ignoring nonexistent directory "/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/local/include"
+        ignoring duplicate directory "/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/../../lib/gcc/x86_64-conda-linux-gnu/13.3.0/include-fixed"
+        ignoring nonexistent directory "/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/../../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/include"
+        #include "..." search starts here:
+        #include <...> search starts here:
+         /home/kenrickmh/anaconda3/envs/p4env311/include
+         /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/include/c++
+         /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/include/c++/x86_64-conda-linux-gnu
+         /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/include/c++/backward
+         /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/include
+         /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/include-fixed
+         /home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/include
+        End of search list.
+        Compiler executable checksum: d087570e6c007cf08e494b8046e3695a
+        COMPILER_PATH=/home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/bin/
+        LIBRARY_PATH=/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib/../lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../:/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/
+        COLLECT_GCC_OPTIONS='-fvisibility-inlines-hidden' '-fmessage-length=0' '-mtune=haswell' '-ftree-vectorize' '-fPIC' '-fstack-protector-strong' '-fno-plt' '-O2' '-ffunction-sections' '-pipe' '-isystem' '/home/kenrickmh/anaconda3/envs/p4env311/include' '-march=native' '-v' '-o' 'CMakeFiles/cmTC_1b897.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-dumpdir' 'CMakeFiles/cmTC_1b897.dir/CMakeCXXCompilerABI.cpp.'
+        Linking CXX executable cmTC_1b897
+        /home/kenrickmh/anaconda3/envs/p4env311/bin/cmake -E cmake_link_script CMakeFiles/cmTC_1b897.dir/link.txt --verbose=1
+        Reading specs from /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/specs
+        could not find specs file conda.specs
+        COLLECT_GCC=/home/kenrickmh/anaconda3/envs/p4env311/bin/x86_64-conda-linux-gnu-c++
+        COLLECT_LTO_WRAPPER=/home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/lto-wrapper
+        Target: x86_64-conda-linux-gnu
+        Configured with: ../configure --prefix=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho --with-slibdir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib --libdir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib --mandir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/man --build=x86_64-conda-linux-gnu --host=x86_64-conda-linux-gnu --target=x86_64-conda-linux-gnu --enable-languages=c,c++,fortran,objc,obj-c++ --enable-__cxa_atexit --disable-libmudflap --enable-libgomp --disable-libssp --enable-libquadmath --enable-libquadmath-support --enable-lto --enable-target-optspace --enable-plugin --enable-gold --disable-nls --disable-bootstrap --disable-multilib --enable-long-long --with-sysroot=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/x86_64-conda-linux-gnu/sysroot --with-build-sysroot=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/work/cf-compilers/x86_64-conda-linux-gnu/sysroot --with-native-system-header-dir=/usr/include --with-gxx-include-dir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib/gcc/x86_64-conda-linux-gnu/13.3.0/include/c++ --with-pkgversion='conda-forge gcc 13.3.0-2' --with-bugurl=https://github.com/conda-forge/ctng-compilers-feedstock/issues/new/choose --enable-libsanitizer --enable-default-pie --enable-threads=posix
+        Thread model: posix
+        Supported LTO compression algorithms: zlib
+        gcc version 13.3.0 (conda-forge gcc 13.3.0-2) 
+        COMPILER_PATH=/home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/bin/
+        LIBRARY_PATH=/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib/../lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../:/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/
+        COLLECT_GCC_OPTIONS='-fvisibility-inlines-hidden' '-fmessage-length=0' '-mtune=haswell' '-ftree-vectorize' '-fPIC' '-fstack-protector-strong' '-fno-plt' '-O2' '-ffunction-sections' '-pipe' '-isystem' '/home/kenrickmh/anaconda3/envs/p4env311/include' '-march=native' '-L/home/kenrickmh/anaconda3/envs/p4env311/lib' '-v' '-o' 'cmTC_1b897' '-shared-libgcc' '-dumpdir' 'cmTC_1b897.'
+         /home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/collect2 -plugin /home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/liblto_plugin.so -plugin-opt=/home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/lto-wrapper -plugin-opt=-fresolution=/tmp/ccN39Zdm.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --sysroot=/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot --eh-frame-hdr -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -o cmTC_1b897 /home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/Scrt1.o /home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crti.o /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/crtbeginS.o -L/home/kenrickmh/anaconda3/envs/p4env311/lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0 -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib/../lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../.. -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib -O2 --sort-common --as-needed -z relro -z now --disable-new-dtags --gc-sections --allow-shlib-undefined -rpath /home/kenrickmh/anaconda3/envs/p4env311/lib -rpath-link /home/kenrickmh/anaconda3/envs/p4env311/lib -v CMakeFiles/cmTC_1b897.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/crtendS.o /home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crtn.o -rpath /home/kenrickmh/anaconda3/envs/p4env311/lib
+        collect2 version 13.3.0
+        /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/bin/ld -plugin /home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/liblto_plugin.so -plugin-opt=/home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/lto-wrapper -plugin-opt=-fresolution=/tmp/ccN39Zdm.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --sysroot=/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot --eh-frame-hdr -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -o cmTC_1b897 /home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/Scrt1.o /home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crti.o /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/crtbeginS.o -L/home/kenrickmh/anaconda3/envs/p4env311/lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0 -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib/../lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../.. -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib -O2 --sort-common --as-needed -z relro -z now --disable-new-dtags --gc-sections --allow-shlib-undefined -rpath /home/kenrickmh/anaconda3/envs/p4env311/lib -rpath-link /home/kenrickmh/anaconda3/envs/p4env311/lib -v CMakeFiles/cmTC_1b897.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/crtendS.o /home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crtn.o -rpath /home/kenrickmh/anaconda3/envs/p4env311/lib
+        GNU ld (GNU Binutils) 2.43
+        COLLECT_GCC_OPTIONS='-fvisibility-inlines-hidden' '-fmessage-length=0' '-mtune=haswell' '-ftree-vectorize' '-fPIC' '-fstack-protector-strong' '-fno-plt' '-O2' '-ffunction-sections' '-pipe' '-isystem' '/home/kenrickmh/anaconda3/envs/p4env311/include' '-march=native' '-L/home/kenrickmh/anaconda3/envs/p4env311/lib' '-v' '-o' 'cmTC_1b897' '-shared-libgcc' '-dumpdir' 'cmTC_1b897.'
+        /home/kenrickmh/anaconda3/envs/p4env311/bin/x86_64-conda-linux-gnu-c++ -fvisibility-inlines-hidden -fmessage-length=0 -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/kenrickmh/anaconda3/envs/p4env311/include -march=native  -Wl,-O2 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,--disable-new-dtags -Wl,--gc-sections -Wl,--allow-shlib-undefined -Wl,-rpath,/home/kenrickmh/anaconda3/envs/p4env311/lib -Wl,-rpath-link,/home/kenrickmh/anaconda3/envs/p4env311/lib -L/home/kenrickmh/anaconda3/envs/p4env311/lib -v -Wl,-v CMakeFiles/cmTC_1b897.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_1b897
+        gmake[1]: Leaving directory '/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-Iimn5j'
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:182 (message)"
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:33 (project)"
+    message: |
+      Parsed CXX implicit include dir info: rv=done
+        found start of include info
+        found start of implicit include info
+          add: [/home/kenrickmh/anaconda3/envs/p4env311/include]
+          add: [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/include/c++]
+          add: [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/include/c++/x86_64-conda-linux-gnu]
+          add: [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/include/c++/backward]
+          add: [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/include]
+          add: [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/include-fixed]
+          add: [/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/include]
+        end of search list found
+        collapse include dir [/home/kenrickmh/anaconda3/envs/p4env311/include] ==> [/home/kenrickmh/anaconda3/envs/p4env311/include]
+        collapse include dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/include/c++] ==> [/home/kenrickmh/anaconda3/envs/p4env311/lib/gcc/x86_64-conda-linux-gnu/13.3.0/include/c++]
+        collapse include dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/include/c++/x86_64-conda-linux-gnu] ==> [/home/kenrickmh/anaconda3/envs/p4env311/lib/gcc/x86_64-conda-linux-gnu/13.3.0/include/c++/x86_64-conda-linux-gnu]
+        collapse include dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/include/c++/backward] ==> [/home/kenrickmh/anaconda3/envs/p4env311/lib/gcc/x86_64-conda-linux-gnu/13.3.0/include/c++/backward]
+        collapse include dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/include] ==> [/home/kenrickmh/anaconda3/envs/p4env311/lib/gcc/x86_64-conda-linux-gnu/13.3.0/include]
+        collapse include dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/include-fixed] ==> [/home/kenrickmh/anaconda3/envs/p4env311/lib/gcc/x86_64-conda-linux-gnu/13.3.0/include-fixed]
+        collapse include dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/include] ==> [/home/kenrickmh/anaconda3/envs/p4env311/x86_64-conda-linux-gnu/sysroot/usr/include]
+        implicit include dirs: [/home/kenrickmh/anaconda3/envs/p4env311/include;/home/kenrickmh/anaconda3/envs/p4env311/lib/gcc/x86_64-conda-linux-gnu/13.3.0/include/c++;/home/kenrickmh/anaconda3/envs/p4env311/lib/gcc/x86_64-conda-linux-gnu/13.3.0/include/c++/x86_64-conda-linux-gnu;/home/kenrickmh/anaconda3/envs/p4env311/lib/gcc/x86_64-conda-linux-gnu/13.3.0/include/c++/backward;/home/kenrickmh/anaconda3/envs/p4env311/lib/gcc/x86_64-conda-linux-gnu/13.3.0/include;/home/kenrickmh/anaconda3/envs/p4env311/lib/gcc/x86_64-conda-linux-gnu/13.3.0/include-fixed;/home/kenrickmh/anaconda3/envs/p4env311/x86_64-conda-linux-gnu/sysroot/usr/include]
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:218 (message)"
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:33 (project)"
+    message: |
+      Parsed CXX implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(\\.[a-z]+)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(ld[0-9]*(\\.[a-z]+)?))("|,| |$)]
+        ignore line: [Change Dir: '/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-Iimn5j']
+        ignore line: []
+        ignore line: [Run Build Command(s): /home/kenrickmh/anaconda3/envs/p4env311/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_1b897/fast]
+        ignore line: [/usr/bin/gmake  -f CMakeFiles/cmTC_1b897.dir/build.make CMakeFiles/cmTC_1b897.dir/build]
+        ignore line: [gmake[1]: Entering directory '/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-Iimn5j']
+        ignore line: [Building CXX object CMakeFiles/cmTC_1b897.dir/CMakeCXXCompilerABI.cpp.o]
+        ignore line: [/home/kenrickmh/anaconda3/envs/p4env311/bin/x86_64-conda-linux-gnu-c++   -fvisibility-inlines-hidden -fmessage-length=0 -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/kenrickmh/anaconda3/envs/p4env311/include -march=native    -v -o CMakeFiles/cmTC_1b897.dir/CMakeCXXCompilerABI.cpp.o -c /home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/CMakeCXXCompilerABI.cpp]
+        ignore line: [Reading specs from /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/specs]
+        ignore line: [could not find specs file conda.specs]
+        ignore line: [COLLECT_GCC=/home/kenrickmh/anaconda3/envs/p4env311/bin/x86_64-conda-linux-gnu-c++]
+        ignore line: [Target: x86_64-conda-linux-gnu]
+        ignore line: [Configured with: ../configure --prefix=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho --with-slibdir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib --libdir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib --mandir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/man --build=x86_64-conda-linux-gnu --host=x86_64-conda-linux-gnu --target=x86_64-conda-linux-gnu --enable-languages=c c++ fortran objc obj-c++ --enable-__cxa_atexit --disable-libmudflap --enable-libgomp --disable-libssp --enable-libquadmath --enable-libquadmath-support --enable-lto --enable-target-optspace --enable-plugin --enable-gold --disable-nls --disable-bootstrap --disable-multilib --enable-long-long --with-sysroot=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/x86_64-conda-linux-gnu/sysroot --with-build-sysroot=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/work/cf-compilers/x86_64-conda-linux-gnu/sysroot --with-native-system-header-dir=/usr/include --with-gxx-include-dir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib/gcc/x86_64-conda-linux-gnu/13.3.0/include/c++ --with-pkgversion='conda-forge gcc 13.3.0-2' --with-bugurl=https://github.com/conda-forge/ctng-compilers-feedstock/issues/new/choose --enable-libsanitizer --enable-default-pie --enable-threads=posix]
+        ignore line: [Thread model: posix]
+        ignore line: [Supported LTO compression algorithms: zlib]
+        ignore line: [gcc version 13.3.0 (conda-forge gcc 13.3.0-2) ]
+        ignore line: [COLLECT_GCC_OPTIONS='-fvisibility-inlines-hidden' '-fmessage-length=0' '-mtune=haswell' '-ftree-vectorize' '-fPIC' '-fstack-protector-strong' '-fno-plt' '-O2' '-ffunction-sections' '-pipe' '-isystem' '/home/kenrickmh/anaconda3/envs/p4env311/include' '-march=native' '-v' '-o' 'CMakeFiles/cmTC_1b897.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-dumpdir' 'CMakeFiles/cmTC_1b897.dir/']
+        ignore line: [ /home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/cc1plus -quiet -v -iprefix /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/ -isysroot /home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot -D_GNU_SOURCE -isystem /home/kenrickmh/anaconda3/envs/p4env311/include /home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/CMakeCXXCompilerABI.cpp -march=alderlake -mmmx -mpopcnt -msse -msse2 -msse3 -mssse3 -msse4.1 -msse4.2 -mavx -mavx2 -mno-sse4a -mno-fma4 -mno-xop -mfma -mno-avx512f -mbmi -mbmi2 -maes -mpclmul -mno-avx512vl -mno-avx512bw -mno-avx512dq -mno-avx512cd -mno-avx512er -mno-avx512pf -mno-avx512vbmi -mno-avx512ifma -mno-avx5124vnniw -mno-avx5124fmaps -mno-avx512vpopcntdq -mno-avx512vbmi2 -mgfni -mvpclmulqdq -mno-avx512vnni -mno-avx512bitalg -mno-avx512bf16 -mno-avx512vp2intersect -mno-3dnow -madx -mabm -mno-cldemote -mclflushopt -mclwb -mno-clzero -mcx16 -mno-enqcmd -mf16c -mfsgsbase -mfxsr -mno-hle -msahf -mno-lwp -mlzcnt -mmovbe -mmovdir64b -mmovdiri -mno-mwaitx -mno-pconfig -mpku -mno-prefetchwt1 -mprfchw -mptwrite -mrdpid -mrdrnd -mrdseed -mno-rtm -mserialize -mno-sgx -msha -mshstk -mno-tbm -mno-tsxldtrk -mvaes -mwaitpkg -mno-wbnoinvd -mxsave -mxsavec -mxsaveopt -mxsaves -mno-amx-tile -mno-amx-int8 -mno-amx-bf16 -mno-uintr -mhreset -mno-kl -mno-widekl -mavxvnni -mno-avx512fp16 -mno-avxifma -mno-avxvnniint8 -mno-avxneconvert -mno-cmpccxadd -mno-amx-fp16 -mno-prefetchi -mno-raoint -mno-amx-complex -quiet -dumpdir CMakeFiles/cmTC_1b897.dir/ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mtune=haswell -O2 -version -fvisibility-inlines-hidden -fmessage-length=0 -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -ffunction-sections -o - |]
+        ignore line: [ /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/bin/as -v --64 -o CMakeFiles/cmTC_1b897.dir/CMakeCXXCompilerABI.cpp.o]
+        ignore line: [GNU assembler version 2.43 (x86_64-conda-linux-gnu) using BFD version (GNU Binutils) 2.43]
+        ignore line: [GNU C++17 (conda-forge gcc 13.3.0-2) version 13.3.0 (x86_64-conda-linux-gnu)]
+        ignore line: [	compiled by GNU C version 14.2.0  GMP version 6.2.1  MPFR version 4.1.0  MPC version 1.2.1  isl version isl-0.24-GMP]
+        ignore line: []
+        ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+        ignore line: [ignoring nonexistent directory "/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/include"]
+        ignore line: [ignoring duplicate directory "/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/../../lib/gcc/x86_64-conda-linux-gnu/13.3.0/include/c++"]
+        ignore line: [ignoring duplicate directory "/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/../../lib/gcc/x86_64-conda-linux-gnu/13.3.0/include/c++/x86_64-conda-linux-gnu"]
+        ignore line: [ignoring duplicate directory "/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/../../lib/gcc/x86_64-conda-linux-gnu/13.3.0/include/c++/backward"]
+        ignore line: [ignoring duplicate directory "/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/../../lib/gcc/x86_64-conda-linux-gnu/13.3.0/include"]
+        ignore line: [ignoring nonexistent directory "/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/local/include"]
+        ignore line: [ignoring duplicate directory "/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/../../lib/gcc/x86_64-conda-linux-gnu/13.3.0/include-fixed"]
+        ignore line: [ignoring nonexistent directory "/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/../../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/include"]
+        ignore line: [#include "..." search starts here:]
+        ignore line: [#include <...> search starts here:]
+        ignore line: [ /home/kenrickmh/anaconda3/envs/p4env311/include]
+        ignore line: [ /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/include/c++]
+        ignore line: [ /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/include/c++/x86_64-conda-linux-gnu]
+        ignore line: [ /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/include/c++/backward]
+        ignore line: [ /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/include]
+        ignore line: [ /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/include-fixed]
+        ignore line: [ /home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/include]
+        ignore line: [End of search list.]
+        ignore line: [Compiler executable checksum: d087570e6c007cf08e494b8046e3695a]
+        ignore line: [COMPILER_PATH=/home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/bin/]
+        ignore line: [LIBRARY_PATH=/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib/../lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../:/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/]
+        ignore line: [COLLECT_GCC_OPTIONS='-fvisibility-inlines-hidden' '-fmessage-length=0' '-mtune=haswell' '-ftree-vectorize' '-fPIC' '-fstack-protector-strong' '-fno-plt' '-O2' '-ffunction-sections' '-pipe' '-isystem' '/home/kenrickmh/anaconda3/envs/p4env311/include' '-march=native' '-v' '-o' 'CMakeFiles/cmTC_1b897.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-dumpdir' 'CMakeFiles/cmTC_1b897.dir/CMakeCXXCompilerABI.cpp.']
+        ignore line: [Linking CXX executable cmTC_1b897]
+        ignore line: [/home/kenrickmh/anaconda3/envs/p4env311/bin/cmake -E cmake_link_script CMakeFiles/cmTC_1b897.dir/link.txt --verbose=1]
+        ignore line: [Reading specs from /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/specs]
+        ignore line: [could not find specs file conda.specs]
+        ignore line: [COLLECT_GCC=/home/kenrickmh/anaconda3/envs/p4env311/bin/x86_64-conda-linux-gnu-c++]
+        ignore line: [COLLECT_LTO_WRAPPER=/home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/lto-wrapper]
+        ignore line: [Target: x86_64-conda-linux-gnu]
+        ignore line: [Configured with: ../configure --prefix=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho --with-slibdir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib --libdir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib --mandir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/man --build=x86_64-conda-linux-gnu --host=x86_64-conda-linux-gnu --target=x86_64-conda-linux-gnu --enable-languages=c c++ fortran objc obj-c++ --enable-__cxa_atexit --disable-libmudflap --enable-libgomp --disable-libssp --enable-libquadmath --enable-libquadmath-support --enable-lto --enable-target-optspace --enable-plugin --enable-gold --disable-nls --disable-bootstrap --disable-multilib --enable-long-long --with-sysroot=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/x86_64-conda-linux-gnu/sysroot --with-build-sysroot=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/work/cf-compilers/x86_64-conda-linux-gnu/sysroot --with-native-system-header-dir=/usr/include --with-gxx-include-dir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib/gcc/x86_64-conda-linux-gnu/13.3.0/include/c++ --with-pkgversion='conda-forge gcc 13.3.0-2' --with-bugurl=https://github.com/conda-forge/ctng-compilers-feedstock/issues/new/choose --enable-libsanitizer --enable-default-pie --enable-threads=posix]
+        ignore line: [Thread model: posix]
+        ignore line: [Supported LTO compression algorithms: zlib]
+        ignore line: [gcc version 13.3.0 (conda-forge gcc 13.3.0-2) ]
+        ignore line: [COMPILER_PATH=/home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/bin/]
+        ignore line: [LIBRARY_PATH=/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib/../lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../:/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/]
+        ignore line: [COLLECT_GCC_OPTIONS='-fvisibility-inlines-hidden' '-fmessage-length=0' '-mtune=haswell' '-ftree-vectorize' '-fPIC' '-fstack-protector-strong' '-fno-plt' '-O2' '-ffunction-sections' '-pipe' '-isystem' '/home/kenrickmh/anaconda3/envs/p4env311/include' '-march=native' '-L/home/kenrickmh/anaconda3/envs/p4env311/lib' '-v' '-o' 'cmTC_1b897' '-shared-libgcc' '-dumpdir' 'cmTC_1b897.']
+        link line: [ /home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/collect2 -plugin /home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/liblto_plugin.so -plugin-opt=/home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/lto-wrapper -plugin-opt=-fresolution=/tmp/ccN39Zdm.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --sysroot=/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot --eh-frame-hdr -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -o cmTC_1b897 /home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/Scrt1.o /home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crti.o /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/crtbeginS.o -L/home/kenrickmh/anaconda3/envs/p4env311/lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0 -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib/../lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../.. -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib -O2 --sort-common --as-needed -z relro -z now --disable-new-dtags --gc-sections --allow-shlib-undefined -rpath /home/kenrickmh/anaconda3/envs/p4env311/lib -rpath-link /home/kenrickmh/anaconda3/envs/p4env311/lib -v CMakeFiles/cmTC_1b897.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/crtendS.o /home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crtn.o -rpath /home/kenrickmh/anaconda3/envs/p4env311/lib]
+          arg [/home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/collect2] ==> ignore
+          arg [-plugin] ==> ignore
+          arg [/home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/liblto_plugin.so] ==> ignore
+          arg [-plugin-opt=/home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/lto-wrapper] ==> ignore
+          arg [-plugin-opt=-fresolution=/tmp/ccN39Zdm.res] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+          arg [--sysroot=/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot] ==> ignore
+          arg [--eh-frame-hdr] ==> ignore
+          arg [-m] ==> ignore
+          arg [elf_x86_64] ==> ignore
+          arg [-dynamic-linker] ==> ignore
+          arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
+          arg [-pie] ==> ignore
+          arg [-o] ==> ignore
+          arg [cmTC_1b897] ==> ignore
+          arg [/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/Scrt1.o] ==> obj [/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/Scrt1.o]
+          arg [/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crti.o] ==> obj [/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crti.o]
+          arg [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/crtbeginS.o] ==> obj [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/crtbeginS.o]
+          arg [-L/home/kenrickmh/anaconda3/envs/p4env311/lib] ==> dir [/home/kenrickmh/anaconda3/envs/p4env311/lib]
+          arg [-L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0] ==> dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0]
+          arg [-L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc] ==> dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc]
+          arg [-L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib/../lib] ==> dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib/../lib]
+          arg [-L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../lib] ==> dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../lib]
+          arg [-L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib] ==> dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib]
+          arg [-L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib] ==> dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib]
+          arg [-L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib] ==> dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib]
+          arg [-L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../..] ==> dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../..]
+          arg [-L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib] ==> dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib]
+          arg [-L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib] ==> dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib]
+          arg [-O2] ==> ignore
+          arg [--sort-common] ==> ignore
+          arg [--as-needed] ==> ignore
+          arg [-zrelro] ==> ignore
+          arg [-znow] ==> ignore
+          arg [--disable-new-dtags] ==> ignore
+          arg [--gc-sections] ==> ignore
+          arg [--allow-shlib-undefined] ==> ignore
+          arg [-rpath] ==> ignore
+          arg [/home/kenrickmh/anaconda3/envs/p4env311/lib] ==> ignore
+          arg [-rpath-link] ==> ignore
+          arg [/home/kenrickmh/anaconda3/envs/p4env311/lib] ==> ignore
+          arg [-v] ==> ignore
+          arg [CMakeFiles/cmTC_1b897.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
+          arg [-lstdc++] ==> lib [stdc++]
+          arg [-lm] ==> lib [m]
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [-lgcc] ==> lib [gcc]
+          arg [-lc] ==> lib [c]
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [-lgcc] ==> lib [gcc]
+          arg [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/crtendS.o] ==> obj [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/crtendS.o]
+          arg [/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crtn.o] ==> obj [/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crtn.o]
+          arg [-rpath] ==> ignore
+          arg [/home/kenrickmh/anaconda3/envs/p4env311/lib] ==> ignore
+        ignore line: [collect2 version 13.3.0]
+        ignore line: [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/bin/ld -plugin /home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/liblto_plugin.so -plugin-opt=/home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/lto-wrapper -plugin-opt=-fresolution=/tmp/ccN39Zdm.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --sysroot=/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot --eh-frame-hdr -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -o cmTC_1b897 /home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/Scrt1.o /home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crti.o /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/crtbeginS.o -L/home/kenrickmh/anaconda3/envs/p4env311/lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0 -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib/../lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../.. -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib -O2 --sort-common --as-needed -z relro -z now --disable-new-dtags --gc-sections --allow-shlib-undefined -rpath /home/kenrickmh/anaconda3/envs/p4env311/lib -rpath-link /home/kenrickmh/anaconda3/envs/p4env311/lib -v CMakeFiles/cmTC_1b897.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/crtendS.o /home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crtn.o -rpath /home/kenrickmh/anaconda3/envs/p4env311/lib]
+        linker tool for 'CXX': /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/bin/ld
+        collapse obj [/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/Scrt1.o] ==> [/home/kenrickmh/anaconda3/envs/p4env311/x86_64-conda-linux-gnu/sysroot/usr/lib/Scrt1.o]
+        collapse obj [/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crti.o] ==> [/home/kenrickmh/anaconda3/envs/p4env311/x86_64-conda-linux-gnu/sysroot/usr/lib/crti.o]
+        collapse obj [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/crtbeginS.o] ==> [/home/kenrickmh/anaconda3/envs/p4env311/lib/gcc/x86_64-conda-linux-gnu/13.3.0/crtbeginS.o]
+        collapse obj [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/crtendS.o] ==> [/home/kenrickmh/anaconda3/envs/p4env311/lib/gcc/x86_64-conda-linux-gnu/13.3.0/crtendS.o]
+        collapse obj [/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crtn.o] ==> [/home/kenrickmh/anaconda3/envs/p4env311/x86_64-conda-linux-gnu/sysroot/usr/lib/crtn.o]
+        collapse library dir [/home/kenrickmh/anaconda3/envs/p4env311/lib] ==> [/home/kenrickmh/anaconda3/envs/p4env311/lib]
+        collapse library dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0] ==> [/home/kenrickmh/anaconda3/envs/p4env311/lib/gcc/x86_64-conda-linux-gnu/13.3.0]
+        collapse library dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc] ==> [/home/kenrickmh/anaconda3/envs/p4env311/lib/gcc]
+        collapse library dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib/../lib] ==> [/home/kenrickmh/anaconda3/envs/p4env311/x86_64-conda-linux-gnu/lib]
+        collapse library dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../lib] ==> [/home/kenrickmh/anaconda3/envs/p4env311/lib]
+        collapse library dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib] ==> [/home/kenrickmh/anaconda3/envs/p4env311/x86_64-conda-linux-gnu/sysroot/lib]
+        collapse library dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib] ==> [/home/kenrickmh/anaconda3/envs/p4env311/x86_64-conda-linux-gnu/sysroot/usr/lib]
+        collapse library dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib] ==> [/home/kenrickmh/anaconda3/envs/p4env311/x86_64-conda-linux-gnu/lib]
+        collapse library dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../..] ==> [/home/kenrickmh/anaconda3/envs/p4env311/lib]
+        collapse library dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib] ==> [/home/kenrickmh/anaconda3/envs/p4env311/x86_64-conda-linux-gnu/sysroot/lib]
+        collapse library dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib] ==> [/home/kenrickmh/anaconda3/envs/p4env311/x86_64-conda-linux-gnu/sysroot/usr/lib]
+        implicit libs: [stdc++;m;gcc_s;gcc;c;gcc_s;gcc]
+        implicit objs: [/home/kenrickmh/anaconda3/envs/p4env311/x86_64-conda-linux-gnu/sysroot/usr/lib/Scrt1.o;/home/kenrickmh/anaconda3/envs/p4env311/x86_64-conda-linux-gnu/sysroot/usr/lib/crti.o;/home/kenrickmh/anaconda3/envs/p4env311/lib/gcc/x86_64-conda-linux-gnu/13.3.0/crtbeginS.o;/home/kenrickmh/anaconda3/envs/p4env311/lib/gcc/x86_64-conda-linux-gnu/13.3.0/crtendS.o;/home/kenrickmh/anaconda3/envs/p4env311/x86_64-conda-linux-gnu/sysroot/usr/lib/crtn.o]
+        implicit dirs: [/home/kenrickmh/anaconda3/envs/p4env311/lib;/home/kenrickmh/anaconda3/envs/p4env311/lib/gcc/x86_64-conda-linux-gnu/13.3.0;/home/kenrickmh/anaconda3/envs/p4env311/lib/gcc;/home/kenrickmh/anaconda3/envs/p4env311/x86_64-conda-linux-gnu/lib;/home/kenrickmh/anaconda3/envs/p4env311/x86_64-conda-linux-gnu/sysroot/lib;/home/kenrickmh/anaconda3/envs/p4env311/x86_64-conda-linux-gnu/sysroot/usr/lib]
+        implicit fwks: []
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/Internal/CMakeDetermineLinkerId.cmake:40 (message)"
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:255 (cmake_determine_linker_id)"
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:33 (project)"
+    message: |
+      Running the CXX compiler's linker: "/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/bin/ld" "-v"
+      GNU ld (GNU Binutils) 2.43
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/Internal/CheckSourceCompiles.cmake:108 (try_compile)"
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/CheckCXXCompilerFlag.cmake:55 (cmake_check_compiler_flag)"
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake/pybind11/pybind11Common.cmake:323 (check_cxx_compiler_flag)"
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake/pybind11/pybind11Common.cmake:368 (_pybind11_return_if_cxx_and_linker_flags_work)"
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake/pybind11/pybind11Common.cmake:435 (_pybind11_generate_lto)"
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake/pybind11/pybind11Config.cmake:250 (include)"
+      - "/usr/local/psi4/share/cmake/psi4/psi4Config.cmake:152 (find_package)"
+      - "CMakeLists.txt:35 (find_package)"
+    checks:
+      - "Performing Test HAS_FLTO"
+    directories:
+      source: "/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-E3cs26"
+      binary: "/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-E3cs26"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "-fvisibility-inlines-hidden -fmessage-length=0 -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/kenrickmh/anaconda3/envs/p4env311/include -march=native"
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: "-Wl,-O2 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,--disable-new-dtags -Wl,--gc-sections -Wl,--allow-shlib-undefined -Wl,-rpath,/home/kenrickmh/anaconda3/envs/p4env311/lib -Wl,-rpath-link,/home/kenrickmh/anaconda3/envs/p4env311/lib -L/home/kenrickmh/anaconda3/envs/p4env311/lib"
+    buildResult:
+      variable: "HAS_FLTO"
+      cached: true
+      stdout: |
+        Change Dir: '/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-E3cs26'
+        
+        Run Build Command(s): /home/kenrickmh/anaconda3/envs/p4env311/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_3fe00/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_3fe00.dir/build.make CMakeFiles/cmTC_3fe00.dir/build
+        gmake[1]: Entering directory '/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-E3cs26'
+        Building CXX object CMakeFiles/cmTC_3fe00.dir/src.cxx.o
+        /home/kenrickmh/anaconda3/envs/p4env311/bin/x86_64-conda-linux-gnu-c++ -DHAS_FLTO  -fvisibility-inlines-hidden -fmessage-length=0 -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/kenrickmh/anaconda3/envs/p4env311/include -march=native  -std=gnu++20   -flto -fno-fat-lto-objects -o CMakeFiles/cmTC_3fe00.dir/src.cxx.o -c /home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-E3cs26/src.cxx
+        Linking CXX executable cmTC_3fe00
+        /home/kenrickmh/anaconda3/envs/p4env311/bin/cmake -E cmake_link_script CMakeFiles/cmTC_3fe00.dir/link.txt --verbose=1
+        /home/kenrickmh/anaconda3/envs/p4env311/bin/x86_64-conda-linux-gnu-c++ -fvisibility-inlines-hidden -fmessage-length=0 -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/kenrickmh/anaconda3/envs/p4env311/include -march=native  -Wl,-O2 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,--disable-new-dtags -Wl,--gc-sections -Wl,--allow-shlib-undefined -Wl,-rpath,/home/kenrickmh/anaconda3/envs/p4env311/lib -Wl,-rpath-link,/home/kenrickmh/anaconda3/envs/p4env311/lib -L/home/kenrickmh/anaconda3/envs/p4env311/lib  CMakeFiles/cmTC_3fe00.dir/src.cxx.o -o cmTC_3fe00  -flto
+        gmake[1]: Leaving directory '/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-E3cs26'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/FindOpenMP.cmake:252 (try_compile)"
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/FindOpenMP.cmake:522 (_OPENMP_GET_FLAGS)"
+      - "/usr/local/psi4/share/cmake/TargetLAPACK/FindTargetOpenMP.cmake:65 (find_package)"
+      - "/usr/local/psi4/share/cmake/TargetLAPACK/FindMathOpenMP.cmake:104 (find_package)"
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)"
+      - "/usr/local/psi4/share/cmake/TargetLAPACK/TargetLAPACKConfig.cmake:44 (find_dependency)"
+      - "/usr/local/psi4/share/cmake/psi4/psi4Config.cmake:156 (find_package)"
+      - "CMakeLists.txt:35 (find_package)"
+    description: "Detecting CXX OpenMP compiler info"
+    directories:
+      source: "/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-VJW7xi"
+      binary: "/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-VJW7xi"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "-fvisibility-inlines-hidden -fmessage-length=0 -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/kenrickmh/anaconda3/envs/p4env311/include -march=native"
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: "-Wl,-O2 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,--disable-new-dtags -Wl,--gc-sections -Wl,--allow-shlib-undefined -Wl,-rpath,/home/kenrickmh/anaconda3/envs/p4env311/lib -Wl,-rpath-link,/home/kenrickmh/anaconda3/envs/p4env311/lib -L/home/kenrickmh/anaconda3/envs/p4env311/lib"
+      CMAKE_MODULE_PATH: "/usr/local/psi4/share/cmake/TargetLAPACK"
+    buildResult:
+      variable: "OpenMP_COMPILE_RESULT_CXX_fopenmp"
+      cached: true
+      stdout: |
+        Change Dir: '/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-VJW7xi'
+        
+        Run Build Command(s): /home/kenrickmh/anaconda3/envs/p4env311/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_f429d/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_f429d.dir/build.make CMakeFiles/cmTC_f429d.dir/build
+        gmake[1]: Entering directory '/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-VJW7xi'
+        Building CXX object CMakeFiles/cmTC_f429d.dir/OpenMPTryFlag.cpp.o
+        /home/kenrickmh/anaconda3/envs/p4env311/bin/x86_64-conda-linux-gnu-c++   -fvisibility-inlines-hidden -fmessage-length=0 -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/kenrickmh/anaconda3/envs/p4env311/include -march=native -fopenmp -std=gnu++20 -o CMakeFiles/cmTC_f429d.dir/OpenMPTryFlag.cpp.o -c /home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-VJW7xi/OpenMPTryFlag.cpp
+        Linking CXX executable cmTC_f429d
+        /home/kenrickmh/anaconda3/envs/p4env311/bin/cmake -E cmake_link_script CMakeFiles/cmTC_f429d.dir/link.txt --verbose=1
+        Reading specs from /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/specs
+        could not find specs file conda.specs
+        COLLECT_GCC=/home/kenrickmh/anaconda3/envs/p4env311/bin/x86_64-conda-linux-gnu-c++
+        COLLECT_LTO_WRAPPER=/home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/lto-wrapper
+        Target: x86_64-conda-linux-gnu
+        Configured with: ../configure --prefix=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho --with-slibdir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib --libdir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib --mandir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/man --build=x86_64-conda-linux-gnu --host=x86_64-conda-linux-gnu --target=x86_64-conda-linux-gnu --enable-languages=c,c++,fortran,objc,obj-c++ --enable-__cxa_atexit --disable-libmudflap --enable-libgomp --disable-libssp --enable-libquadmath --enable-libquadmath-support --enable-lto --enable-target-optspace --enable-plugin --enable-gold --disable-nls --disable-bootstrap --disable-multilib --enable-long-long --with-sysroot=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/x86_64-conda-linux-gnu/sysroot --with-build-sysroot=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/work/cf-compilers/x86_64-conda-linux-gnu/sysroot --with-native-system-header-dir=/usr/include --with-gxx-include-dir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib/gcc/x86_64-conda-linux-gnu/13.3.0/include/c++ --with-pkgversion='conda-forge gcc 13.3.0-2' --with-bugurl=https://github.com/conda-forge/ctng-compilers-feedstock/issues/new/choose --enable-libsanitizer --enable-default-pie --enable-threads=posix
+        Thread model: posix
+        Supported LTO compression algorithms: zlib
+        gcc version 13.3.0 (conda-forge gcc 13.3.0-2) 
+        COMPILER_PATH=/home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/bin/
+        LIBRARY_PATH=/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib/../lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../:/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/
+        Reading specs from /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib/../lib/libgomp.spec
+        COLLECT_GCC_OPTIONS='-fvisibility-inlines-hidden' '-fmessage-length=0' '-mtune=haswell' '-ftree-vectorize' '-fPIC' '-fstack-protector-strong' '-fno-plt' '-O2' '-ffunction-sections' '-pipe' '-isystem' '/home/kenrickmh/anaconda3/envs/p4env311/include' '-march=native' '-fopenmp' '-L/home/kenrickmh/anaconda3/envs/p4env311/lib' '-v' '-o' 'cmTC_f429d' '-shared-libgcc' '-pthread' '-dumpdir' 'cmTC_f429d.'
+         /home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/collect2 -plugin /home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/liblto_plugin.so -plugin-opt=/home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/lto-wrapper -plugin-opt=-fresolution=/tmp/cclJ1yVf.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lpthread -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --sysroot=/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot --eh-frame-hdr -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -o cmTC_f429d /home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/Scrt1.o /home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crti.o /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/crtbeginS.o -L/home/kenrickmh/anaconda3/envs/p4env311/lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0 -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib/../lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../.. -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib -O2 --sort-common --as-needed -z relro -z now --disable-new-dtags --gc-sections --allow-shlib-undefined -rpath /home/kenrickmh/anaconda3/envs/p4env311/lib -rpath-link /home/kenrickmh/anaconda3/envs/p4env311/lib CMakeFiles/cmTC_f429d.dir/OpenMPTryFlag.cpp.o -lstdc++ -lm -lgomp -lgcc_s -lgcc -lpthread -lc -lgcc_s -lgcc /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/crtendS.o /home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crtn.o -rpath /home/kenrickmh/anaconda3/envs/p4env311/lib
+        COLLECT_GCC_OPTIONS='-fvisibility-inlines-hidden' '-fmessage-length=0' '-mtune=haswell' '-ftree-vectorize' '-fPIC' '-fstack-protector-strong' '-fno-plt' '-O2' '-ffunction-sections' '-pipe' '-isystem' '/home/kenrickmh/anaconda3/envs/p4env311/include' '-march=native' '-fopenmp' '-L/home/kenrickmh/anaconda3/envs/p4env311/lib' '-v' '-o' 'cmTC_f429d' '-shared-libgcc' '-pthread' '-dumpdir' 'cmTC_f429d.'
+        /home/kenrickmh/anaconda3/envs/p4env311/bin/x86_64-conda-linux-gnu-c++ -fvisibility-inlines-hidden -fmessage-length=0 -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/kenrickmh/anaconda3/envs/p4env311/include -march=native -fopenmp -Wl,-O2 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,--disable-new-dtags -Wl,--gc-sections -Wl,--allow-shlib-undefined -Wl,-rpath,/home/kenrickmh/anaconda3/envs/p4env311/lib -Wl,-rpath-link,/home/kenrickmh/anaconda3/envs/p4env311/lib -L/home/kenrickmh/anaconda3/envs/p4env311/lib  -v CMakeFiles/cmTC_f429d.dir/OpenMPTryFlag.cpp.o -o cmTC_f429d
+        gmake[1]: Leaving directory '/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-VJW7xi'
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/FindOpenMP.cmake:296 (message)"
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/FindOpenMP.cmake:522 (_OPENMP_GET_FLAGS)"
+      - "/usr/local/psi4/share/cmake/TargetLAPACK/FindTargetOpenMP.cmake:65 (find_package)"
+      - "/usr/local/psi4/share/cmake/TargetLAPACK/FindMathOpenMP.cmake:104 (find_package)"
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)"
+      - "/usr/local/psi4/share/cmake/TargetLAPACK/TargetLAPACKConfig.cmake:44 (find_dependency)"
+      - "/usr/local/psi4/share/cmake/psi4/psi4Config.cmake:156 (find_package)"
+      - "CMakeLists.txt:35 (find_package)"
+    message: |
+      Parsed CXX OpenMP implicit link information from above output:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(\\.[a-z]+)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        ignore line: [Change Dir: '/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-VJW7xi']
+        ignore line: []
+        ignore line: [Run Build Command(s): /home/kenrickmh/anaconda3/envs/p4env311/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_f429d/fast]
+        ignore line: [/usr/bin/gmake  -f CMakeFiles/cmTC_f429d.dir/build.make CMakeFiles/cmTC_f429d.dir/build]
+        ignore line: [gmake[1]: Entering directory '/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-VJW7xi']
+        ignore line: [Building CXX object CMakeFiles/cmTC_f429d.dir/OpenMPTryFlag.cpp.o]
+        ignore line: [/home/kenrickmh/anaconda3/envs/p4env311/bin/x86_64-conda-linux-gnu-c++   -fvisibility-inlines-hidden -fmessage-length=0 -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/kenrickmh/anaconda3/envs/p4env311/include -march=native -fopenmp -std=gnu++20 -o CMakeFiles/cmTC_f429d.dir/OpenMPTryFlag.cpp.o -c /home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-VJW7xi/OpenMPTryFlag.cpp]
+        ignore line: [Linking CXX executable cmTC_f429d]
+        ignore line: [/home/kenrickmh/anaconda3/envs/p4env311/bin/cmake -E cmake_link_script CMakeFiles/cmTC_f429d.dir/link.txt --verbose=1]
+        ignore line: [Reading specs from /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/specs]
+        ignore line: [could not find specs file conda.specs]
+        ignore line: [COLLECT_GCC=/home/kenrickmh/anaconda3/envs/p4env311/bin/x86_64-conda-linux-gnu-c++]
+        ignore line: [COLLECT_LTO_WRAPPER=/home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/lto-wrapper]
+        ignore line: [Target: x86_64-conda-linux-gnu]
+        ignore line: [Configured with: ../configure --prefix=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho --with-slibdir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib --libdir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib --mandir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/man --build=x86_64-conda-linux-gnu --host=x86_64-conda-linux-gnu --target=x86_64-conda-linux-gnu --enable-languages=c c++ fortran objc obj-c++ --enable-__cxa_atexit --disable-libmudflap --enable-libgomp --disable-libssp --enable-libquadmath --enable-libquadmath-support --enable-lto --enable-target-optspace --enable-plugin --enable-gold --disable-nls --disable-bootstrap --disable-multilib --enable-long-long --with-sysroot=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/x86_64-conda-linux-gnu/sysroot --with-build-sysroot=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/work/cf-compilers/x86_64-conda-linux-gnu/sysroot --with-native-system-header-dir=/usr/include --with-gxx-include-dir=/home/conda/feedstock_root/build_artifacts/gcc_compilers_1740237997146/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho/lib/gcc/x86_64-conda-linux-gnu/13.3.0/include/c++ --with-pkgversion='conda-forge gcc 13.3.0-2' --with-bugurl=https://github.com/conda-forge/ctng-compilers-feedstock/issues/new/choose --enable-libsanitizer --enable-default-pie --enable-threads=posix]
+        ignore line: [Thread model: posix]
+        ignore line: [Supported LTO compression algorithms: zlib]
+        ignore line: [gcc version 13.3.0 (conda-forge gcc 13.3.0-2) ]
+        ignore line: [COMPILER_PATH=/home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/bin/]
+        ignore line: [LIBRARY_PATH=/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib/../lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../:/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib/:/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/]
+        ignore line: [Reading specs from /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib/../lib/libgomp.spec]
+        ignore line: [COLLECT_GCC_OPTIONS='-fvisibility-inlines-hidden' '-fmessage-length=0' '-mtune=haswell' '-ftree-vectorize' '-fPIC' '-fstack-protector-strong' '-fno-plt' '-O2' '-ffunction-sections' '-pipe' '-isystem' '/home/kenrickmh/anaconda3/envs/p4env311/include' '-march=native' '-fopenmp' '-L/home/kenrickmh/anaconda3/envs/p4env311/lib' '-v' '-o' 'cmTC_f429d' '-shared-libgcc' '-pthread' '-dumpdir' 'cmTC_f429d.']
+        link line: [ /home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/collect2 -plugin /home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/liblto_plugin.so -plugin-opt=/home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/lto-wrapper -plugin-opt=-fresolution=/tmp/cclJ1yVf.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lpthread -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --sysroot=/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot --eh-frame-hdr -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -o cmTC_f429d /home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/Scrt1.o /home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crti.o /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/crtbeginS.o -L/home/kenrickmh/anaconda3/envs/p4env311/lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0 -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib/../lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../.. -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib -L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib -O2 --sort-common --as-needed -z relro -z now --disable-new-dtags --gc-sections --allow-shlib-undefined -rpath /home/kenrickmh/anaconda3/envs/p4env311/lib -rpath-link /home/kenrickmh/anaconda3/envs/p4env311/lib CMakeFiles/cmTC_f429d.dir/OpenMPTryFlag.cpp.o -lstdc++ -lm -lgomp -lgcc_s -lgcc -lpthread -lc -lgcc_s -lgcc /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/crtendS.o /home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib/crtn.o -rpath /home/kenrickmh/anaconda3/envs/p4env311/lib]
+          arg [/home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/collect2] ==> ignore
+          arg [-plugin] ==> ignore
+          arg [/home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/liblto_plugin.so] ==> ignore
+          arg [-plugin-opt=/home/kenrickmh/anaconda3/envs/p4env311/bin/../libexec/gcc/x86_64-conda-linux-gnu/13.3.0/lto-wrapper] ==> ignore
+          arg [-plugin-opt=-fresolution=/tmp/cclJ1yVf.res] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lpthread] ==> ignore
+          arg [-plugin-opt=-pass-through=-lc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+          arg [--sysroot=/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot] ==> ignore
+          arg [--eh-frame-hdr] ==> ignore
+          arg [-m] ==> ignore
+          arg [elf_x86_64] ==> ignore
+          arg [-dynamic-linker] ==> ignore
+          arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
+          arg [-pie] ==> ignore
+          arg [-o] ==> ignore
+          arg [cmTC_f429d] ==> ignore
+          arg [-L/home/kenrickmh/anaconda3/envs/p4env311/lib] ==> dir [/home/kenrickmh/anaconda3/envs/p4env311/lib]
+          arg [-L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0] ==> dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0]
+          arg [-L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc] ==> dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc]
+          arg [-L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib/../lib] ==> dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib/../lib]
+          arg [-L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../lib] ==> dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../lib]
+          arg [-L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib] ==> dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib]
+          arg [-L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib] ==> dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib]
+          arg [-L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib] ==> dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib]
+          arg [-L/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../..] ==> dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../..]
+          arg [-L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib] ==> dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib]
+          arg [-L/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib] ==> dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib]
+          arg [-O2] ==> ignore
+          arg [--sort-common] ==> ignore
+          arg [--as-needed] ==> ignore
+          arg [-zrelro] ==> ignore
+          arg [-znow] ==> ignore
+          arg [--disable-new-dtags] ==> ignore
+          arg [--gc-sections] ==> ignore
+          arg [--allow-shlib-undefined] ==> ignore
+          arg [-rpath] ==> ignore
+          arg [/home/kenrickmh/anaconda3/envs/p4env311/lib] ==> ignore
+          arg [-rpath-link] ==> ignore
+          arg [/home/kenrickmh/anaconda3/envs/p4env311/lib] ==> ignore
+          arg [CMakeFiles/cmTC_f429d.dir/OpenMPTryFlag.cpp.o] ==> ignore
+          arg [-lstdc++] ==> lib [stdc++]
+          arg [-lm] ==> lib [m]
+          arg [-lgomp] ==> lib [gomp]
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [-lgcc] ==> lib [gcc]
+          arg [-lpthread] ==> lib [pthread]
+          arg [-lc] ==> lib [c]
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [-lgcc] ==> lib [gcc]
+          arg [-rpath] ==> ignore
+          arg [/home/kenrickmh/anaconda3/envs/p4env311/lib] ==> ignore
+        collapse library dir [/home/kenrickmh/anaconda3/envs/p4env311/lib] ==> [/home/kenrickmh/anaconda3/envs/p4env311/lib]
+        collapse library dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0] ==> [/home/kenrickmh/anaconda3/envs/p4env311/lib/gcc/x86_64-conda-linux-gnu/13.3.0]
+        collapse library dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc] ==> [/home/kenrickmh/anaconda3/envs/p4env311/lib/gcc]
+        collapse library dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib/../lib] ==> [/home/kenrickmh/anaconda3/envs/p4env311/x86_64-conda-linux-gnu/lib]
+        collapse library dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../lib] ==> [/home/kenrickmh/anaconda3/envs/p4env311/lib]
+        collapse library dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib/../lib] ==> [/home/kenrickmh/anaconda3/envs/p4env311/x86_64-conda-linux-gnu/sysroot/lib]
+        collapse library dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib/../lib] ==> [/home/kenrickmh/anaconda3/envs/p4env311/x86_64-conda-linux-gnu/sysroot/usr/lib]
+        collapse library dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/lib] ==> [/home/kenrickmh/anaconda3/envs/p4env311/x86_64-conda-linux-gnu/lib]
+        collapse library dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../..] ==> [/home/kenrickmh/anaconda3/envs/p4env311/lib]
+        collapse library dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/lib] ==> [/home/kenrickmh/anaconda3/envs/p4env311/x86_64-conda-linux-gnu/sysroot/lib]
+        collapse library dir [/home/kenrickmh/anaconda3/envs/p4env311/bin/../x86_64-conda-linux-gnu/sysroot/usr/lib] ==> [/home/kenrickmh/anaconda3/envs/p4env311/x86_64-conda-linux-gnu/sysroot/usr/lib]
+        implicit libs: [stdc++;m;gomp;gcc_s;gcc;pthread;c;gcc_s;gcc]
+        implicit objs: []
+        implicit dirs: [/home/kenrickmh/anaconda3/envs/p4env311/lib;/home/kenrickmh/anaconda3/envs/p4env311/lib/gcc/x86_64-conda-linux-gnu/13.3.0;/home/kenrickmh/anaconda3/envs/p4env311/lib/gcc;/home/kenrickmh/anaconda3/envs/p4env311/x86_64-conda-linux-gnu/lib;/home/kenrickmh/anaconda3/envs/p4env311/x86_64-conda-linux-gnu/sysroot/lib;/home/kenrickmh/anaconda3/envs/p4env311/x86_64-conda-linux-gnu/sysroot/usr/lib]
+        implicit fwks: []
+      
+      
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/FindOpenMP.cmake:456 (try_compile)"
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/FindOpenMP.cmake:596 (_OPENMP_GET_SPEC_DATE)"
+      - "/usr/local/psi4/share/cmake/TargetLAPACK/FindTargetOpenMP.cmake:65 (find_package)"
+      - "/usr/local/psi4/share/cmake/TargetLAPACK/FindMathOpenMP.cmake:104 (find_package)"
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)"
+      - "/usr/local/psi4/share/cmake/TargetLAPACK/TargetLAPACKConfig.cmake:44 (find_dependency)"
+      - "/usr/local/psi4/share/cmake/psi4/psi4Config.cmake:156 (find_package)"
+      - "CMakeLists.txt:35 (find_package)"
+    description: "Detecting CXX OpenMP version"
+    directories:
+      source: "/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-kDQUUV"
+      binary: "/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-kDQUUV"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "-fvisibility-inlines-hidden -fmessage-length=0 -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/kenrickmh/anaconda3/envs/p4env311/include -march=native"
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: "-Wl,-O2 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,--disable-new-dtags -Wl,--gc-sections -Wl,--allow-shlib-undefined -Wl,-rpath,/home/kenrickmh/anaconda3/envs/p4env311/lib -Wl,-rpath-link,/home/kenrickmh/anaconda3/envs/p4env311/lib -L/home/kenrickmh/anaconda3/envs/p4env311/lib"
+      CMAKE_MODULE_PATH: "/usr/local/psi4/share/cmake/TargetLAPACK"
+    buildResult:
+      variable: "OpenMP_SPECTEST_CXX_"
+      cached: true
+      stdout: |
+        Change Dir: '/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-kDQUUV'
+        
+        Run Build Command(s): /home/kenrickmh/anaconda3/envs/p4env311/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_a5806/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_a5806.dir/build.make CMakeFiles/cmTC_a5806.dir/build
+        gmake[1]: Entering directory '/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-kDQUUV'
+        Building CXX object CMakeFiles/cmTC_a5806.dir/OpenMPCheckVersion.cpp.o
+        /home/kenrickmh/anaconda3/envs/p4env311/bin/x86_64-conda-linux-gnu-c++   -fvisibility-inlines-hidden -fmessage-length=0 -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/kenrickmh/anaconda3/envs/p4env311/include -march=native -fopenmp -std=gnu++20 -o CMakeFiles/cmTC_a5806.dir/OpenMPCheckVersion.cpp.o -c /home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-kDQUUV/OpenMPCheckVersion.cpp
+        Linking CXX executable cmTC_a5806
+        /home/kenrickmh/anaconda3/envs/p4env311/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a5806.dir/link.txt --verbose=1
+        /home/kenrickmh/anaconda3/envs/p4env311/bin/x86_64-conda-linux-gnu-c++ -fvisibility-inlines-hidden -fmessage-length=0 -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/kenrickmh/anaconda3/envs/p4env311/include -march=native -fopenmp -Wl,-O2 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,--disable-new-dtags -Wl,--gc-sections -Wl,--allow-shlib-undefined -Wl,-rpath,/home/kenrickmh/anaconda3/envs/p4env311/lib -Wl,-rpath-link,/home/kenrickmh/anaconda3/envs/p4env311/lib -L/home/kenrickmh/anaconda3/envs/p4env311/lib  CMakeFiles/cmTC_a5806.dir/OpenMPCheckVersion.cpp.o -o cmTC_a5806
+        gmake[1]: Leaving directory '/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-kDQUUV'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/Internal/CheckSourceCompiles.cmake:108 (try_compile)"
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/CheckCXXSourceCompiles.cmake:58 (cmake_check_source_compiles)"
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/FindThreads.cmake:99 (CHECK_CXX_SOURCE_COMPILES)"
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/FindThreads.cmake:163 (_threads_check_libc)"
+      - "/usr/local/psi4/lib/cmake/libint2/libint2-config.cmake:69 (find_package)"
+      - "/usr/local/psi4/share/cmake/psi4/psi4Config.cmake:157 (find_package)"
+      - "CMakeLists.txt:35 (find_package)"
+    directories:
+      source: "/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-DhhMDC"
+      binary: "/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-DhhMDC"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "-fvisibility-inlines-hidden -fmessage-length=0 -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/kenrickmh/anaconda3/envs/p4env311/include -march=native"
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: "-Wl,-O2 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,--disable-new-dtags -Wl,--gc-sections -Wl,--allow-shlib-undefined -Wl,-rpath,/home/kenrickmh/anaconda3/envs/p4env311/lib -Wl,-rpath-link,/home/kenrickmh/anaconda3/envs/p4env311/lib -L/home/kenrickmh/anaconda3/envs/p4env311/lib"
+      CMAKE_MODULE_PATH: "/usr/local/psi4/share/cmake/TargetLAPACK"
+    buildResult:
+      variable: "CMAKE_HAVE_LIBC_PTHREAD"
+      cached: true
+      stdout: |
+        Change Dir: '/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-DhhMDC'
+        
+        Run Build Command(s): /home/kenrickmh/anaconda3/envs/p4env311/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_d4aa1/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_d4aa1.dir/build.make CMakeFiles/cmTC_d4aa1.dir/build
+        gmake[1]: Entering directory '/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-DhhMDC'
+        Building CXX object CMakeFiles/cmTC_d4aa1.dir/src.cxx.o
+        /home/kenrickmh/anaconda3/envs/p4env311/bin/x86_64-conda-linux-gnu-c++ -DCMAKE_HAVE_LIBC_PTHREAD  -fvisibility-inlines-hidden -fmessage-length=0 -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/kenrickmh/anaconda3/envs/p4env311/include -march=native  -std=gnu++20 -o CMakeFiles/cmTC_d4aa1.dir/src.cxx.o -c /home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-DhhMDC/src.cxx
+        Linking CXX executable cmTC_d4aa1
+        /home/kenrickmh/anaconda3/envs/p4env311/bin/cmake -E cmake_link_script CMakeFiles/cmTC_d4aa1.dir/link.txt --verbose=1
+        /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/bin/ld: CMakeFiles/cmTC_d4aa1.dir/src.cxx.o: in function `main':
+        src.cxx:(.text.startup.main+0x24): undefined reference to `pthread_create'
+        /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/bin/ld: src.cxx:(.text.startup.main+0x2e): undefined reference to `pthread_detach'
+        /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/bin/ld: src.cxx:(.text.startup.main+0x38): undefined reference to `pthread_cancel'
+        /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/bin/ld: src.cxx:(.text.startup.main+0x44): undefined reference to `pthread_join'
+        /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/bin/ld: src.cxx:(.text.startup.main+0x50): undefined reference to `pthread_atfork'
+        collect2: error: ld returned 1 exit status
+        /home/kenrickmh/anaconda3/envs/p4env311/bin/x86_64-conda-linux-gnu-c++ -fvisibility-inlines-hidden -fmessage-length=0 -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/kenrickmh/anaconda3/envs/p4env311/include -march=native  -Wl,-O2 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,--disable-new-dtags -Wl,--gc-sections -Wl,--allow-shlib-undefined -Wl,-rpath,/home/kenrickmh/anaconda3/envs/p4env311/lib -Wl,-rpath-link,/home/kenrickmh/anaconda3/envs/p4env311/lib -L/home/kenrickmh/anaconda3/envs/p4env311/lib  CMakeFiles/cmTC_d4aa1.dir/src.cxx.o -o cmTC_d4aa1
+        gmake[1]: *** [CMakeFiles/cmTC_d4aa1.dir/build.make:102: cmTC_d4aa1] Error 1
+        gmake[1]: Leaving directory '/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-DhhMDC'
+        gmake: *** [Makefile:133: cmTC_d4aa1/fast] Error 2
+        
+      exitCode: 2
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/CheckLibraryExists.cmake:78 (try_compile)"
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/FindThreads.cmake:112 (CHECK_LIBRARY_EXISTS)"
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/FindThreads.cmake:175 (_threads_check_lib)"
+      - "/usr/local/psi4/lib/cmake/libint2/libint2-config.cmake:69 (find_package)"
+      - "/usr/local/psi4/share/cmake/psi4/psi4Config.cmake:157 (find_package)"
+      - "CMakeLists.txt:35 (find_package)"
+    directories:
+      source: "/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-H7VIqf"
+      binary: "/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-H7VIqf"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "-fvisibility-inlines-hidden -fmessage-length=0 -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/kenrickmh/anaconda3/envs/p4env311/include -march=native"
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: "-Wl,-O2 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,--disable-new-dtags -Wl,--gc-sections -Wl,--allow-shlib-undefined -Wl,-rpath,/home/kenrickmh/anaconda3/envs/p4env311/lib -Wl,-rpath-link,/home/kenrickmh/anaconda3/envs/p4env311/lib -L/home/kenrickmh/anaconda3/envs/p4env311/lib"
+      CMAKE_MODULE_PATH: "/usr/local/psi4/share/cmake/TargetLAPACK"
+    buildResult:
+      variable: "CMAKE_HAVE_PTHREADS_CREATE"
+      cached: true
+      stdout: |
+        Change Dir: '/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-H7VIqf'
+        
+        Run Build Command(s): /home/kenrickmh/anaconda3/envs/p4env311/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_45ea0/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_45ea0.dir/build.make CMakeFiles/cmTC_45ea0.dir/build
+        gmake[1]: Entering directory '/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-H7VIqf'
+        Building CXX object CMakeFiles/cmTC_45ea0.dir/CheckFunctionExists.cxx.o
+        /home/kenrickmh/anaconda3/envs/p4env311/bin/x86_64-conda-linux-gnu-c++   -fvisibility-inlines-hidden -fmessage-length=0 -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/kenrickmh/anaconda3/envs/p4env311/include -march=native -DCHECK_FUNCTION_EXISTS=pthread_create -std=gnu++20 -o CMakeFiles/cmTC_45ea0.dir/CheckFunctionExists.cxx.o -c /home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-H7VIqf/CheckFunctionExists.cxx
+        Linking CXX executable cmTC_45ea0
+        /home/kenrickmh/anaconda3/envs/p4env311/bin/cmake -E cmake_link_script CMakeFiles/cmTC_45ea0.dir/link.txt --verbose=1
+        /home/kenrickmh/anaconda3/envs/p4env311/bin/../lib/gcc/x86_64-conda-linux-gnu/13.3.0/../../../../x86_64-conda-linux-gnu/bin/ld: cannot find -lpthreads: No such file or directory
+        collect2: error: ld returned 1 exit status
+        /home/kenrickmh/anaconda3/envs/p4env311/bin/x86_64-conda-linux-gnu-c++ -fvisibility-inlines-hidden -fmessage-length=0 -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/kenrickmh/anaconda3/envs/p4env311/include -march=native -DCHECK_FUNCTION_EXISTS=pthread_create -Wl,-O2 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,--disable-new-dtags -Wl,--gc-sections -Wl,--allow-shlib-undefined -Wl,-rpath,/home/kenrickmh/anaconda3/envs/p4env311/lib -Wl,-rpath-link,/home/kenrickmh/anaconda3/envs/p4env311/lib -L/home/kenrickmh/anaconda3/envs/p4env311/lib  CMakeFiles/cmTC_45ea0.dir/CheckFunctionExists.cxx.o -o cmTC_45ea0  -lpthreads
+        gmake[1]: *** [CMakeFiles/cmTC_45ea0.dir/build.make:102: cmTC_45ea0] Error 1
+        gmake[1]: Leaving directory '/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-H7VIqf'
+        gmake: *** [Makefile:133: cmTC_45ea0/fast] Error 2
+        
+      exitCode: 2
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/CheckLibraryExists.cmake:78 (try_compile)"
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/FindThreads.cmake:112 (CHECK_LIBRARY_EXISTS)"
+      - "/home/kenrickmh/anaconda3/envs/p4env311/share/cmake-3.31/Modules/FindThreads.cmake:176 (_threads_check_lib)"
+      - "/usr/local/psi4/lib/cmake/libint2/libint2-config.cmake:69 (find_package)"
+      - "/usr/local/psi4/share/cmake/psi4/psi4Config.cmake:157 (find_package)"
+      - "CMakeLists.txt:35 (find_package)"
+    directories:
+      source: "/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-RMLKb3"
+      binary: "/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-RMLKb3"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "-fvisibility-inlines-hidden -fmessage-length=0 -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/kenrickmh/anaconda3/envs/p4env311/include -march=native"
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: "-Wl,-O2 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,--disable-new-dtags -Wl,--gc-sections -Wl,--allow-shlib-undefined -Wl,-rpath,/home/kenrickmh/anaconda3/envs/p4env311/lib -Wl,-rpath-link,/home/kenrickmh/anaconda3/envs/p4env311/lib -L/home/kenrickmh/anaconda3/envs/p4env311/lib"
+      CMAKE_MODULE_PATH: "/usr/local/psi4/share/cmake/TargetLAPACK"
+    buildResult:
+      variable: "CMAKE_HAVE_PTHREAD_CREATE"
+      cached: true
+      stdout: |
+        Change Dir: '/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-RMLKb3'
+        
+        Run Build Command(s): /home/kenrickmh/anaconda3/envs/p4env311/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_672ce/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_672ce.dir/build.make CMakeFiles/cmTC_672ce.dir/build
+        gmake[1]: Entering directory '/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-RMLKb3'
+        Building CXX object CMakeFiles/cmTC_672ce.dir/CheckFunctionExists.cxx.o
+        /home/kenrickmh/anaconda3/envs/p4env311/bin/x86_64-conda-linux-gnu-c++   -fvisibility-inlines-hidden -fmessage-length=0 -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/kenrickmh/anaconda3/envs/p4env311/include -march=native -DCHECK_FUNCTION_EXISTS=pthread_create -std=gnu++20 -o CMakeFiles/cmTC_672ce.dir/CheckFunctionExists.cxx.o -c /home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-RMLKb3/CheckFunctionExists.cxx
+        Linking CXX executable cmTC_672ce
+        /home/kenrickmh/anaconda3/envs/p4env311/bin/cmake -E cmake_link_script CMakeFiles/cmTC_672ce.dir/link.txt --verbose=1
+        /home/kenrickmh/anaconda3/envs/p4env311/bin/x86_64-conda-linux-gnu-c++ -fvisibility-inlines-hidden -fmessage-length=0 -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem /home/kenrickmh/anaconda3/envs/p4env311/include -march=native -DCHECK_FUNCTION_EXISTS=pthread_create -Wl,-O2 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,--disable-new-dtags -Wl,--gc-sections -Wl,--allow-shlib-undefined -Wl,-rpath,/home/kenrickmh/anaconda3/envs/p4env311/lib -Wl,-rpath-link,/home/kenrickmh/anaconda3/envs/p4env311/lib -L/home/kenrickmh/anaconda3/envs/p4env311/lib  CMakeFiles/cmTC_672ce.dir/CheckFunctionExists.cxx.o -o cmTC_672ce  -lpthread
+        gmake[1]: Leaving directory '/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/CMakeScratch/TryCompile-RMLKb3'
+        
+      exitCode: 0
+...

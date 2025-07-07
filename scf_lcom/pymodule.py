@@ -30,25 +30,18 @@
 
 import psi4
 import psi4.driver.p4util as p4util
-import psi4.driver.procrouting.dft.dft_builder as dft_builder
-import psi4.driver.procrouting.proc as proc
+from psi4.driver.procrouting.dft import dft_builder
+from psi4.driver.procrouting import proc
 from psi4.driver.procrouting import proc_util
-from scripts.dft_router import (
-    build_lcom_functional,
+from .scripts.dft_router import (
+    build_lcom_from_dict,
     lcom_build_functional_and_disp
 )
 
 run_scf = psi4.driver.procedures['energy']['scf']
 
-
 # Patcher Class to monkey patch python symbols
 # class FunctionPatcher:
-    
-
-
-
-
-
 
 def run_scf_lcom(name, **kwargs):
     r"""Function encoding sequence of PSI module and plugin calls so that
@@ -67,19 +60,23 @@ def run_scf_lcom(name, **kwargs):
     
     try:
         # replace the psi4 builder with our implementation
-        dft_builder.build_superfunctional_from_dictionary = build_lcom_functional
+        dft_builder.build_superfunctional_from_dictionary = build_lcom_from_dict
         proc.build_functional_and_disp = lcom_build_functional_and_disp
         
+        print("OK?")
+        print(name)
+        
         # Now just run scf normally
-        return run_scf(name, kwargs)
+        return run_scf("scf", **kwargs)
 
     except Exception as e:
-        raise RuntimeError("Error: failed to compute SCF. Reason: ") from e
+        raise e
         
     finally:
         # Regardless, restore the original function
         dft_builder.build_superfunctional_from_dictionary = original_dict_builder
         proc.build_functional_and_disp = original_func_disp_builder
+
 
 # Integration with driver routines
 psi4.driver.procedures['energy']['scf_lcom'] = run_scf_lcom
