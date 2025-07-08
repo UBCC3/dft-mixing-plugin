@@ -218,16 +218,28 @@ class FunctionalDatabase:
     def insert_single_disp(self, 
                            session: sqlalchemy.orm.Session,
                             dash_coeff_name: str,
+                            func_name: str,
                             disp_type: str,
                             disp_citation : str,
                             disp_desc: str,
                             disp_params: dict,
-                            src: str) -> None:
+                            disp_src: str,
+                            func_src: str | None = None) -> uuid.UUID:
     
-        # Map the aliased version
-
+        try:
+            src_id = self._query_source(session, disp_src)
+            
+        # Cannot find source, create a new source
+        # just for this functional.
+        except DBNotFoundError as e:
+            src_id = self._create_source(session, disp_src)
+    
+        # Add alias mapping to the database
+        self._add_dash_coeff_mapping(session, func_name, 
+                                    disp_type, dash_coeff_name)
+    
         # Check if functional exists
-        func_id = self.get_single_functional(session, canon_fname, None)
+        func_id = self.get_single_functional(session, func_name, func_src)
                 
         base_disp_id = uuid.uuid4()
         
@@ -237,24 +249,79 @@ class FunctionalDatabase:
             fnctl_id = func_id,
             disp_params = disp_params,
             subdisp_name = disp_type,
-            disp_base_source = src,
+            disp_base_source = src_id,
             citation = disp_citation,
             description = disp_desc,
         )
         
+        disp_config_id = uuid.uuid4()
+        
+        # Also add a new dispersion config
+        disp_config = DispersionConfig(
+            disp_id = disp_config_id,
+            fnctl_id = func_id,
+            disp_config_source = src_id, 
+            citation = disp_citation,
+            description = disp_desc,
+            disp_name = disp_type,
+            subdisp_id = base_disp_id
+        )
+        
         session.add(base_disp)
+        session.add(disp_config)
         
         return base_disp_id
-    gi
+
     def insert_disp_config(self, 
                            session: sqlalchemy.orm.Session,
-                            f_alias: str,
-                            f_name: str,
-                            f_citation : str,
-                            f_desc: str,
-                            f_data: dict,
-                            src: str) -> None:
-        pass
+                            dash_coeff_name: str,
+                            func_name: str,
+                            disp_name: str,
+                            disp_citation : str,
+                            disp_desc: str,
+                            disp_coeffs: dict[str, float],
+                            disp_src: str,
+                            func_src: str | None = None) -> None:
+        
+        try:
+            src_id = self._query_source(session, disp_src)
+            
+        # Cannot find source, create a new sourceg
+        # just for this functional.
+        except DBNotFoundError as e:
+            src_id = self._create_source(session, disp_src)
+        
+        # Add alias mapping
+        self._add_dash_coeff_mapping(session, func_name, 
+                                     disp_name, dash_coeff_name)
+        
+        # Get functional id
+        func_id = self.get_single_functional(session, 
+                                            func_name, None)
+
+        # Add new dispersion entries
+        for subdisp_name, coef in disp_coeffs.items():
+            
+            subdisp_alias = f'{func_name}-{subdisp_name}'
+            
+            # Assume dispersion part of the same configuration,
+            # otherwise, fallback to existing dispersion.
+            subdisp_id = self.get_dispersion(session, subdisp_alias,
+                                          disp_source=disp_src,
+                                          func_source=func_src)
+            
+            disp_coef_id = uuid.uuid4()
+            disp_entry = DispersionConfig(
+                disp_id = disp_coef_id,
+                fnctl_id = func_id, 
+                disp_config_source = disp_src,
+                citation = disp_citation,
+                description = disp_desc,
+                disp_name = disp_name, 
+                subdisp_id = subdisp_id,
+                subdisp_coef = coef 
+            ) 
+        
         
     def _resolve_source(self, err_source: str) -> str:
         '''
@@ -307,7 +374,8 @@ class FunctionalDatabase:
         '''
         
         res = (session.query(DispersionAlias.func_name, DispersionAlias.disp_name)
-                .filter(DispersionAlias.func_dash_name == dash_coeff_name)
+                .filter(sqlalchemy.func.lower(DispersionAlias.func_dash_name)
+                         == dash_coeff_name.lower())
                 .first())
         
         if res is None:
@@ -351,6 +419,54 @@ class FunctionalDatabase:
     #
     # ==================================
     def get_dispersion(self,
+                       session: sqlalchemy.orm.Session,
+                       dashcoeff_name: str,
+                       func_source: str = None,
+                        disp_source: str = None) -> list:
+        '''
+            Returns a list of base dispersions associated with a
+            single dispersion model
+        '''
+        
+        # Resolve dashcoeff name
+        canon_fname, canon_dname = self._resolve_dash_coeff(session, dashcoeff_name)
+
+        
+        
+        
+        return False
+        
+        # Resolve both functional and dispersion alias first
+        proper_fname = self._resolve_functional_alias(session, functional_name)
+        proper_dname = self._resolve_dispersion_alias(session, dispersion_name)
+        
+        
+        disp_list : list[tuple[DispersionBase, float]] = (
+            session.query(DispersionBase, DispersionConfig.subdisp_coef)
+                .join(Functional, DispersionConfig.fnctl_id == Functional.fnctl_id)
+                .join(Sources, DispersionConfig.source == Sources.id) 
+                .join(DispersionBase, DispersionBase.subdisp_id == DispersionConfig.subdisp_id)
+                # .all()
+                .filter(
+                    sqlalchemy.func.lower(Functional.fnctl_name) == functional_name.lower(),
+                    sqlalchemy.func.lower(Sources.name) == source.lower(),
+                    sqlalchemy.func.lower(DispersionConfig.disp_name) == dispersion_name.lower()                        
+                ).all()       
+        )
+        
+        logger.warning(disp_list)
+        
+        # Try to resolve to another source if not found
+        if len(disp_list) == 0:
+            try:
+                next_source = self._resolve_source(disp_source)
+            except SourceResolutionError as e:
+                raise DBNotFoundError("Cannot find functional!") from e
+
+        return disp_list
+    
+    
+    def get_multi_dispersion(self,
                        session: sqlalchemy.orm.Session,
                        functional_name: str,
                        dispersion_name: str,
