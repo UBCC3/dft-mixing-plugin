@@ -7,9 +7,6 @@ from sqlalchemy import Column, String, Double, ForeignKey, UUID, JSON, UniqueCon
 from sqlalchemy.orm import declarative_base, relationship, Session
 from sqlalchemy.ext.hybrid import hybrid_property
 
-# For functionals
-from psi4.driver.procrouting.dft.dft_builder import functionals
-
 # Default dispersions
 from qcengine.programs.empirical_dispersion_resources import dashcoeff, get_dispersion_aliases, new_d4_api
 
@@ -46,7 +43,6 @@ import yaml
 
 logger = logging.getLogger(__name__) 
 
-
 class FunctionalDatabase:
     
     def __init__(self, database_config : Path):
@@ -81,11 +77,6 @@ class FunctionalDatabase:
         Base.metadata.create_all(engine)
         
         self.Session = sqlalchemy.orm.sessionmaker(bind=engine, expire_on_commit=False)
-        
-        # If database does not exist, create a new database
-        # with PSI4 columns filled in
-        if not db_exists:
-            self._import_psi4_fnctls_disp()
 
     def get_session(self) -> sqlalchemy.orm.Session:
         return self.Session()
@@ -103,7 +94,7 @@ class FunctionalDatabase:
         '''
             
         src_id = (session.query(Sources)
-                    .filter(Sources.name == source_name)
+                    .filter(sqlalchemy.func.lower(Sources.name) == source_name.lower())
                     .first())  
     
         if src_id is None:
@@ -410,7 +401,7 @@ class FunctionalDatabase:
             Returns the canonical name of a functional.
         '''
         canon_name = ( session.query(FunctionalAlias.func_name)
-                        .filter(DispersionAlias.dash_coeff_name == functional_name)
+                        .filter(sqlalchemy.func.lower(FunctionalAlias.alias_name) == functional_name.lower())
                         .first())
 
         if canon_name is None:
@@ -456,7 +447,7 @@ class FunctionalDatabase:
             session.query(DispersionBase)
             .filter(
                 DispersionBase.fnctl_id == func_id, 
-                DispersionBase.subdisp_name == canon_dname,
+                sqlalchemy.func.lower(DispersionBase.subdisp_name) == canon_dname.lower(),
                 DispersionBase.disp_base_source == source_id
             )
             .first() 
@@ -531,7 +522,7 @@ class FunctionalDatabase:
     def get_single_functional(self, 
                             session: sqlalchemy.orm.Session,
                             functional_name: str, 
-                            source: str) -> Functional:
+                            source: str | None = None) -> Functional:
         '''
             Queries only a single functional (without getting 
             all the coeffs).
@@ -543,6 +534,9 @@ class FunctionalDatabase:
             Raises:
                 DBNotFoundError: If the functional is not present in any source.
         '''
+        
+        if source is None: 
+            source = self.source_fallback_stack[0]
         
         # Resolve alias first (canonical name is always in alias list)
         res_functional_name = self._resolve_functional_alias(session, 
