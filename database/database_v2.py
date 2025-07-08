@@ -214,8 +214,39 @@ class FunctionalDatabase:
             session.add(coef_entry)
 
         return multi_id
-        
+                
     def insert_single_disp(self, 
+                           session: sqlalchemy.orm.Session,
+                            dash_coeff_name: str,
+                            disp_type: str,
+                            disp_citation : str,
+                            disp_desc: str,
+                            disp_params: dict,
+                            src: str) -> None:
+    
+        # Map the aliased version
+
+        # Check if functional exists
+        func_id = self.get_single_functional(session, canon_fname, None)
+                
+        base_disp_id = uuid.uuid4()
+        
+        # If functional does exist (does not throw error), insert the dispersion info
+        base_disp = DispersionBase(
+            subdisp_id = base_disp_id,
+            fnctl_id = func_id,
+            disp_params = disp_params,
+            subdisp_name = disp_type,
+            disp_base_source = src,
+            citation = disp_citation,
+            description = disp_desc,
+        )
+        
+        session.add(base_disp)
+        
+        return base_disp_id
+    gi
+    def insert_disp_config(self, 
                            session: sqlalchemy.orm.Session,
                             f_alias: str,
                             f_name: str,
@@ -224,9 +255,7 @@ class FunctionalDatabase:
                             f_data: dict,
                             src: str) -> None:
         pass
-    
-    
-    
+        
     def _resolve_source(self, err_source: str) -> str:
         '''
             This functional is called when the query
@@ -247,40 +276,45 @@ class FunctionalDatabase:
 
         return lower_resol_arr[next_source]            
     
-    def _add_dispersion_alias(self,
+    def _add_dash_coeff_mapping(self,
                               session : sqlalchemy.orm.Session, 
                               functional_name: str, 
                               dispersion_name: str,
-                              dispersion_alias: str):
+                              dash_coeff_name: str):
         '''
             Adds an alias of a dispersion to the database.
         '''
         new_alias = DispersionAlias(
             func_name = functional_name,
             disp_name = dispersion_name, 
-            alias_name = dispersion_alias
+            func_dash_name = dash_coeff_name
         )
         
         session.add(new_alias)        
     
-    def _resolve_dispersion_alias(self,
-                                  session : sqlalchemy.orm.Session,
-                                  functional_canon: str,
-                                  dispersion_name: str) -> str:
+    
+    def _resolve_dash_coeff(self,
+                            session: sqlalchemy.orm.Session, 
+                            dash_coeff_name: str) -> tuple[str, str]:
         '''
-            Returns the canonical name of a dispersion.
+            Resolve dash coefficient name to resolve
+            into their canonical functional name, and
+            canonical dispersion name.
+            
+            Returns:
+                `(canon_func_name, canon_disp_name)`, canonical
+                functional name and dispersion respectively.
         '''
         
-        canon_name = ( session.query(DispersionAlias.disp_name)
-                        .filter(DispersionAlias.func_name == functional_canon,
-                                DispersionAlias.alias_name == dispersion_name)
-                        .first())
-
-        if canon_name is None:
-            raise DBNotFoundError("Error: Cannot resolve alias!")
+        res = (session.query(DispersionAlias.func_name, DispersionAlias.disp_name)
+                .filter(DispersionAlias.func_dash_name == dash_coeff_name)
+                .first())
         
-        return canon_name[0]   
+        if res is None:
+            raise DBNotFoundError("Error: Cannot resolve dashcoeff")
         
+        return (res[0], res[1])        
+    
     def _add_functional_alias(self, 
                               session: sqlalchemy.orm.Session,
                               functional_name: str, 
@@ -304,7 +338,7 @@ class FunctionalDatabase:
             Returns the canonical name of a functional.
         '''
         canon_name = ( session.query(FunctionalAlias.func_name)
-                        .filter(DispersionAlias.alias_name == functional_name)
+                        .filter(DispersionAlias.dash_coeff_name == functional_name)
                         .first())
 
         if canon_name is None:
@@ -357,9 +391,7 @@ class FunctionalDatabase:
                 raise DBNotFoundError("Cannot find functional!") from e
 
         return disp_list
-        
-
-
+    
     def get_single_functional(self, 
                             session: sqlalchemy.orm.Session,
                             functional_name: str, 

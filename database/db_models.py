@@ -99,11 +99,14 @@ class DispersionConfig(Base):
     subdisp = relationship("DispersionBase", back_populates="used_in_configs")
 
 class DispersionAlias(Base):
+    '''
+        Maps functional + disp string combo -> (functional, disp)
+    '''
     __tablename__ = "dispersionalias"
     alias_id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     func_name =  Column(String(36), nullable=False)
     disp_name = Column(String(36), nullable=False)
-    alias_name = Column(String(40), nullable=False)
+    func_dash_name = Column(String(40), unique=True, nullable=False)
     
 def get_base():
     return Base
