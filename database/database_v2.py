@@ -239,8 +239,10 @@ class FunctionalDatabase:
                                     disp_type, dash_coeff_name)
     
         # Check if functional exists
-        func_id = self.get_single_functional(session, func_name, func_src)
-                
+        func_id = self.get_single_functional(session, 
+                                             func_name, 
+                                             func_src).fnctl_id
+    
         base_disp_id = uuid.uuid4()
         
         # If functional does exist (does not throw error), insert the dispersion info
@@ -296,8 +298,10 @@ class FunctionalDatabase:
                                      disp_name, dash_coeff_name)
         
         # Get functional id
-        func_id = self.get_single_functional(session, 
+        functional = self.get_single_functional(session, 
                                             func_name, None)
+
+        func_id = functional.fnctl_id
 
         # Add new dispersion entries
         for subdisp_name, coef in disp_coeffs.items():
@@ -306,7 +310,7 @@ class FunctionalDatabase:
             
             # Assume dispersion part of the same configuration,
             # otherwise, fallback to existing dispersion.
-            subdisp_id = self.get_dispersion(session, subdisp_alias,
+            subdisp_id = self.get_base_dispersion(session, subdisp_alias,
                                           disp_source=disp_src,
                                           func_source=func_src)
             
@@ -418,53 +422,58 @@ class FunctionalDatabase:
     #               GETTERS
     #
     # ==================================
-    def get_dispersion(self,
+    def get_base_dispersion(self,
                        session: sqlalchemy.orm.Session,
                        dashcoeff_name: str,
-                       func_source: str = None,
-                        disp_source: str = None) -> list:
+                       func_source: str | None = None,
+                        disp_source: str | None = None) -> DispersionBase:
         '''
             Returns a list of base dispersions associated with a
             single dispersion model
+            
+            Source Resolution Notes:
+                Here, the functional source resolution takes 
+                takes priority over the dispersion source resolution.
         '''
         
         # Resolve dashcoeff name
         canon_fname, canon_dname = self._resolve_dash_coeff(session, dashcoeff_name)
-
+        
+        # Resolve functional first
+        functional = self.get_single_functional(session, canon_fname,
+                                      func_source)
         
         
+        canon_func_source = str(functional.source)
+        func_id = functional.fnctl_id
         
-        return False
+        if disp_source is None:
+            disp_source = self.source_fallback_stack[0]  
+            
+        source_id = self._query_source(session, disp_source)
         
-        # Resolve both functional and dispersion alias first
-        proper_fname = self._resolve_functional_alias(session, functional_name)
-        proper_dname = self._resolve_dispersion_alias(session, dispersion_name)
-        
-        
-        disp_list : list[tuple[DispersionBase, float]] = (
-            session.query(DispersionBase, DispersionConfig.subdisp_coef)
-                .join(Functional, DispersionConfig.fnctl_id == Functional.fnctl_id)
-                .join(Sources, DispersionConfig.source == Sources.id) 
-                .join(DispersionBase, DispersionBase.subdisp_id == DispersionConfig.subdisp_id)
-                # .all()
-                .filter(
-                    sqlalchemy.func.lower(Functional.fnctl_name) == functional_name.lower(),
-                    sqlalchemy.func.lower(Sources.name) == source.lower(),
-                    sqlalchemy.func.lower(DispersionConfig.disp_name) == dispersion_name.lower()                        
-                ).all()       
+        base_disp = (
+            session.query(DispersionBase)
+            .filter(
+                DispersionBase.fnctl_id == func_id, 
+                DispersionBase.subdisp_name == canon_dname,
+                DispersionBase.disp_base_source == source_id
+            )
+            .first() 
         )
         
-        logger.warning(disp_list)
-        
-        # Try to resolve to another source if not found
-        if len(disp_list) == 0:
+        if base_disp is None:
             try:
                 next_source = self._resolve_source(disp_source)
             except SourceResolutionError as e:
                 raise DBNotFoundError("Cannot find functional!") from e
-
-        return disp_list
-    
+            
+            return self.get_base_dispersion(session,
+                                            dashcoeff_name,
+                                            canon_func_source,
+                                            next_source)
+             
+        return base_disp
     
     def get_multi_dispersion(self,
                        session: sqlalchemy.orm.Session,
@@ -476,6 +485,15 @@ class FunctionalDatabase:
             Returns a list of base dispersions associated with a
             single dispersion model
         '''
+        
+        # Resolve dashcoeff name
+        canon_fname, canon_dname = self._resolve_dash_coeff(session, dashcoeff_name)
+        
+        # Resolve functional first
+        func_id = self.get_functional(session, canon_fname,
+                                      func_source)
+        
+        
         
         return False
         
