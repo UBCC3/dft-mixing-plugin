@@ -87,7 +87,7 @@ class DispersionConfig(Base):
     description = Column(String(512), nullable=False, default="")
     disp_name = Column(String(40), nullable=False)
     subdisp_id = Column(String(36), ForeignKey('dispersionbase.subdisp_id'), nullable=False)
-    subdisp_coef = Column(Double(), nullable=False, default=1.0)
+    subdisp_coef = Column(Double, nullable=False, default=1.0)
 
     __table_args__ = (
         UniqueConstraint('disp_name', 'subdisp_id', name='uq_disp_subdisp'),

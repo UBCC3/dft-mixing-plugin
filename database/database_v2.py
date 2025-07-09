@@ -410,7 +410,7 @@ class FunctionalDatabase:
         return canon_name[0]   
     
     # ==================================
-    #               GETTERS
+    #          GETTERS (BY NAME)
     #
     # ==================================
     def get_base_dispersion(self,
@@ -470,7 +470,8 @@ class FunctionalDatabase:
                        session: sqlalchemy.orm.Session,
                        dashcoeff_name: str,
                        func_source: str | None = None,
-                        disp_source: str | None = None) -> list:
+                        disp_source: str | None = None
+                        ) -> list[tuple[DispersionBase, float]]:
         '''
             Returns a list of base dispersions associated with a
             single dispersion model
@@ -518,7 +519,6 @@ class FunctionalDatabase:
              
         return disp_coeffs
     
-    
     def get_single_functional(self, 
                             session: sqlalchemy.orm.Session,
                             functional_name: str, 
@@ -563,8 +563,8 @@ class FunctionalDatabase:
             
             return self.get_single_functional(session, functional_name, next_source)
             
-        return query_funcs[0]                    
-    
+        return query_funcs[0]
+
     def get_functional(self, 
                         session: sqlalchemy.orm.Session, 
                         functional_name: str, 
@@ -583,8 +583,9 @@ class FunctionalDatabase:
             the function returns an empty list.
         '''
         
-        # Resolve alias first
-        
+        if source is None:
+            source = self.source_fallback_stack[0]
+    
         # Query base functional 
         query_func = self.get_single_functional(session, functional_name, source)
     
@@ -609,5 +610,81 @@ class FunctionalDatabase:
         if any(func.is_lcom for (func, _) in func_coefs):
             raise RuntimeError("Error: Somehow we have a multifunctional here")
 
+        return parent_func, func_coefs
+    
+    
+    
+    # ==================================
+    #          GETTERS (BY ID)
+    #
+    # ==================================
+    
+    
+    
+    
+    
+    def get_single_functional_by_id(self, 
+                            session: sqlalchemy.orm.Session,
+                            functional_id: uuid.UUID) -> Functional:
+        '''
+            Queries only a single functional (without getting 
+            all the coeffs) by id.
+            
+            Raises:
+                DBNotFoundError: If the functional is not present in any source.
+        '''
+        # Find funcitonal
+    
+        query_func: Functional | None = (
+            session.query(Functional)
+            .filter(Functional.fnctl_id == functional_id)  
+            .first()
+        )
+    
+        if query_func is None:
+            raise DBNotFoundError("Cannot find functional!")
+            
+        return query_func                    
+    
+    def get_functional_by_id(self, 
+                            session: sqlalchemy.orm.Session, 
+                            functional_id: uuid.UUID) -> (
+                                tuple[Functional | None, list[tuple[Functional, float]]]
+                            ):
+        '''
+            Queries a functional by ID and returns the functional data
+            and (if any) returns a list of tuples containing 
+            the subcomponent functional and coefficients.
+            
+            The subcomponent functional is guranteed to be 
+            base functionals.
+            
+            If queried functional is a base functional, 
+            the function returns an empty list.
+        '''
+        
+        # Query base functional 
+        query_func = self.get_single_functional_by_id(session, functional_id)
+    
+        # If not lcom, we are done!
+        if not query_func.is_lcom:
+            return query_func, []
+        
+        parent_func = query_func
+        parent_func_id = query_func.fnctl_id
+        # If it is lcom, we need more work!
+                   
+        func_coefs : list[tuple[Functional, float]] = (
+                        session.query(Functional, FunctionalCoeffs.coef)
+                        .join(FunctionalCoeffs, FunctionalCoeffs.parent_fnctl_id == Functional.fnctl_id)
+                        .filter(
+                            FunctionalCoeffs.parent_fnctl_id == parent_func_id,        
+                        )  
+                        .all()
+                    )
+            
+        # Validate, cannot have a lcom functional in the result
+        if any(func.is_lcom for (func, _) in func_coefs):
+            raise RuntimeError("Error: Somehow we have a multifunctional here")
 
         return parent_func, func_coefs
