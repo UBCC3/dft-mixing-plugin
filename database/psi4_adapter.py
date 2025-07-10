@@ -13,31 +13,151 @@ from .db_models import (
 import logging
 from typing import Any
 
+# PSI4 internal functionals
+from psi4.driver.procrouting.dft.dft_builder import functionals
+
+# DFTD4 internal functionals
+
+
+
 logger = logging.getLogger(__name__)
 
 class Psi4DbAdapter:
     '''
-        PSI4 database w
+        PSI4 database wrapper for a Database handler
     '''
 
     def __init__(self, config_path):
         self.db = FunctionalDatabase(config_path)
     
-    
     def _import_psi4_data(self):
+        
+        parent_functionals = {
+            func_name : functionals[func_name] \
+                for func_name in functionals \
+                if "dispersion" not in functionals[func_name]
+        }
+        
+        dispersion_functionals = {
+            func_name : functionals[func_name] \
+                for func_name in functionals \
+                if "dispersion" in functionals[func_name]
+        }
+        
+        
+        for func_alias, func_dict in parent_functionals:
+            canon_fname = func_dict["name"]
+            func_citation = func_dict.get("citation", "No citations available")
+            func_description = func_dict.get("description", "")
+            func_data = func_dict
+
+            # Insert base functional into PSI4
+            
+            with self.db.get_session() as session:
+                self.db.insert_base_functional(
+                    session, 
+                    canon_fname,
+                    func_citation,
+                    func_description,
+                    func_data,
+                    "psi4",
+                    func_alias
+                )
+                session.commit()        
+        
+        # Insert dispersion
+        for func_alias, func_dict in dispersion_functionals.items():
+            pass
+    
+    def load_base_functional_data(self, func_dict):
         pass
     
-    def load_base_functional_data(self):
-        pass
+    def load_multi_functional_data(self, multi_func_dict, source: str):
+        '''
+            Loads in multi-functional data.
+        '''
+        error_list = []
+        
+        for multifunc_alias, multi_args in multi_func_dict.items():
+            try:
+                components = multi_args["functionals"]
+                canon_name = multi_args.get("name", multifunc_alias)
+                
+                with self.db.get_session() as session:
+                    self.db.insert_multi_functional(
+                        session,
+                        canon_name,
+                        multi_args.get("citation", "No citation."),
+                        multi_args.get("description", "No description."),
+                        components,
+                        source,
+                        multifunc_alias
+                    )
+                    
+                    session.commit()
+            except Exception as e:
+                error_list.append(e)
+                
+        if len(error_list) > 0:
+            raise ExceptionGroup("Some errors were encountered:", error_list)            
+        return
+        
     
-    def load_multi_functional_data(self):
-        pass
+    def load_base_dispersion_data(self, base_disp_dict, src: str):
+        error_list = []
+        
+        for parent_func, avail_disps in base_disp_dict.items():
+            for disp_alias, disp_info in avail_disps.items():
+                try:
+                    
+                    dash_coeff_name = f'{parent_func}-{disp_alias}'
+                    with self.db.get_session() as session:
+                    
+                        self.db.insert_single_disp(
+                            session,
+                            dash_coeff_name,
+                            parent_func,
+                            disp_alias,
+                            disp_info.get("citation", "No Citation"),
+                            disp_info.get("description", "No Description"),
+                            disp_info["disp_params"],
+                            src,                            
+                        )
+                    
+                        session.commit()
+                except Exception as e:
+                    error_list.append(e)
+                    
+        if len(error_list) > 0:
+            raise ExceptionGroup("Some errors were encountered:", error_list)            
+        return
     
-    def load_base_dispersion_data(self):
-        pass
-    
-    def load_dispersion_config_data(self):
-        pass
+    def load_dispersion_config_data(self, disp_config_dict, src: str):
+        error_list = []
+        
+        for parent_func, avail_configs in disp_config_dict.items():
+            for disp_config_name, config_args in avail_configs.items():
+                try:
+                    dash_coeff_name = f'{parent_func}-{disp_config_name}'
+                    with self.db.get_session() as session:
+                        self.db.insert_disp_config(
+                            session,
+                            dash_coeff_name,
+                            parent_func,
+                            disp_config_name,
+                            config_args.get("citation", "No Citation"),
+                            config_args.get("description", "No Description"),
+                            config_args["coeffs"],
+                            src,                            
+                        )
+                    
+                        session.commit()
+                except Exception as e:
+                    error_list.append(e)
+                    
+        if len(error_list) > 0:
+            raise ExceptionGroup("Some errors were encountered:", error_list)            
+        return
         
     def get_functional_dict(self, 
                               functional_name : str,
