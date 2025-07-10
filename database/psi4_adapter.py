@@ -253,7 +253,25 @@ class Psi4DbAdapter:
             configuration for that functional, and formats it
             to a PSI4 compatible dictionary. 
         ''' 
-        pass   
+        
+        # Query for functional first
+        with self.db.get_session() as session:
+            par_functional, func_coeffs = self.db.get_functional(
+                session, functional_name, functional_source
+            )
+            
+            dashcoeff_name = f'{par_functional.fnctl_name}-{dispersion_name}'
+            dispersion_coeffs = self.db.get_multi_dispersion(
+                session, dashcoeff_name, functional_source, dispersion_source
+            )
+            
+            session.commit()
+            
+        return self._format_to_psi4(par_functional, func_coeffs, dispersion_coeffs)
+        
+        
+        
+        
 
 
 
