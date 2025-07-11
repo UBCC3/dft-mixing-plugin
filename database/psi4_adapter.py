@@ -24,9 +24,6 @@ import re
 from psi4.driver.procrouting.dft.dft_builder import functionals
 
 # DFTD4 internal functionals
-
-
-
 logger = logging.getLogger(__name__)
 
 class Psi4DbAdapter:

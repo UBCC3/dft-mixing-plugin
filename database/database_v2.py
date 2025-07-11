@@ -123,12 +123,11 @@ class FunctionalDatabase:
     
     def insert_base_functional(self, 
                                 session: sqlalchemy.orm.Session,
-                                f_name: str,
+                                canon_fname: str,
                                 f_citation : str,
                                 f_desc: str,
                                 f_data: dict,
-                                src: str,
-                                f_alias: str | None = None) -> uuid.UUID:
+                                src: str) -> uuid.UUID:
         '''
             Creates a new base functional and returns the
             functional id for the base functional.
@@ -142,37 +141,27 @@ class FunctionalDatabase:
         except DBNotFoundError as e:
             src_id = self._create_source(session, src)
             
-        if f_alias is None: 
-            f_alias = f_name
-           
-        # Now, create an alias for this functional
-        if f_alias != f_name:
-            self._add_functional_alias(session, f_name, f_alias)    
-         
         # Check if functional exist or not
         try:
-            
             # logger.warning(f'Inserting {f_name}')
-            return self.get_single_functional(session, f_name, src).fnctl_id
+            return self.get_single_functional(session, canon_fname, src).fnctl_id
         
         # Cannot find mapping to functional, add base mapping.
         except DBNotFoundError as e:
             # logger.warning(f'{f_name} not found, creating new mapping!')
             pass
         
-
         new_functional_id = str(uuid.uuid4())
         # logger.warning(f'ACTUALLY INSERT {f_name} into DB')
         new_functional = Functional(
             fnctl_id = new_functional_id,
             source= src_id,
             fnctl_data = f_data, 
-            fnctl_name = f_name,
+            fnctl_name = canon_fname,
             citation = f_citation,
             description = f_desc    
         )
         
-        self._add_functional_alias(session, f_name, f_name)
         session.add(new_functional)
         # logger.warning(f'{f_name} into DB OK')
         
@@ -221,7 +210,6 @@ class FunctionalDatabase:
                 
     def insert_single_disp(self, 
                            session: sqlalchemy.orm.Session,
-                            dash_coeff_name: str,
                             func_name: str,
                             disp_type: str,
                             disp_citation : str,
@@ -238,10 +226,7 @@ class FunctionalDatabase:
         except DBNotFoundError as e:
             src_id = self._create_source(session, disp_src)
     
-        # Add alias mapping to the database
-        self._add_dash_coeff_mapping(session, func_name, 
-                                    disp_type, dash_coeff_name)
-    
+        dash_coeff_name = f'{func_name}-{disp_type}'
         try:
             return self.get_base_dispersion(session, dash_coeff_name, func_src, disp_src).subdisp_id
         except DBNotFoundError as e:
@@ -302,10 +287,6 @@ class FunctionalDatabase:
         except DBNotFoundError as e:
             src_id = self._create_source(session, disp_src)
         
-        # Add alias mapping
-        self._add_dash_coeff_mapping(session, func_name, 
-                                     disp_name, dash_coeff_name)
-        
         try:
             self.get_multi_dispersion(session, dash_coeff_name, func_src, disp_src)
             return 
@@ -362,7 +343,7 @@ class FunctionalDatabase:
 
         return lower_resol_arr[next_source]            
     
-    def _add_dash_coeff_mapping(self,
+    def add_dash_coeff_mapping(self,
                               session : sqlalchemy.orm.Session, 
                               functional_name: str, 
                               dispersion_name: str,
@@ -379,7 +360,7 @@ class FunctionalDatabase:
         session.add(new_alias)        
     
     
-    def _resolve_dash_coeff(self,
+    def resolve_dash_coeff(self,
                             session: sqlalchemy.orm.Session, 
                             dash_coeff_name: str) -> tuple[str, str]:
         '''
@@ -402,7 +383,7 @@ class FunctionalDatabase:
         
         return (res[0], res[1])        
     
-    def _add_functional_alias(self, 
+    def add_functional_alias(self, 
                               session: sqlalchemy.orm.Session,
                               functional_name: str, 
                               functional_alias : str):
@@ -419,7 +400,7 @@ class FunctionalDatabase:
         session.add(new_alias)      
         
     
-    def _resolve_functional_alias(self, 
+    def resolve_functional_alias(self, 
                                   session,
                                   functional_name: str) -> str:
         '''
