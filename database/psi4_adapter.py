@@ -55,19 +55,33 @@ class Psi4DbAdapter:
             func_citation = func_dict.get("citation", "No citations available")
             func_description = func_dict.get("description", "")
             func_data = func_dict
-
+            
+            #   For any insertion phase, we need to check whether 
+            #   the functional already exists or not, 
             with self.db.get_session() as session:
-                # Insert base functional into PSI4
-                self.db.insert_base_functional(
-                    session, 
-                    canon_fname,
-                    func_citation,
-                    func_description,
-                    func_data,
-                    "psi4",
-                    func_alias
-                )   
-                session.commit()
+                try:
+                    self.db.get_single_functional(session, canon_fname, "psi4")
+                
+                # Have not exist, actually add functional + canon alias
+                except DBNotFoundError as e:
+                    session.rollback()
+                    
+                    self.db.add_functional_alias(session, canon_fname, canon_fname)
+                    self.db.insert_base_functional(
+                        session, 
+                        canon_fname,
+                        func_citation,
+                        func_description,
+                        func_data,
+                        "psi4",
+                        func_alias
+                    )
+                    
+                # Now add the alias (if its not the same as canon fname)
+                finally:
+                    if (canon_fname.lower() != func_alias.lower()):
+                        self.db.add_functional_alias(session, canon_fname, func_alias)
+                    session.commit()
                 
             # Just to make sure functional is in database.
             with self.db.get_session() as session:
@@ -93,6 +107,9 @@ class Psi4DbAdapter:
         
             try:
                 with self.db.get_session() as session:
+                    
+                    
+                    
                     self.db.insert_single_disp(
                         session, 
                         func_dashcoeff,
