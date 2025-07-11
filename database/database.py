@@ -471,14 +471,15 @@ class FunctionalDatabase:
         disp_coeffs = (
             session.query(DispersionBase, DispersionConfig.subdisp_coef)
             .join(
+                DispersionConfig, 
                 DispersionConfig.subdisp_id == DispersionBase.subdisp_id
             )
             .filter(
                 DispersionConfig.fnctl_id == func_id, 
                 DispersionConfig.disp_name == canon_dname,
-                DispersionConfig.disp_base_source == source_id
+                DispersionConfig.disp_config_source == source_id
             )
-            .first() 
+            .all() 
         )
         
         if disp_coeffs is None:
@@ -491,7 +492,8 @@ class FunctionalDatabase:
                                             dashcoeff_name,
                                             canon_func_source,
                                             next_source)
-             
+            
+        # logger.warning(disp_coeffs)
         return disp_coeffs
     
     def get_single_functional(self, 
@@ -593,11 +595,6 @@ class FunctionalDatabase:
     #          GETTERS (BY ID)
     #
     # ==================================
-    
-    
-    
-    
-    
     def get_single_functional_by_id(self, 
                             session: sqlalchemy.orm.Session,
                             functional_id: uuid.UUID) -> Functional:

@@ -1,5 +1,5 @@
 
-from database_v2 import FunctionalDatabase
+from database import FunctionalDatabase
 from db_models import (
     Sources,
     Functional,
@@ -348,9 +348,3 @@ class Psi4DbAdapter:
             
         return self._format_to_psi4(par_functional, func_coeffs, dispersion_coeffs)
         
-        
-        
-        
-
-
-
