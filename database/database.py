@@ -4,17 +4,29 @@ from pathlib import Path
 
 import sqlalchemy.orm
 from sqlalchemy import Column, String, Double, ForeignKey, UUID, JSON, UniqueConstraint
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy.orm import declarative_base, relationship, Session
 from sqlalchemy.ext.hybrid import hybrid_property
-
-# For functionals
-from psi4.driver.procrouting.dft.dft_builder import functionals
 
 # Default dispersions
 from qcengine.programs.empirical_dispersion_resources import dashcoeff, get_dispersion_aliases, new_d4_api
 
-# blacklisted functionals
-from .exceptions import blacklist_funcs
+# Error types
+from db_errors import (
+    SourceResolutionError,
+    DBNotFoundError,
+    DBDuplicateError
+)
+
+from db_models import (
+    get_base,
+    Functional,
+    FunctionalAlias,
+    FunctionalCoeffs,
+    DispersionAlias,
+    DispersionBase, 
+    DispersionConfig, 
+    Sources
+)
 
 import uuid
 import re
@@ -26,102 +38,7 @@ import logging
 # Config parser
 import yaml
 
-logger = logging.getLogger(__name__)
-
-Base = declarative_base() 
-class Sources(Base):
-    __tablename__ = "sources"
-
-    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    name = Column(String(40), unique=True, nullable=False)
-
-    # Reverse access to related rows
-    functionals = relationship("Functional", back_populates="source_ref")
-    dispersion_configs = relationship("DispersionConfig", back_populates="source_ref")
-    dispersion_bases = relationship("DispersionBase", back_populates="source_ref")
-
-class Functional(Base):
-    __tablename__ = "functional"
-
-    fnctl_id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    source = Column(String(36), ForeignKey('sources.id'), nullable=False)
-    fnctl_data = Column(JSON(), nullable=True, default=None)
-    fnctl_name = Column(String(40), nullable=False, unique=True)
-    citation = Column(String(512), nullable=False, default="")
-    description = Column(String(512), nullable=False, default="")
-
-    # Navigation
-    source_ref = relationship("Sources", back_populates="functionals")
-    child_coeffs = relationship("FunctionalCoeffs", foreign_keys="[FunctionalCoeffs.parent_fnctl_id]", back_populates="parent")
-    parent_coeffs = relationship("FunctionalCoeffs", foreign_keys="[FunctionalCoeffs.child_fnctl_id]", back_populates="child")
-    dispersion_configs = relationship("DispersionConfig", back_populates="functional")
-    dispersion_bases = relationship("DispersionBase", back_populates="functional")
-
-    @hybrid_property
-    def is_lcom(self):
-        return self.fnctl_data is None
-
-class FunctionalAlias(Base):
-    __tablename__ = "functionalalias"
-    alias_id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    fnctl_id = Column(String(36), ForeignKey('functional.fnctl_id'), nullable=False)
-    alias_name = Column(String(40), nullable=False)
-
-class FunctionalCoeffs(Base):
-    __tablename__ = "functionalcoeffs"
-
-    parent_fnctl_id = Column(String(36), ForeignKey('functional.fnctl_id'), primary_key=True)
-    child_fnctl_id = Column(String(36), ForeignKey('functional.fnctl_id'), primary_key=True)
-    coef = Column(Double(), nullable=False, default=1.0)
-
-    # Navigation
-    parent = relationship("Functional", foreign_keys=[parent_fnctl_id], back_populates="child_coeffs")
-    child = relationship("Functional", foreign_keys=[child_fnctl_id], back_populates="parent_coeffs")
-
-class DispersionBase(Base):
-    __tablename__ = "dispersionbase"
-
-    subdisp_id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    fnctl_id = Column(String(36), ForeignKey('functional.fnctl_id'), nullable=False)
-    disp_params = Column(JSON(), nullable=True)
-    
-    # Note that this cannot be the aliased name, must be the master name.
-    subdisp_name = Column(String(40), nullable=False)
-    source = Column(String(36), ForeignKey('sources.id'), nullable=False)
-    citation = Column(String(512), nullable=False, default="")
-    description = Column(String(512), nullable=False, default="")
-
-    # Navigation
-    source_ref = relationship("Sources", back_populates="dispersion_bases")
-    functional = relationship("Functional", back_populates="dispersion_bases")
-    used_in_configs = relationship("DispersionConfig", back_populates="subdisp")
-
-class DispersionConfig(Base):
-    __tablename__ = "dispersionconfig"
-
-    disp_id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    fnctl_id = Column(String(36), ForeignKey('functional.fnctl_id'), primary_key=True)
-    source = Column(String(36), ForeignKey('sources.id'), nullable=False)
-    citation = Column(String(512), nullable=False, default="")
-    description = Column(String(512), nullable=False, default="")
-    disp_name = Column(String(40), nullable=False)
-    subdisp_id = Column(String(36), ForeignKey('dispersionbase.subdisp_id'), nullable=False)
-    subdisp_coef = Column(Double(), nullable=False, default=1.0)
-
-    __table_args__ = (
-        UniqueConstraint('disp_name', 'subdisp_id', name='uq_disp_subdisp'),
-    )
-
-    # Navigation
-    source_ref = relationship("Sources", back_populates="dispersion_configs")
-    functional = relationship("Functional", back_populates="dispersion_configs")
-    subdisp = relationship("DispersionBase", back_populates="used_in_configs")
-
-class DispersionAlias(Base):
-    __tablename__ = "dispersionalias"
-    alias_id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    disp_config_id = Column(String(36), ForeignKey('dispersionconfig.fnctl_id'), nullable=False)
-    alias_name = Column(String(40), nullable=False)
+logger = logging.getLogger(__name__) 
 
 class FunctionalDatabase:
     
@@ -134,7 +51,7 @@ class FunctionalDatabase:
             1. Path to database
             
         '''     
-        self.source_resol_stack : list[str] = []
+        self.source_fallback_stack : list[str] = ["dftd4", "psi4"]
         
         # Import from existing database if path is specified 
         if database_config is None:
@@ -153,391 +70,482 @@ class FunctionalDatabase:
         # Create a SQL database for this
         engine = sqlalchemy.create_engine(db_uri)
         
+        Base = get_base()
         Base.metadata.create_all(engine)
         
         self.Session = sqlalchemy.orm.sessionmaker(bind=engine, expire_on_commit=False)
-        
-        # If database does not exist, create a new database
-        # with PSI4 columns filled in
-        if not db_exists:
-            self._import_psi4_fnctls_disp()
-    
-    def get_source_resolution_stack(self) -> list[str]:
-        return self.source_resol_stack.copy()
-    
-    def add_json_source(self, source: str, 
-                        fnctl_base_json : dict,
-                        fnctl_coef_json : dict,  
-                        disp_param_json : dict = None, 
-                        disp_mixing_json: dict = None):        
-        
-        # Need to add feedback if process went successfully, or
-        # some functionals 
-        pass
-    
-    def query_functional_disp(self, func_name : str, 
-                            disp_config_name : str = None,
-                            source: str = None, 
-                            fmt: str = "psi4") -> dict:
-        '''
-            Queries for a functional, and returns it in a specified format
-            (PSI4 JSON format by default). 
-            
-            If `disp_config_name` is given as an argument, it will
-            add that dispersion configuration to the queried
-            functional.
-            
-            By default, the database queries for the top of the 
-            source stack by default, and keep progressing
-            
-            For example, if the source stack was specified as:
-                - sourceA
-                - dftd4     (hidden)
-                - psi4      (hidden)
-                
-            it will query for sourceA first, then dftd4 if not found, then psi4.
-            
-            If `source` was given (reccomended), it will immediately search for
-            that source. 
-        '''
-        
-        par_func, functional_coefs = self._get_only_functional(func_name, source)
-        
-        if disp_config_name is not None:
-            disp_coefs = self._get_dispersion(func_name, disp_config_name, source)
-        else:
-            disp_coefs = []
-            
-        # Assemble functional and dispersion
-        if fmt.lower() == "psi4":
-            return self._format_to_psi4(par_func, functional_coefs, disp_coefs)
 
-        raise RuntimeError("Error: Invalid format!")
-
-
-    def _get_session(self) -> sqlalchemy.orm.Session:
+    def get_session(self) -> sqlalchemy.orm.Session:
         return self.Session()
     
-    def _resolve_fnctl_coefficients(self, source: str, multi_fnctl_components: dict):
-        raise NotImplementedError("Have not implemented this yet!")        
+    def _query_source(self, session: sqlalchemy.orm.Session, 
+                        source_name: str) -> uuid.UUID:
+        '''
+            Queries for a source within the databse
+            
+            Returns:
+                `src_id` id of source
+            
+            Raises:
+                DBNotFoundError: if the source data is not found.
+        '''
+            
+        src_id = (session.query(Sources.id)
+                    .filter(sqlalchemy.func.lower(Sources.name) == source_name.lower())
+                    .first())  
     
-    # Stores
-    def _store_fnctl_base_json(self, 
-                        source: str,
-                        fnctl_base_json : dict,) -> None:
-        raise NotImplementedError("Error: Have not implemented this yet...")
-
-    def _store_disp_json(self, 
-                        source: str,
-                        disp_param_json : dict = None) -> None:
+        if src_id is None:
+            raise DBNotFoundError("Error, source is missing.")
         
-        error_list = []
+        return src_id[0]
         
-        # Add all base dispersions first
-        for parent_func, avail_disps in disp_param_json.items():
-            for disp_name, disp_info in avail_disps.items():
-                try:
-                    with self._get_session() as session:
-                        # Query for functional id
-                        fnctl_id, source_id = (
-                            session.query(Functional.fnctl_id, Sources.id)
-                            .join(Sources)
-                            .filter(Functional.fnctl_name == parent_func,
-                                    Sources.name == source)
-                            .first()
-                        )
-
-                        # Create new Base Disperison
-                        base_disp = DispersionBase(
-                            fnctl_id = fnctl_id, 
-                            subdisp_name = disp_info["type"],
-                            disp_params = disp_info["disp_params"],
-                            citation = disp_info.get("citation", ""),
-                            description = disp_info.get("citation", "")
-                        )
-                        
-                        # Create new DispersionConfig
-                        base_disp_cfg = DispersionBase(
-                            fnctl_id = fnctl_id, 
-                            subdisp_name = disp_info["type"],
-                            citation = disp_info.get("citation", ""),
-                            description = disp_info.get("citation", ""),
-                            disp_name = disp_info["type"],
-                            subdisp_id = base_disp.subdisp_id
-                        )
-                        
-                        session.add(base_disp)
-                        session.add(base_disp_cfg)
-                        session.commit()
-                        
-                except Exception as e:
-                    error_list.append(e)    
-                    
-        if len(error_list > 1):
-            raise ExceptionGroup("[ERROR] Several errors were found: ", error_list)
-        
-    def _store_disp_mixing(self, 
-                            source: str,
-                            disp_coeffs_json : dict = None) -> None:
+    def _create_source(self,
+                        session: sqlalchemy.orm.Session, 
+                        source_name: str) -> uuid.UUID:
+        '''
+            Create a new source/namespace for functionals/
+            dispersions. 
             
-            error_list = []
-            
-            # Add all base dispersions first
-            for parent_func, avail_disps in disp_coeffs_json.items():
-                for disp_name, disp_info in avail_disps.items():
-                    try:
-                        with self._get_session() as session:
-                            # Query for functional id
-                            fnctl_id, source_id = (
-                                session.query(Functional.fnctl_id, Sources.id)
-                                .join(Sources)
-                                .filter(Functional.fnctl_name == parent_func,
-                                        Sources.name == source)
-                                .first()
-                            )
+            Returns:
+                `src_id` id of source
+                
+            Raises:
+        '''
 
-                            # Create new Base Disperison
-                            base_disp = DispersionBase(
-                                fnctl_id = fnctl_id, 
-                                subdisp_name = disp_info["type"],
-                                disp_params = disp_info["disp_params"],
-                                citation = disp_info.get("citation", ""),
-                                description = disp_info.get("citation", "")
-                            )
-                            
-                            # Create new DispersionConfig
-                            base_disp_cfg = DispersionBase(
-                                fnctl_id = fnctl_id, 
-                                subdisp_name = disp_info["type"],
-                                citation = disp_info.get("citation", ""),
-                                description = disp_info.get("citation", ""),
-                                disp_name = disp_info["type"],
-                                subdisp_id = base_disp.subdisp_id
-                            )
-                            
-                            session.add(base_disp)
-                            session.add(base_disp_cfg)
-                            session.commit()
-                            
-                    except Exception as e:
-                        error_list.append(e) 
+        src_id = str(uuid.uuid4())
+        new_src = Sources(
+            id = src_id,
+            name = source_name
+        )
+        
+        session.add(new_src)
+        return src_id
     
-    def _store_fnctl_coef_json(self, 
-                               source: str,
-                               fnctl_coef_json: dict) -> None:
+    def insert_base_functional(self, 
+                                session: sqlalchemy.orm.Session,
+                                canon_fname: str,
+                                f_citation : str,
+                                f_desc: str,
+                                f_data: dict,
+                                src: str) -> uuid.UUID:
         '''
-            Imports functionals from a JSON file and also validates
-            the JSON file format.
-            
-
-            ```
+            Creates a new base functional and returns the
+            functional id for the base functional.
         '''
-        # Since we are doing this as a single transaction,  
-        # need to rollback the entire process
-        error_lists : list[Exception] = []
-
-        for multi_fnctl_name, multi_args in fnctl_coef_json.items():
-            # Typecheck the types
-            assert type(multi_fnctl_name) == str, "Error: incompatible type for fnctl_name"
-            
-            components = multi_args["fnctls"]
-            
-            # Create the new functional first, then queue up.
-            new_fnctl : Functional = Functional(
-                    source=source,
-                    fnctl_name=multi_fnctl_name, 
-                    citation=multi_args.get("citation", ""),
-                    description=multi_args.get("description", "")
-                )
-                
-            multi_fnctl_id = new_fnctl.fnctl_id
-                        
-            for child_fnctl_name, coef in components.items():
-                child_fnctl_name = child_fnctl_name.lower()
-                try:
-                    with self._get_session() as session:
-                        
-                        # Lookup existing functionals.
-                        child_fnctl : Functional = (session.query(Functional)
-                                .filter(Functional.fnctl_name.lower() == child_fnctl_name)
-                                .first()
-                        )
-                        
-                        if child_fnctl is None:
-                            raise RuntimeError(f"Error: Cannot find functional {child_fnctl_name} in database!")
-                        
-                        # !TODO: for future support, resolve coefficients.                 
-                        if child_fnctl.is_lcom:
-                            raise RuntimeError(f"Error: Cannot create multi-functional by specifying multi-functional, need base functionals.")
-                        
-                        child_id = child_fnctl.fnctl_id
-                        new_coef_entry = FunctionalCoeffs(
-                            parent_fnctl_id = multi_fnctl_id,
-                            child_fnctl_id = child_id, 
-                            coef=coef
-                        )
-                        
-                        session.add(new_coef_entry)
-                
-                except Exception as e:
-                    error_lists.append(e)
         
-        if len(error_lists) > 0:
-            raise ExceptionGroup("Some errors were encountered:", error_lists)            
-        return
+        try:
+            src_id = self._query_source(session, src)
+            
+        # Cannot find source, create a new source
+        # just for this functional.
+        except DBNotFoundError as e:
+            src_id = self._create_source(session, src)
+        
+        new_functional_id = str(uuid.uuid4())
+        # logger.warning(f'ACTUALLY INSERT {f_name} into DB')
+        new_functional = Functional(
+            fnctl_id = new_functional_id,
+            source= src_id,
+            fnctl_data = f_data, 
+            fnctl_name = canon_fname,
+            citation = f_citation,
+            description = f_desc    
+        )
+        
+        session.add(new_functional)
+        # logger.warning(f'{f_name} into DB OK')
+        
+        return new_functional_id      
+        
+    def insert_multi_functional(self, 
+                                session: sqlalchemy.orm.Session,
+                                multi_name: str,
+                                multi_citation : str,
+                                multi_desc: str,
+                                multi_coeffs: dict[str, float],
+                                src: str,
+                                multi_alias: str | None = None) -> uuid.UUID:
+        
+        # This is a functional consisting of its dispersion
 
-    def _import_psi4_fnctls_disp(self) -> None:
-        '''
-            Helper function to import PSI4 dispersions and functions
-            into the database.
-        '''
-        self.source_resol_stack.append("psi4")
-        with self._get_session() as session:
-            src = Sources(name="psi4")
-            session.add(src)
-            session.commit()
-            src_id = src.id
-          
-        logger.info(f"src_id: {src_id}")
+        # Create new functional entry for the multifunctional
+        multi_id = self.insert_base_functional(
+            session, multi_name, multi_citation, 
+            multi_desc, multi_coeffs, src, multi_alias
+        )
     
-        parent_functionals = {
-            func_name : functionals[func_name] \
-                for func_name in functionals \
-                if "dispersion" not in functionals[func_name]
-        }
-        
-        dispersion_functionals = {
-            func_name : functionals[func_name] \
-                for func_name in functionals \
-                if "dispersion" in functionals[func_name]
-        }
-        
+        # Now, loop through the coefficients and lookup
+        # functionals
+        for child_name, coef in multi_coeffs.items():
+            child_func = self.get_single_functional(session, child_name, src)
+            
+            # Add new coef entry
+            coef_entry = FunctionalCoeffs(
+                parent_fnctl_id = multi_id,
+                child_fnctl_id = child_func.fnctl_id, 
+                coef=coef
+            )
+            
+            session.add(coef_entry)
 
-        func_master_set = {}
-        dispersion_master_set = {}
-        
-        # Add parent functionals        
-        for func_name, func_dict in parent_functionals.items():
-            alias_name = func_name
-            master_name = func_dict["name"]
-            func_citation = func_dict.get("citation", "No citations available")
-            func_description = func_dict.get("description", "")
-            func_data = func_dict
+        return multi_id
+                
+    def insert_single_disp(self, 
+                           session: sqlalchemy.orm.Session,
+                            func_name: str,
+                            disp_type: str,
+                            disp_citation : str,
+                            disp_desc: str,
+                            disp_params: dict,
+                            disp_src: str,
+                            func_src: str | None = None) -> uuid.UUID:
+    
+        try:
+            src_id = self._query_source(session, disp_src)
             
-            if master_name.lower() not in func_master_set:
-                with self._get_session() as session:
+        # Cannot find source, create a new source
+        # just for this functional.
+        except DBNotFoundError as e:
+            src_id = self._create_source(session, disp_src)
+    
+        # Check if functional exists
+        func_id = self.get_single_functional(session, 
+                                             func_name, 
+                                             func_src).fnctl_id
+    
+        base_disp_id = str(uuid.uuid4())
+        
+        # If functional does exist (does not throw error), insert the dispersion info
+        base_disp = DispersionBase(
+            subdisp_id = base_disp_id,
+            fnctl_id = func_id,
+            disp_params = disp_params,
+            subdisp_name = disp_type,
+            disp_base_source = str(src_id),
+            citation = disp_citation,
+            description = disp_desc,
+        )
+        
+        disp_config_id = str(uuid.uuid4())
+        
+        # Also add a new dispersion config
+        disp_config = DispersionConfig(
+            disp_id = disp_config_id,
+            fnctl_id = func_id,
+            disp_config_source = str(src_id), 
+            citation = disp_citation,
+            description = disp_desc,
+            disp_name = disp_type,
+            subdisp_id = base_disp_id
+        )
+        
+        session.add(base_disp)
+        session.add(disp_config)
+        
+        return base_disp_id
 
-                    fnctl = Functional(
-                        source = src_id,
-                        fnctl_data=master_name,
-                        fnctl_name=func_name,
-                        citation=func_citation,
-                        description=func_description,
-                    )
-                    
-                    session.add(fnctl)
-                    session.commit()
+    def insert_disp_config(self, 
+                           session: sqlalchemy.orm.Session,
+                            func_name: str,
+                            disp_name: str,
+                            disp_citation : str,
+                            disp_desc: str,
+                            disp_coeffs: dict[str, float],
+                            disp_src: str,
+                            func_src: str | None = None) -> None:
+        
+        try:
+            src_id = self._query_source(session, disp_src)
+            
+        # Cannot find source, create a new sourceg
+        # just for this functional.
+        except DBNotFoundError as e:
+            src_id = self._create_source(session, disp_src)
+        
+        # Get functional id
+        functional = self.get_single_functional(session, 
+                                            func_name, None)
 
-                func_master_set[master_name.lower()] = fnctl.fnctl_id
+        func_id = functional.fnctl_id
+
+        # Add new dispersion entries
+        for subdisp_name, coef in disp_coeffs.items():
+            
+            subdisp_alias = f'{func_name}-{subdisp_name}'
+            
+            # Assume dispersion part of the same configuration,
+            # otherwise, fallback to existing dispersion.
+            subdisp_id = self.get_base_dispersion(session, subdisp_alias,
+                                          disp_source=disp_src,
+                                          func_source=func_src)
+            
+            disp_coef_id = str(uuid.uuid4())
+            disp_entry = DispersionConfig(
+                disp_id = disp_coef_id,
+                fnctl_id = func_id, 
+                disp_config_source = disp_src,
+                citation = disp_citation,
+                description = disp_desc,
+                disp_name = disp_name, 
+                subdisp_id = subdisp_id,
+                subdisp_coef = coef 
+            ) 
         
-            # Add an alias
-            else: 
-                with self._get_session() as session:
-                    alias = FunctionalAlias(
-                        fnctl_id = func_master_set[master_name.lower()],
-                        alias_name = alias_name
-                    )
-                    session.add(alias)
-                    session.commit()
-            
-        error_fnctls = {}
-            
-        # Now add dispersions, only add those whose parent functionals we added before
-        for func_name, func_dict in dispersion_functionals.items():
-            
-            # Skip blacklisted functionals for now
-            if func_name.lower() in blacklist_funcs:
-                continue
-            
-            # For dispersion, ALWAYS link towards master name
-            # func_name is with dashcoeff
-            func_name = func_dict["name"]
-            
-            # Extract the parent part of fnctl
-            pattern = r"([-\d\w()]+)-([\w\d()]+)\)?$"
-            match = re.match(pattern, func_name)
-            
-            # END immediately if in blacklisted functionals
-            # if func_name.lower() in blacklist_funcs:
-            #     logger.error(f'Skipping functional {func_name} since the dispersion is weird')
-            #     continue
-            
-            if not match: 
-                logger.error(f"Dispersion causing error, Skipping functional {func_name}:{func_dict} ")
-                error_fnctls[func_name] = func_dict
-                continue
-                # raise RuntimeError(f"Error: somehow encountered a non dash-coeff functional {func_name}")
-            
-            parent_func, disp_alias = match.groups()
-            # Search for parent_func id
-            with self._get_session() as session:
-                fnctl : Functional = (session.query(Functional)
-                            .filter(sqlalchemy.func.lower(Functional.fnctl_name) == parent_func.lower())
-                            .first())
-                
-                if fnctl is None:
-                    logger.error(f"Skipping functional {func_name}:{func_dict}")
-                    session.commit()
-                    error_fnctls[func_name] = func_dict
-                    continue
-                    raise RuntimeError(f"Error: no parent functional corresponds to the functional {func_name} : {func_dict}")
-                
-                func_id = fnctl.fnctl_id
-                session.commit()
-            
-            func_disp = func_dict["dispersion"]
-            disp_name = func_disp["type"]
-            disp_citation = func_disp.get("citation", "No citations available")
-            disp_description = func_disp.get("description", "")
-            disp_params = func_disp.get("params", {})
-            
-            with self._get_session() as session:
-                
-                subdisp_id = str(uuid.uuid4())
-                
-                # Add base dispersion
-                subdisp = DispersionBase(
-                    subdisp_id=subdisp_id,
-                    fnctl_id=func_id,
-                    disp_params=disp_params,
-                    subdisp_name=disp_name,
-                    source = src_id,
-                    citation=disp_citation,
-                    description=disp_description,
-                )
-                
-                # Add a configuration consisting of only ONE dispersion.
-                # under the name of the dispersion itself so PSI4 can run 
-                # singular dispersion model
-                
-                disp_config = DispersionConfig(
-                    fnctl_id=func_id,
-                    source=src_id,
-                    citation=disp_citation,
-                    description=disp_description,
-                    disp_name=disp_name,
-                    subdisp_id=subdisp_id,    
-                )
-                
-                session.add(subdisp)
-                session.add(disp_config)
-                session.commit()
         
-    def _get_only_functional(self, 
-                             functional_name: str, 
-                             source: str) -> (
-                                tuple[Functional, list[tuple[Functional, float]]]
-                             ):
+    def _resolve_source(self, err_source: str) -> str:
+        '''
+            This functional is called when the query
+            cannot find something in ERR_SOURCE, and 
+            returns the next best source to search in.
+        '''
+        
+        lower_resol_arr = list(map(lambda s: s.lower(), self.source_fallback_stack))
+        err_source = err_source.lower()
+        
+        resol_index = -1
+        if err_source in lower_resol_arr:
+            resol_index = lower_resol_arr.index(err_source)
+        
+        next_source = resol_index + 1
+        if (next_source == len(lower_resol_arr)):
+            raise SourceResolutionError("ERROR: Cannot resolve source!")
+
+        return lower_resol_arr[next_source]            
+    
+    def add_dash_coeff_mapping(self,
+                              session : sqlalchemy.orm.Session, 
+                              functional_name: str, 
+                              dispersion_name: str,
+                              dash_coeff_name: str):
+        '''
+            Adds an alias of a dispersion to the database.
+        '''
+        new_alias = DispersionAlias(
+            func_name = functional_name,
+            disp_name = dispersion_name, 
+            func_dash_name = dash_coeff_name
+        )
+        
+        session.add(new_alias)        
+    
+    
+    def resolve_dash_coeff(self,
+                            session: sqlalchemy.orm.Session, 
+                            dash_coeff_name: str) -> tuple[str, str]:
+        '''
+            Resolve dash coefficient name to resolve
+            into their canonical functional name, and
+            canonical dispersion name.
+            
+            Returns:
+                `(canon_func_name, canon_disp_name)`, canonical
+                functional name and dispersion respectively.
+        '''
+        
+        res = (session.query(DispersionAlias.func_name, DispersionAlias.disp_name)
+                .filter(sqlalchemy.func.lower(DispersionAlias.func_dash_name)
+                         == dash_coeff_name.lower())
+                .first())
+        
+        if res is None:
+            raise DBNotFoundError("Error: Cannot resolve dashcoeff")
+        
+        return (res[0], res[1])        
+    
+    def add_functional_alias(self, 
+                              session: sqlalchemy.orm.Session,
+                              functional_name: str, 
+                              functional_alias : str):
+        '''
+            Adds a functional alias to the database,
+            maps it to the canonical name.
+        '''
+        # logger.warning(f"INSERTING ALIAS {functional_alias} -> {functional_name}")
+        new_alias = FunctionalAlias(
+            func_name = functional_name,
+            alias_name = functional_alias
+        )
+        
+        session.add(new_alias)      
+        
+    
+    def resolve_functional_alias(self, 
+                                  session,
+                                  functional_name: str) -> str:
+        '''
+            Returns the canonical name of a functional.
+        '''
+        canon_name = ( session.query(FunctionalAlias.func_name)
+                        .filter(sqlalchemy.func.lower(FunctionalAlias.alias_name) == functional_name.lower())
+                        .first())
+
+        if canon_name is None:
+            raise DBNotFoundError("Error: Cannot resolve alias!")
+        
+        return canon_name[0]   
+    
+    # ==================================
+    #          GETTERS (BY NAME)
+    #
+    # ==================================
+    def get_base_dispersion(self,
+                       session: sqlalchemy.orm.Session,
+                       dashcoeff_name: str,
+                       func_source: str | None = None,
+                        disp_source: str | None = None) -> DispersionBase:
+        '''
+            Returns a list of base dispersions associated with a
+            single dispersion model
+            
+            Source Resolution Notes:
+                Here, the functional source resolution takes 
+                takes priority over the dispersion source resolution.
+        '''
+        
+        # Resolve dashcoeff name
+        canon_fname, canon_dname = self.resolve_dash_coeff(session, dashcoeff_name)
+        
+        # Resolve functional first
+        functional = self.get_single_functional(session, canon_fname,
+                                      func_source)
+        
+        
+        canon_func_source = str(functional.source)
+        func_id = functional.fnctl_id
+        
+        if disp_source is None:
+            disp_source = self.source_fallback_stack[0]  
+            
+        source_id = self._query_source(session, disp_source)
+        
+        base_disp = (
+            session.query(DispersionBase)
+            .filter(
+                DispersionBase.fnctl_id == func_id, 
+                sqlalchemy.func.lower(DispersionBase.subdisp_name) == canon_dname.lower(),
+                DispersionBase.disp_base_source == source_id
+            )
+            .first() 
+        )
+        
+        if base_disp is None:
+            try:
+                next_source = self._resolve_source(disp_source)
+            except SourceResolutionError as e:
+                raise DBNotFoundError("Cannot find functional!") from e
+            
+            return self.get_base_dispersion(session,
+                                            dashcoeff_name,
+                                            canon_func_source,
+                                            next_source)
+             
+        return base_disp
+    
+    def get_multi_dispersion(self,
+                       session: sqlalchemy.orm.Session,
+                       dashcoeff_name: str,
+                       func_source: str | None = None,
+                        disp_source: str | None = None
+                        ) -> list[tuple[DispersionBase, float]]:
+        '''
+            Returns a list of base dispersions associated with a
+            single dispersion model
+        '''
+        
+        # Resolve dashcoeff name
+        canon_fname, canon_dname = self.resolve_dash_coeff(session, dashcoeff_name)
+        
+        # Resolve functional first
+        functional = self.get_single_functional(session, canon_fname,
+                                      func_source)
+        
+        
+        canon_func_source = str(functional.source)
+        func_id = functional.fnctl_id
+        
+        if disp_source is None:
+            disp_source = self.source_fallback_stack[0]  
+            
+        source_id = self._query_source(session, disp_source)
+        
+        disp_coeffs = (
+            session.query(DispersionBase, DispersionConfig.subdisp_coef)
+            .join(
+                DispersionConfig.subdisp_id == DispersionBase.subdisp_id
+            )
+            .filter(
+                DispersionConfig.fnctl_id == func_id, 
+                DispersionConfig.disp_name == canon_dname,
+                DispersionConfig.disp_base_source == source_id
+            )
+            .first() 
+        )
+        
+        if disp_coeffs is None:
+            try:
+                next_source = self._resolve_source(disp_source)
+            except SourceResolutionError as e:
+                raise DBNotFoundError("Cannot find functional!") from e
+            
+            return self.get_multi_dispersion(session,
+                                            dashcoeff_name,
+                                            canon_func_source,
+                                            next_source)
+             
+        return disp_coeffs
+    
+    def get_single_functional(self, 
+                            session: sqlalchemy.orm.Session,
+                            functional_name: str, 
+                            source: str | None = None) -> Functional:
+        '''
+            Queries only a single functional (without getting 
+            all the coeffs).
+            
+            If the source is not 
+            found, it just resolves to the fallback sources, 
+            in priority.
+            
+            Raises:
+                DBNotFoundError: If the functional is not present in any source.
+        '''
+        
+        if source is None: 
+            source = self.source_fallback_stack[0]
+        
+        # Resolve alias first (canonical name is always in alias list)
+        res_functional_name = self.resolve_functional_alias(session, 
+                                                            functional_name)
+        
+        # Find funcitonal
+    
+        query_funcs : list[Functional] = (
+            session.query(Functional)
+            .join(Sources)
+            .filter(sqlalchemy.func.lower(Functional.fnctl_name) == res_functional_name.lower(),
+                    sqlalchemy.func.lower(Sources.name) == source.lower())  
+            .all()
+        )
+        
+        if len(query_funcs) > 1:
+            raise DBDuplicateError("Error: More than one functional found on a single source")
+        
+        if len(query_funcs) == 0:
+            try:
+                next_source = self._resolve_source(source)
+            except SourceResolutionError as e:
+                raise DBNotFoundError("Cannot find functional!") from e
+            
+            return self.get_single_functional(session, functional_name, next_source)
+            
+        return query_funcs[0]
+
+    def get_functional(self, 
+                        session: sqlalchemy.orm.Session, 
+                        functional_name: str, 
+                        source: str) -> (
+                        tuple[Functional | None, list[tuple[Functional, float]]]
+                        ):
         '''
             Queries a functional and returns the functional data
             and (if any) returns a list of tuples containing 
@@ -550,19 +558,11 @@ class FunctionalDatabase:
             the function returns an empty list.
         '''
         
-        with self._get_session() as session:        
-            query_func : Functional = (
-                            session.query(Functional)
-                            .join(Sources)
-                            .filter(sqlalchemy.func.lower(Functional.fnctl_name) == functional_name.lower(),
-                                    Sources.name == source)  
-                            .first()
-                        )
-            
-            session.commit()
+        if source is None:
+            source = self.source_fallback_stack[0]
     
-        if query_func is None:
-            raise RuntimeError('Error: Cannot find functional.')
+        # Query base functional 
+        query_func = self.get_single_functional(session, functional_name, source)
     
         # If not lcom, we are done!
         if not query_func.is_lcom:
@@ -571,100 +571,95 @@ class FunctionalDatabase:
         parent_func = query_func
         parent_func_id = query_func.fnctl_id
         # If it is lcom, we need more work!
-        with self._get_session() as session:        
+                   
+        func_coefs : list[tuple[Functional, float]] = (
+                        session.query(Functional, FunctionalCoeffs.coef)
+                        .join(FunctionalCoeffs, FunctionalCoeffs.parent_fnctl_id == Functional.fnctl_id)
+                        .filter(
+                            FunctionalCoeffs.parent_fnctl_id == parent_func_id,        
+                        )  
+                        .all()
+                    )
             
-            func_coefs : list[tuple[Functional, float]] = (
-                            session.query(Functional, FunctionalCoeffs.coef)
-                            .join(FunctionalCoeffs, FunctionalCoeffs.parent_fnctl_id == Functional.fnctl_id)
-                            .filter(
-                                FunctionalCoeffs.parent_fnctl_id == parent_func_id,
-                            )  
-                            .all()
-                        )
-            
-            # Validate, cannot have a lcom functional in the result
-            if any(func.is_lcom for (func, _) in func_coefs):
-                raise RuntimeError("Error: Somehow we have a multifunctional here")
-
-            session.commit()
+        # Validate, cannot have a lcom functional in the result
+        if any(func.is_lcom for (func, _) in func_coefs):
+            raise RuntimeError("Error: Somehow we have a multifunctional here")
 
         return parent_func, func_coefs
     
-    def _get_dispersion(self, functional_name: str, dispersion_name: str, source: str):
-            
-        logger.warning(f"Querying: fname: {functional_name}, disp: {dispersion_name}, source: {source} ")
-        
-        with self._get_session() as session:
-            disp_list : list[tuple[DispersionBase, float]] = (
-                session.query(DispersionBase, DispersionConfig.subdisp_coef)
-                    .join(Functional, DispersionConfig.fnctl_id == Functional.fnctl_id)
-                    .join(Sources, DispersionConfig.source == Sources.id) 
-                    .join(DispersionBase, DispersionBase.subdisp_id == DispersionConfig.subdisp_id)
-                    # .all()
-                    .filter(
-                        sqlalchemy.func.lower(Functional.fnctl_name) == functional_name.lower(),
-                        sqlalchemy.func.lower(Sources.name) == source.lower(),
-                        sqlalchemy.func.lower(DispersionConfig.disp_name) == dispersion_name.lower()                        
-                    ).all()       
-            )
-            
-            logger.warning(disp_list)
-            
-            session.commit()
-            
-        if len(disp_list) == 0:
-            raise RuntimeError("Error: Dispersion Not Found!")
-             
-        return disp_list
-            
-    def _format_to_psi4(self, 
-                        par_functional : Functional,
-                        functional_coeffs: list[tuple[Functional, float]],
-                        dispersion_coeffs: list[tuple[DispersionBase, float]] = []):
-        '''
-            Formats query results to PSI4 lcom plugin format.
-        '''    
-        
-        func_dict = {}
-        func_dict["name"] = par_functional.fnctl_name
-        func_dict["citation"] = par_functional.citation
-        func_dict["description"] = par_functional.description
-        
-        if len(functional_coeffs) > 1:
-            lcom_fucntionals = {}
-            for (child_fnctl, coef) in functional_coeffs:
-                child_name = child_fnctl.fnctl_name
-                child_data = child_fnctl.fnctl_data.copy()
-                lcom_fucntionals[child_name] = child_data
-                lcom_fucntionals[child_name]["coef"] = coef    
-            
-            func_dict["lcom_functionals"] = lcom_fucntionals
-        
-        else:
-            func_dict = par_functional.fnctl_data        
-            
-            
-        logger.warning(f"Dipsersion Coeffs: {dispersion_coeffs}") 
-            
-        if len(dispersion_coeffs) > 0:
-            lcom_disps = []
-            for (base_disp, coef) in dispersion_coeffs:
-                disp_dict = {}
-                disp_dict["params"] = base_disp.disp_params
-                disp_dict["type"] = base_disp.subdisp_name
-                disp_dict["citation"] = base_disp.citation
-                disp_dict["description"] = base_disp.description
-                disp_dict["lcom_coef"] = coef
-                lcom_disps.append(disp_dict)
-            
-            if len(dispersion_coeffs) == 1:
-                func_dict["dispersion"] = lcom_disps[0]
-            else:
-                func_dict["lcom_dispersion"] = lcom_disps
-        
-        if func_dict is None:
-            logger.error(f"FUNC DICT FORMATTING IS NONE {func_dict}")
-        
-        return func_dict
     
-   
+    
+    # ==================================
+    #          GETTERS (BY ID)
+    #
+    # ==================================
+    
+    
+    
+    
+    
+    def get_single_functional_by_id(self, 
+                            session: sqlalchemy.orm.Session,
+                            functional_id: uuid.UUID) -> Functional:
+        '''
+            Queries only a single functional (without getting 
+            all the coeffs) by id.
+            
+            Raises:
+                DBNotFoundError: If the functional is not present in any source.
+        '''
+        # Find funcitonal
+    
+        query_func: Functional | None = (
+            session.query(Functional)
+            .filter(Functional.fnctl_id == functional_id)  
+            .first()
+        )
+    
+        if query_func is None:
+            raise DBNotFoundError("Cannot find functional!")
+            
+        return query_func                    
+    
+    def get_functional_by_id(self, 
+                            session: sqlalchemy.orm.Session, 
+                            functional_id: uuid.UUID) -> (
+                                tuple[Functional | None, list[tuple[Functional, float]]]
+                            ):
+        '''
+            Queries a functional by ID and returns the functional data
+            and (if any) returns a list of tuples containing 
+            the subcomponent functional and coefficients.
+            
+            The subcomponent functional is guranteed to be 
+            base functionals.
+            
+            If queried functional is a base functional, 
+            the function returns an empty list.
+        '''
+        
+        # Query base functional 
+        query_func = self.get_single_functional_by_id(session, functional_id)
+    
+        # If not lcom, we are done!
+        if not query_func.is_lcom:
+            return query_func, []
+        
+        parent_func = query_func
+        parent_func_id = query_func.fnctl_id
+        # If it is lcom, we need more work!
+                   
+        func_coefs : list[tuple[Functional, float]] = (
+                        session.query(Functional, FunctionalCoeffs.coef)
+                        .join(FunctionalCoeffs, FunctionalCoeffs.parent_fnctl_id == Functional.fnctl_id)
+                        .filter(
+                            FunctionalCoeffs.parent_fnctl_id == parent_func_id,        
+                        )  
+                        .all()
+                    )
+            
+        # Validate, cannot have a lcom functional in the result
+        if any(func.is_lcom for (func, _) in func_coefs):
+            raise RuntimeError("Error: Somehow we have a multifunctional here")
+
+        return parent_func, func_coefs
