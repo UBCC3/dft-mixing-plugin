@@ -140,16 +140,6 @@ class FunctionalDatabase:
         # just for this functional.
         except DBNotFoundError as e:
             src_id = self._create_source(session, src)
-            
-        # Check if functional exist or not
-        try:
-            # logger.warning(f'Inserting {f_name}')
-            return self.get_single_functional(session, canon_fname, src).fnctl_id
-        
-        # Cannot find mapping to functional, add base mapping.
-        except DBNotFoundError as e:
-            # logger.warning(f'{f_name} not found, creating new mapping!')
-            pass
         
         new_functional_id = str(uuid.uuid4())
         # logger.warning(f'ACTUALLY INSERT {f_name} into DB')
@@ -183,14 +173,6 @@ class FunctionalDatabase:
             session, multi_name, multi_citation, 
             multi_desc, multi_coeffs, src, multi_alias
         )
-        
-        # Check if functional exist or not
-        try:
-            
-            par_func, _ = self.get_functional(session, multi_name, src) 
-            return par_func.fnctl_id
-        except DBNotFoundError as e:
-            pass
     
         # Now, loop through the coefficients and lookup
         # functionals
@@ -225,12 +207,6 @@ class FunctionalDatabase:
         # just for this functional.
         except DBNotFoundError as e:
             src_id = self._create_source(session, disp_src)
-    
-        dash_coeff_name = f'{func_name}-{disp_type}'
-        try:
-            return self.get_base_dispersion(session, dash_coeff_name, func_src, disp_src).subdisp_id
-        except DBNotFoundError as e:
-            pass
     
         # Check if functional exists
         func_id = self.get_single_functional(session, 
@@ -286,12 +262,6 @@ class FunctionalDatabase:
         # just for this functional.
         except DBNotFoundError as e:
             src_id = self._create_source(session, disp_src)
-        
-        try:
-            self.get_multi_dispersion(session, dash_coeff_name, func_src, disp_src)
-            return 
-        except DBNotFoundError as e:
-            pass
         
         # Get functional id
         functional = self.get_single_functional(session, 
