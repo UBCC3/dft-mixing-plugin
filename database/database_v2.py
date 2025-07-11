@@ -246,7 +246,6 @@ class FunctionalDatabase:
 
     def insert_disp_config(self, 
                            session: sqlalchemy.orm.Session,
-                            dash_coeff_name: str,
                             func_name: str,
                             disp_name: str,
                             disp_citation : str,
