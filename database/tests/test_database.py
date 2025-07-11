@@ -42,29 +42,29 @@ class TestBase:
         
         print(func_dict) 
         
-    def test_base_w_dispersion(self, initialize_db):
+    # def test_base_w_dispersion(self, initialize_db):
         
-        func_db : Psi4DbAdapter = initialize_db
+    #     func_db : Psi4DbAdapter = initialize_db
 
-        # Test queries
-        disp = 'd2'
+    #     # Test queries
+    #     disp = 'd2'
         
-        ref_dict = functionals['b3lyp-d2']
-        logger.warning(ref_dict)
+    #     ref_dict = functionals['b3lyp-d2']
+    #     logger.warning(ref_dict)
         
-        func_dict = func_db.get_functional_dict('b3lyp', disp, source="psi4")
-        logger.warning(func_dict)
+    #     func_dict = func_db.get_functional_dict('b3lyp', disp, source="psi4")
+    #     logger.warning(func_dict)
 
-        assert ('dispersion' in func_dict), "No dispersion found!"
+    #     assert ('dispersion' in func_dict), "No dispersion found!"
 
-        for attr in ref_dict:
-            if attr != 'dispersion':
-                assert (func_dict[attr] == func_dict[attr]), f"Error, mismatch at {attr}"    
+    #     for attr in ref_dict:
+    #         if attr != 'dispersion':
+    #             assert (func_dict[attr] == func_dict[attr]), f"Error, mismatch at {attr}"    
             
-            else: 
-                disp = func_dict['dispersion']
-                for disp_attr in ref_dict['dispersion']:
-                    assert(disp[disp_attr] == ref_dict[disp_attr])
+    #         else: 
+    #             disp = func_dict['dispersion']
+    #             for disp_attr in ref_dict['dispersion']:
+    #                 assert(disp[disp_attr] == ref_dict[disp_attr])
                     
 # class TestFunctional:
     

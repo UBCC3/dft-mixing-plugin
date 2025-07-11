@@ -88,6 +88,7 @@ class Psi4DbAdapter:
             
             if not match: 
                 logger.error(f"Dispersion causing error, Skipping functional {func_dashcoeff}:{func_dict} ")
+                continue
                 
             parent_func, _ = match.groups()
             disp_dict = func_dict["dispersion"]
@@ -307,10 +308,13 @@ class Psi4DbAdapter:
                 session, functional_name, functional_source
             )
             
-            dashcoeff_name = f'{par_functional.fnctl_name}-{dispersion_name}'
-            dispersion_coeffs = self.db.get_multi_dispersion(
-                session, dashcoeff_name, functional_source, dispersion_source
-            )
+            if dispersion_name is not None:
+                dashcoeff_name = f'{par_functional.fnctl_name}-{dispersion_name}'
+                dispersion_coeffs = self.db.get_multi_dispersion(
+                    session, dashcoeff_name, functional_source, dispersion_source
+                )
+            else:
+                dispersion_coeffs = []
             
             session.commit()
             
