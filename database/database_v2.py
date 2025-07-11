@@ -403,7 +403,7 @@ class FunctionalDatabase:
         '''
         
         # Resolve dashcoeff name
-        canon_fname, canon_dname = self._resolve_dash_coeff(session, dashcoeff_name)
+        canon_fname, canon_dname = self.resolve_dash_coeff(session, dashcoeff_name)
         
         # Resolve functional first
         functional = self.get_single_functional(session, canon_fname,
@@ -453,7 +453,7 @@ class FunctionalDatabase:
         '''
         
         # Resolve dashcoeff name
-        canon_fname, canon_dname = self._resolve_dash_coeff(session, dashcoeff_name)
+        canon_fname, canon_dname = self.resolve_dash_coeff(session, dashcoeff_name)
         
         # Resolve functional first
         functional = self.get_single_functional(session, canon_fname,
@@ -514,7 +514,7 @@ class FunctionalDatabase:
             source = self.source_fallback_stack[0]
         
         # Resolve alias first (canonical name is always in alias list)
-        res_functional_name = self._resolve_functional_alias(session, 
+        res_functional_name = self.resolve_functional_alias(session, 
                                                             functional_name)
         
         # Find funcitonal

@@ -160,7 +160,7 @@ class Psi4DbAdapter:
                 components = multi_args["functionals"]
                 canon_name = multi_args.get("name", multifunc_alias)
                 
-                with self.db.get_session() as session:
+                with self.db.get_session() as session:                
                     self.db.insert_multi_functional(
                         session,
                         canon_name,
