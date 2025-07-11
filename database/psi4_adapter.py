@@ -82,14 +82,6 @@ class Psi4DbAdapter:
                         self.db.add_functional_alias(session, canon_fname, func_alias)
                     session.commit()
                 
-            # Just to make sure functional is in database.
-            with self.db.get_session() as session:
-                # Insert base functional into PSI4
-                # logger.warning(f"TEST QUERY {func_alias} -> {canon_fname} into db")
-                self.db.get_functional(session, func_alias, "psi4") 
-                session.commit()
-                
-            
         # Insert dispersion
         for func_dashcoeff, func_dict in dispersion_functionals.items():
             canon_fdashcoeff = func_dict["name"]
@@ -138,13 +130,6 @@ class Psi4DbAdapter:
                     if (f'{parent_func}-{canon_dname}'.lower() != func_dashcoeff.lower()):
                         self.db.add_dash_coeff_mapping(session, parent_func, canon_dname, func_dashcoeff)
                     session.commit()
-                    
-            
-            with self.db.get_session() as session:
-                # Just check if its actually there...
-                self.db.get_base_dispersion(session, func_dashcoeff, "psi4", "psi4") 
-                session.commit()
-    
     
     def load_base_functional_data(self, func_dict):
         raise NotImplementedError("Not implemented yet!")
@@ -156,11 +141,13 @@ class Psi4DbAdapter:
         error_list = []
         
         for multifunc_alias, multi_args in multi_func_dict.items():
-            try:
-                components = multi_args["functionals"]
-                canon_name = multi_args.get("name", multifunc_alias)
-                
-                with self.db.get_session() as session:                
+            components = multi_args["functionals"]
+            canon_name = multi_args.get("name", multifunc_alias)
+            with self.db.get_session() as session:
+                try:
+                    # Try to insert alias first
+                    self.db.add_functional_alias(session, canon_name, multifunc_alias)
+                    
                     self.db.insert_multi_functional(
                         session,
                         canon_name,
@@ -171,8 +158,9 @@ class Psi4DbAdapter:
                     )
                     
                     session.commit()
-            except Exception as e:
-                error_list.append(e)
+                except Exception as e:
+                    session.rollback()
+                    error_list.append(e)
                 
         if len(error_list) > 0:
             raise ExceptionGroup("Some errors were encountered:", error_list)            

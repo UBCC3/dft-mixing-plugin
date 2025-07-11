@@ -163,15 +163,14 @@ class FunctionalDatabase:
                                 multi_citation : str,
                                 multi_desc: str,
                                 multi_coeffs: dict[str, float],
-                                src: str,
-                                multi_alias: str | None = None) -> uuid.UUID:
+                                src: str) -> uuid.UUID:
         
         # This is a functional consisting of its dispersion
 
         # Create new functional entry for the multifunctional
         multi_id = self.insert_base_functional(
             session, multi_name, multi_citation, 
-            multi_desc, multi_coeffs, src, multi_alias
+            multi_desc, multi_coeffs, src
         )
     
         # Now, loop through the coefficients and lookup
@@ -213,12 +212,12 @@ class FunctionalDatabase:
                                              func_name, 
                                              func_src).fnctl_id
     
-        base_disp_id = str(uuid.uuid4())
+        base_disp_id = uuid.uuid4()
         
         # If functional does exist (does not throw error), insert the dispersion info
         base_disp = DispersionBase(
-            subdisp_id = base_disp_id,
-            fnctl_id = func_id,
+            subdisp_id = str(base_disp_id),
+            fnctl_id = str(func_id),
             disp_params = disp_params,
             subdisp_name = disp_type,
             disp_base_source = str(src_id),
@@ -226,17 +225,17 @@ class FunctionalDatabase:
             description = disp_desc,
         )
         
-        disp_config_id = str(uuid.uuid4())
+        disp_config_id = uuid.uuid4()
         
         # Also add a new dispersion config
         disp_config = DispersionConfig(
-            disp_id = disp_config_id,
-            fnctl_id = func_id,
+            disp_id = str(disp_config_id),
+            fnctl_id = str(func_id),
             disp_config_source = str(src_id), 
             citation = disp_citation,
             description = disp_desc,
             disp_name = disp_type,
-            subdisp_id = base_disp_id
+            subdisp_id = str(base_disp_id)
         )
         
         session.add(base_disp)
@@ -281,15 +280,17 @@ class FunctionalDatabase:
             
             disp_coef_id = str(uuid.uuid4())
             disp_entry = DispersionConfig(
-                disp_id = disp_coef_id,
-                fnctl_id = func_id, 
+                disp_id = str(disp_coef_id),
+                fnctl_id = str(func_id), 
                 disp_config_source = disp_src,
                 citation = disp_citation,
                 description = disp_desc,
                 disp_name = disp_name, 
-                subdisp_id = subdisp_id,
+                subdisp_id = str(subdisp_id),
                 subdisp_coef = coef 
             ) 
+            
+            session.add(disp_entry)
         
         
     def _resolve_source(self, err_source: str) -> str:
@@ -380,7 +381,7 @@ class FunctionalDatabase:
                         .first())
 
         if canon_name is None:
-            raise DBNotFoundError("Error: Cannot resolve alias!")
+            raise DBNotFoundError(f"Error: Cannot resolve alias {functional_name}!")
         
         return canon_name[0]   
     
