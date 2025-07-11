@@ -74,7 +74,6 @@ class Psi4DbAdapter:
                         func_description,
                         func_data,
                         "psi4",
-                        func_alias
                     )
                     
                 # Now add the alias (if its not the same as canon fname)
@@ -104,15 +103,28 @@ class Psi4DbAdapter:
             parent_func, _ = match.groups()
             disp_dict = func_dict["dispersion"]
             canon_dname = disp_dict["type"]
+            
+            # Check if parent functional exists or not
+            with self.db.get_session() as session:
+                try:                   
+                    func_id = self.db.get_single_functional(session,
+                        functional_name= parent_func, source="psi4")
+                except DBNotFoundError as e:
+                    logger.error(f"Dispersion {func_dashcoeff} does not have parent functional")
+                    continue                
         
-            try:
-                with self.db.get_session() as session:
+            with self.db.get_session() as session:
+                try:
+                    # Check if CANONICAL dispersion exists first
+                    self.db.get_base_dispersion(session, f'{parent_func}-{canon_dname}', "psi4", "psi4")
+
+                except DBNotFoundError as e:
+                    session.rollback()
                     
-                    
-                    
+                    # Insert canonical alias
+                    self.db.add_dash_coeff_mapping(session, parent_func, canon_dname, f'{parent_func}-{canon_dname}')
                     self.db.insert_single_disp(
                         session, 
-                        func_dashcoeff,
                         parent_func,
                         canon_dname,
                         disp_dict.get("citation", "No citation."),
@@ -120,16 +132,19 @@ class Psi4DbAdapter:
                         disp_dict["params"],
                         "psi4",
                         "psi4",
-                    ) 
-                    session.commit() 
+                    )
                     
-                with self.db.get_session() as session:
-                    # Insert base functional into PSI4
-                    self.db.get_base_dispersion(session, func_dashcoeff, "psi4", "psi4") 
-                    session.commit()   
-        
-            except DBNotFoundError as e:
-                logger.error(f"Dispersion {func_dashcoeff} does not have parent functional")
+                finally:
+                    if (f'{parent_func}-{canon_dname}'.lower() != func_dashcoeff.lower()):
+                        self.db.add_dash_coeff_mapping(session, parent_func, canon_dname, func_dashcoeff)
+                    session.commit()
+                    
+            
+            with self.db.get_session() as session:
+                # Just check if its actually there...
+                self.db.get_base_dispersion(session, func_dashcoeff, "psi4", "psi4") 
+                session.commit()
+    
     
     def load_base_functional_data(self, func_dict):
         raise NotImplementedError("Not implemented yet!")
@@ -152,8 +167,7 @@ class Psi4DbAdapter:
                         multi_args.get("citation", "No citation."),
                         multi_args.get("description", "No description."),
                         components,
-                        source,
-                        multifunc_alias
+                        source
                     )
                     
                     session.commit()
