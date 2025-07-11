@@ -10,9 +10,6 @@ from sqlalchemy.ext.hybrid import hybrid_property
 # Default dispersions
 from qcengine.programs.empirical_dispersion_resources import dashcoeff, get_dispersion_aliases, new_d4_api
 
-# blacklisted functionals
-from .exceptions import blacklist_funcs
-
 # Error types
 from db_errors import (
     SourceResolutionError,
@@ -20,7 +17,7 @@ from db_errors import (
     DBDuplicateError
 )
 
-from .db_models import (
+from db_models import (
     get_base,
     Functional,
     FunctionalAlias,
@@ -93,14 +90,14 @@ class FunctionalDatabase:
                 DBNotFoundError: if the source data is not found.
         '''
             
-        src_id = (session.query(Sources)
+        src_id = (session.query(Sources.id)
                     .filter(sqlalchemy.func.lower(Sources.name) == source_name.lower())
                     .first())  
     
         if src_id is None:
             raise DBNotFoundError("Error, source is missing.")
         
-        return src_id
+        return src_id[0]
         
     def _create_source(self,
                         session: sqlalchemy.orm.Session, 
@@ -115,7 +112,7 @@ class FunctionalDatabase:
             Raises:
         '''
 
-        src_id = uuid.uuid4()
+        src_id = str(uuid.uuid4())
         new_src = Sources(
             id = src_id,
             name = source_name
@@ -145,7 +142,27 @@ class FunctionalDatabase:
         except DBNotFoundError as e:
             src_id = self._create_source(session, src)
             
-        new_functional_id = uuid.uuid4()
+        if f_alias is None: 
+            f_alias = f_name
+           
+        # Now, create an alias for this functional
+        if f_alias != f_name:
+            self._add_functional_alias(session, f_name, f_alias)    
+         
+        # Check if functional exist or not
+        try:
+            
+            # logger.warning(f'Inserting {f_name}')
+            return self.get_single_functional(session, f_name, src).fnctl_id
+        
+        # Cannot find mapping to functional, add base mapping.
+        except DBNotFoundError as e:
+            # logger.warning(f'{f_name} not found, creating new mapping!')
+            pass
+        
+
+        new_functional_id = str(uuid.uuid4())
+        # logger.warning(f'ACTUALLY INSERT {f_name} into DB')
         new_functional = Functional(
             fnctl_id = new_functional_id,
             source= src_id,
@@ -155,14 +172,10 @@ class FunctionalDatabase:
             description = f_desc    
         )
         
+        self._add_functional_alias(session, f_name, f_name)
         session.add(new_functional)
+        # logger.warning(f'{f_name} into DB OK')
         
-        if f_alias is None: 
-            f_alias = f_name
-            
-        # Now, create an alias for this functional
-        self._add_functional_alias(session, f_name, f_alias)
-            
         return new_functional_id      
         
     def insert_multi_functional(self, 
@@ -175,21 +188,21 @@ class FunctionalDatabase:
                                 multi_alias: str | None = None) -> uuid.UUID:
         
         # This is a functional consisting of its dispersion
-        
-        try:
-            src_id = self._query_source(session, src)
-            
-        # Cannot find source, create a new source
-        # just for this functional.
-        except DBNotFoundError as e:
-            src_id = self._create_source(session, src)
-        
+
         # Create new functional entry for the multifunctional
         multi_id = self.insert_base_functional(
             session, multi_name, multi_citation, 
             multi_desc, multi_coeffs, src, multi_alias
         )
         
+        # Check if functional exist or not
+        try:
+            
+            par_func, _ = self.get_functional(session, multi_name, src) 
+            return par_func.fnctl_id
+        except DBNotFoundError as e:
+            pass
+    
         # Now, loop through the coefficients and lookup
         # functionals
         for child_name, coef in multi_coeffs.items():
@@ -229,12 +242,17 @@ class FunctionalDatabase:
         self._add_dash_coeff_mapping(session, func_name, 
                                     disp_type, dash_coeff_name)
     
+        try:
+            return self.get_base_dispersion(session, dash_coeff_name, func_src, disp_src).subdisp_id
+        except DBNotFoundError as e:
+            pass
+    
         # Check if functional exists
         func_id = self.get_single_functional(session, 
                                              func_name, 
                                              func_src).fnctl_id
     
-        base_disp_id = uuid.uuid4()
+        base_disp_id = str(uuid.uuid4())
         
         # If functional does exist (does not throw error), insert the dispersion info
         base_disp = DispersionBase(
@@ -242,18 +260,18 @@ class FunctionalDatabase:
             fnctl_id = func_id,
             disp_params = disp_params,
             subdisp_name = disp_type,
-            disp_base_source = src_id,
+            disp_base_source = str(src_id),
             citation = disp_citation,
             description = disp_desc,
         )
         
-        disp_config_id = uuid.uuid4()
+        disp_config_id = str(uuid.uuid4())
         
         # Also add a new dispersion config
         disp_config = DispersionConfig(
             disp_id = disp_config_id,
             fnctl_id = func_id,
-            disp_config_source = src_id, 
+            disp_config_source = str(src_id), 
             citation = disp_citation,
             description = disp_desc,
             disp_name = disp_type,
@@ -288,6 +306,12 @@ class FunctionalDatabase:
         self._add_dash_coeff_mapping(session, func_name, 
                                      disp_name, dash_coeff_name)
         
+        try:
+            self.get_multi_dispersion(session, dash_coeff_name, func_src, disp_src)
+            return 
+        except DBNotFoundError as e:
+            pass
+        
         # Get functional id
         functional = self.get_single_functional(session, 
                                             func_name, None)
@@ -305,7 +329,7 @@ class FunctionalDatabase:
                                           disp_source=disp_src,
                                           func_source=func_src)
             
-            disp_coef_id = uuid.uuid4()
+            disp_coef_id = str(uuid.uuid4())
             disp_entry = DispersionConfig(
                 disp_id = disp_coef_id,
                 fnctl_id = func_id, 
@@ -386,6 +410,7 @@ class FunctionalDatabase:
             Adds a functional alias to the database,
             maps it to the canonical name.
         '''
+        # logger.warning(f"INSERTING ALIAS {functional_alias} -> {functional_name}")
         new_alias = FunctionalAlias(
             func_name = functional_name,
             alias_name = functional_alias
@@ -547,8 +572,8 @@ class FunctionalDatabase:
         query_funcs : list[Functional] = (
             session.query(Functional)
             .join(Sources)
-            .filter(sqlalchemy.func.lower(Functional.fnctl_name) == functional_name.lower(),
-                    Sources.name == source)  
+            .filter(sqlalchemy.func.lower(Functional.fnctl_name) == res_functional_name.lower(),
+                    sqlalchemy.func.lower(Sources.name) == source.lower())  
             .all()
         )
         

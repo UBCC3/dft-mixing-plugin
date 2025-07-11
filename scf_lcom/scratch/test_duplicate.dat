@@ -17,7 +17,7 @@ func1 = {
   "name": "func1",
   "coef": 1.0,
   "lcom_functionals":{
-    "BOP": 1.0
+    "BLYP": 1.0
   }
 }
 
@@ -33,7 +33,7 @@ dft_functional1 = {
   "name": "test",
   "lcom_functionals":{
       "func1": func1, 
-      "BLYP": 1.0,
+      "func2": func2,
  }
 }
 

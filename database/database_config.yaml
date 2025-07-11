@@ -1,6 +1,6 @@
 
 db_path: "/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/scripts/database/example_databases"
-
+external_resol: ['']
 
 
 

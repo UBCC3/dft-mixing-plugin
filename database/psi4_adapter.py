@@ -1,6 +1,6 @@
 
-from .database_v2 import FunctionalDatabase
-from .db_models import (
+from database_v2 import FunctionalDatabase
+from db_models import (
     Sources,
     Functional,
     FunctionalAlias,
@@ -8,6 +8,11 @@ from .db_models import (
     DispersionBase,
     DispersionConfig,
     DispersionAlias
+)
+
+from db_errors import (
+    DBDuplicateError,
+    DBNotFoundError
 )
 
 import logging
@@ -31,28 +36,30 @@ class Psi4DbAdapter:
 
     def __init__(self, config_path):
         self.db = FunctionalDatabase(config_path)
+        self._import_psi4_data()
     
     def _import_psi4_data(self):
-        with self.db.get_session() as session:
-            parent_functionals = {
-                func_name : functionals[func_name] \
-                    for func_name in functionals \
-                    if "dispersion" not in functionals[func_name]
-            }
-            
-            dispersion_functionals = {
-                func_name : functionals[func_name] \
-                    for func_name in functionals \
-                    if "dispersion" in functionals[func_name]
-            }
-            
-            
-            for func_alias, func_dict in parent_functionals:
-                canon_fname = func_dict["name"]
-                func_citation = func_dict.get("citation", "No citations available")
-                func_description = func_dict.get("description", "")
-                func_data = func_dict
+        
+        parent_functionals = {
+            func_name : functionals[func_name] \
+                for func_name in functionals \
+                if "dispersion" not in functionals[func_name]
+        }
+        
+        dispersion_functionals = {
+            func_name : functionals[func_name] \
+                for func_name in functionals \
+                if "dispersion" in functionals[func_name]
+        }
+        
+        
+        for func_alias, func_dict in parent_functionals.items():
+            canon_fname = func_dict["name"]
+            func_citation = func_dict.get("citation", "No citations available")
+            func_description = func_dict.get("description", "")
+            func_data = func_dict
 
+            with self.db.get_session() as session:
                 # Insert base functional into PSI4
                 self.db.insert_base_functional(
                     session, 
@@ -63,6 +70,15 @@ class Psi4DbAdapter:
                     "psi4",
                     func_alias
                 )   
+                session.commit()
+                
+            # Just to make sure functional is in database.
+            with self.db.get_session() as session:
+                # Insert base functional into PSI4
+                # logger.warning(f"TEST QUERY {func_alias} -> {canon_fname} into db")
+                self.db.get_functional(session, func_alias, "psi4") 
+                session.commit()
+                
             
         # Insert dispersion
         for func_dashcoeff, func_dict in dispersion_functionals.items():
@@ -76,22 +92,29 @@ class Psi4DbAdapter:
             parent_func, _ = match.groups()
             disp_dict = func_dict["dispersion"]
             canon_dname = disp_dict["type"]
-            dashcoeff_name = f'{parent_func}-{disp_dict}'
-            
-            self.db.insert_single_disp(
-                session, 
-                dashcoeff_name,
-                parent_func,
-                canon_dname,
-                disp_dict.get("citation", "No citation."),
-                disp_dict.get("description", "No description."),
-                disp_dict["params"],
-                "psi4",
-                "psi4",
-            ) 
-            
-        session.commit()
-            
+        
+            try:
+                with self.db.get_session() as session:
+                    self.db.insert_single_disp(
+                        session, 
+                        func_dashcoeff,
+                        parent_func,
+                        canon_dname,
+                        disp_dict.get("citation", "No citation."),
+                        disp_dict.get("description", "No description."),
+                        disp_dict["params"],
+                        "psi4",
+                        "psi4",
+                    ) 
+                    session.commit() 
+                    
+                with self.db.get_session() as session:
+                    # Insert base functional into PSI4
+                    self.db.get_base_dispersion(session, func_dashcoeff, "psi4", "psi4") 
+                    session.commit()   
+        
+            except DBNotFoundError as e:
+                logger.error(f"Dispersion {func_dashcoeff} does not have parent functional")
     
     def load_base_functional_data(self, func_dict):
         raise NotImplementedError("Not implemented yet!")

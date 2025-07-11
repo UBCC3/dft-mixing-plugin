@@ -6,8 +6,9 @@ import logging
 
 from psi4.driver.procrouting.dft.dft_builder import functionals
 
-from scripts.database import FunctionalDatabase
-from .db_sample_data import lcom_func_dataset
+from database_v2 import FunctionalDatabase
+from psi4_adapter import Psi4DbAdapter
+from db_sample_data import lcom_func_dataset
 
 logger = logging.getLogger(__name__)
 
@@ -24,15 +25,13 @@ class TestBase:
         with open(config_path, 'w') as f:
             config = yaml.safe_dump(config, f)
         
-        func_db = FunctionalDatabase(config_path)
+        func_db = Psi4DbAdapter(config_path)
 
         yield func_db
         
     def test_base_queries(self, initialize_db):        
-        func_db : FunctionalDatabase = initialize_db
-
-        # Test queries
-        func_dict = func_db.query_functional_disp('b3lyp', source='psi4')
+        func_db : Psi4DbAdapter = initialize_db
+        func_dict = func_db.get_functional_dict('b3lyp', functional_source='psi4')
         
         logging.info(func_dict)
         
@@ -45,7 +44,7 @@ class TestBase:
         
     def test_base_w_dispersion(self, initialize_db):
         
-        func_db : FunctionalDatabase = initialize_db
+        func_db : Psi4DbAdapter = initialize_db
 
         # Test queries
         disp = 'd2'
@@ -53,7 +52,7 @@ class TestBase:
         ref_dict = functionals['b3lyp-d2']
         logger.warning(ref_dict)
         
-        func_dict = func_db.query_functional_disp('b3lyp', disp, source="psi4")
+        func_dict = func_db.get_functional_dict('b3lyp', disp, source="psi4")
         logger.warning(func_dict)
 
         assert ('dispersion' in func_dict), "No dispersion found!"
@@ -67,44 +66,43 @@ class TestBase:
                 for disp_attr in ref_dict['dispersion']:
                     assert(disp[disp_attr] == ref_dict[disp_attr])
                     
-class TestFunctional:
+# class TestFunctional:
     
-    @pytest.fixture
-    def test_load_fully_success(tmp_path):
-        # Initializes the database for the first time
-        config_path = tmp_path / 'test_data_config.yaml'
-        db_path = tmp_path / 'test.db'        
+#     def test_load_fully_success(tmp_path):
+#         # Initializes the database for the first time
+#         config_path = tmp_path / 'test_data_config.yaml'
+#         db_path = tmp_path / 'test.db'        
 
-        config = {"db_path": str(db_path)}
+#         config = {"db_path": str(db_path)}
         
-        # Load in database path
-        with open(config_path, 'w') as f:
-            config = yaml.safe_dump(config, f)
+#         # Load in database path
+#         with open(config_path, 'w') as f:
+#             config = yaml.safe_dump(config, f)
         
-        func_db = FunctionalDatabase(config_path)
-        func_db._store_fnctl_coef_json("test", lcom_func_dataset)
+#         func_db = FunctionalDatabase(config_path)
+#         func_db._store_fnctl_coef_json("test", lcom_func_dataset)
 
-        yield func_db
+#         yield func_db
     
-    def test_queries(test_load_fully_success):
+#     def test_queries(test_load_fully_success):
         
-        func_db = test_load_fully_success
+#         func_db = test_load_fully_success
         
     
         
         
         
         
-        pass
+#         pass
 
-class TestDispersion:
+# class TestDispersion:
     
-    @pytest.fixture
-    def load_functional_dispersion():
-        pass
+#     @pytest.fixture
+#     def load_functional_dispersion():
+#         pass
     
-    def test_queries():
-        pass
+#     def test_queries():
+#         pass
 
 
 

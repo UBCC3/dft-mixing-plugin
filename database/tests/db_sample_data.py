@@ -50,11 +50,9 @@ lcom_func_dataset = {
 
 func_dataset_ref = {
     "singlefunc1": {
-        {
-            "name": "singlefunc1",
-            "lcom_functionals": {
-                "BLYP": 1.0
-            }
+        "name": "singlefunc1",
+        "lcom_functionals": {
+            "BLYP": 1.0
         }
     },  
     
