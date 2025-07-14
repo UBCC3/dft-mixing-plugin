@@ -50,8 +50,10 @@ class FunctionalDatabase:
             Yaml contains:
             1. Path to database
             
-        '''     
-        self.source_fallback_stack : list[str] = ["dftd4", "psi4"]
+        ''' 
+        
+        # Havent imported dftd4 dispersions yet    
+        self.source_fallback_stack : list[str] = ["psi4"]
         self._is_empty = True
         
         # Import from existing database if path is specified 
@@ -109,7 +111,7 @@ class FunctionalDatabase:
                     .first())  
     
         if src_id is None:
-            raise DBNotFoundError("Error, source is missing.")
+            raise DBNotFoundError(f"Error, source is missing for {source_name}.")
         
         return src_id[0]
         
@@ -285,6 +287,7 @@ class FunctionalDatabase:
         for subdisp_name, coef in disp_coeffs.items():
             
             subdisp_alias = f'{func_name}-{subdisp_name}'
+            logger.warning(subdisp_alias)
             
             # Assume dispersion part of the same configuration,
             # otherwise, fallback to existing dispersion.
