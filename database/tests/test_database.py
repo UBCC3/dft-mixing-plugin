@@ -9,7 +9,12 @@ from psi4.driver.procrouting.dft.dft_builder import functionals
 
 from database import FunctionalDatabase
 from psi4_adapter import Psi4DbAdapter
-from db_sample_data import lcom_func_dataset, func_dataset_ref
+from db_sample_data import (
+    lcom_func_dataset,
+    func_dataset_ref,
+    lcom_psi_dispconfig_dataset,
+    lcom_base_disp_dataset
+)
 
 logger = logging.getLogger(__name__)
 
@@ -147,21 +152,47 @@ class TestFunctional:
     # def test_not_found(initialize_db, fnames):
 
         
-        
-        
-#         pass
-
-# class TestDispersion:
+class TestDispersion:
     
-#     @pytest.fixture
-#     def load_functional_dispersion():
-#         pass
+    @pytest.fixture(scope="class")
+    def initialize_db(self, tmp_path_factory):
+        
+        tmp_path = tmp_path_factory.mktemp('db_test_data')
+        # Initializes the database for the first time
+        config_path = tmp_path / 'test_data_config.yaml'
+        db_path = tmp_path / 'test.db'        
+
+        config = {"db_path": str(db_path),
+                  "external_resol": ["test"]}
+        
+        # Load in database path
+        with open(config_path, 'w') as f:
+            config = yaml.safe_dump(config, f)
+        
+        func_db = Psi4DbAdapter(config_path)
+
+        func_db.load_multi_functional_data(lcom_func_dataset, 'test')
+        func_db.load_base_dispersion_data(lcom_base_disp_dataset, 'test')
+        func_db.load_dispersion_config_data(lcom_psi_dispconfig_dataset, 'test')
+        yield func_db
     
-#     def test_queries():
-#         pass
-
-
-
+    @pytest.mark.parametrize(
+        'fname, disp_name', 
+        [
+            ("TPSS", "disp_mix1"),
+            ("TPSS", "disp_mix2"),
+            ("singlefunc1", "disp_mix1"),
+            ("singlefunc1", "disp_mix2"),
+            ("multifunc2", "disp_mix1"),
+            ("multifunc2", "disp_mix2"),
+        ]
+    )
+    def test_multidisp_query(self, initialize_db, fname, disp_name):
+        # ref_ans = func_dataset_ref[fname]
+        func_db : Psi4DbAdapter = initialize_db
+        
+        # ans =  func_db.get_functional_dict(fname, disp_name)
+        # compare_lcom_functionals(ans, ref_ans)
     
     
 

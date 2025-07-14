@@ -14,8 +14,6 @@ Afterwards, you can load in multifunctionals, base dispersion parameters, and al
 You may also query a functional 
 
 
-
-
 Source Resolution
 ---
 For any dispersion configuration/multifunctional, all sources
@@ -72,14 +70,4 @@ functional_dict = db.query_functional_disp('BLYP', 'dispersion_config', 'source'
 # To use within PSI4
 scf_energy = psi4.energy('scf_lcom', dft_functionals=functional_dict)
 ```
-
-
-
-
-
-
-
-
-
-
 

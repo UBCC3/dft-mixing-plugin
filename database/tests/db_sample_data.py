@@ -34,7 +34,6 @@ lcom_func_dataset = {
             "PWPW": 0.75,
         }
     },    
-
 }
 
 fail_dataset = {
@@ -104,7 +103,95 @@ func_dataset_ref = {
     },    
 }
 
+lcom_psi_dispconfig_dataset : dict = {
+    "TPSS": {
+        "disp_mix1": {
+            "disp1": 0.25,
+            "disp2": 0.25,
+            "disp3": 0.5,
+        },
+        
+        "disp_mix2": {
+            "d2": 0.55,
+            "d3": 0.25,
+            "d3bj": 0.15,
+        },
+    },  
+    
+    "singlefunc1": {
+        "disp_mix1": {
+            "disp2": 0.25,
+            "disp3": 0.25,
+            "disp4": 0.5,
+        },
+        
+        "disp_mix2": {
+            "d2": 0.1,
+            "d3": 0.2,
+            "d3bj": 0.8,
+        }, 
+    },  
+    
+    "multifunc2": {
+        "disp_mix1": {
+            "d2": 0.25,
+            "d3": 0.25,
+            "d4": 0.5,
+        },
+        
+        "disp_mix2": {
+            "d2": 0.1,
+            "d3": 0.2,
+            "d3bj": 0.8,
+        }, 
+    },  
+}
 
 
-
-
+lcom_base_disp_dataset : dict = {
+    "singlefunc1": {
+        "d2": {
+            "type": "d2",
+            "params": {
+                "test_param": "test_param"
+            }
+        },
+        
+        "d3": {
+            "type": "d3",
+            "params": {
+                "test_param": "test_param"
+            }
+        },
+        
+        "d4": {
+            "type": "d4",
+            "params": {
+                "test_param": "test_param"
+            }
+        }
+    },  
+    
+    "multifunc2": {
+        "d2": {
+            "type": "d2",
+            "params": {
+                "test_param": "test_param2"
+            }
+        },
+        
+        "d3": {
+            "type": "d3",
+            "params": {
+                "test_param": "test_param2"
+            }
+        },
+        
+        "d4": {
+            "type": "d4",
+            "params": {
+                "test_param": "test_param2"
+            }
+        }   
+    },  
+}

@@ -52,6 +52,7 @@ class FunctionalDatabase:
             
         '''     
         self.source_fallback_stack : list[str] = ["dftd4", "psi4"]
+        self._is_empty = True
         
         # Import from existing database if path is specified 
         if database_config is None:
@@ -61,11 +62,21 @@ class FunctionalDatabase:
         with open(database_config) as f:
             config = yaml.safe_load(f)
 
+        # Configure source resolution
+        DB_EXTERNAL_RESOL : list = config['external_resol']
+        if (len(DB_EXTERNAL_RESOL) > 0):
+            while len(DB_EXTERNAL_RESOL) != 0:
+                last_priority = DB_EXTERNAL_RESOL.pop(-1)
+                self.source_fallback_stack.insert(0, last_priority)
+
         DB_PATH = config["db_path"]
         
         # Check if db exists
         db_exists = os.path.exists(DB_PATH)
+        if (db_exists): 
+            self._is_empty = False
         
+        # Configure base        
         db_uri = f'sqlite:///{DB_PATH}'
         # Create a SQL database for this
         engine = sqlalchemy.create_engine(db_uri)
@@ -74,6 +85,9 @@ class FunctionalDatabase:
         Base.metadata.create_all(engine)
         
         self.Session = sqlalchemy.orm.sessionmaker(bind=engine, expire_on_commit=False)
+
+    def is_empty(self):
+        return self._is_empty
 
     def get_session(self) -> sqlalchemy.orm.Session:
         return self.Session()

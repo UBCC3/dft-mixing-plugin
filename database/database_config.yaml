@@ -1,6 +1,8 @@
 
 db_path: "/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/scripts/database/example_databases"
-external_resol: ['']
+
+# Sources with lower index means higher priority.
+external_resol: ['src1', 'src2']
 
 
 

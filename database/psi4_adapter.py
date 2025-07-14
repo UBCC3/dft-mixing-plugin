@@ -33,7 +33,9 @@ class Psi4DbAdapter:
 
     def __init__(self, config_path):
         self.db = FunctionalDatabase(config_path)
-        self._import_psi4_data()
+        
+        if (self.db.is_empty()):
+            self._import_psi4_data()
     
     def _import_psi4_data(self):
         
@@ -172,25 +174,31 @@ class Psi4DbAdapter:
         
         for parent_func, avail_disps in base_disp_dict.items():
             for disp_alias, disp_info in avail_disps.items():
-                try:
+                with self.db.get_session() as session:
+                    try:
+                        dash_coeff_name = f'{parent_func}-{disp_alias}'
                     
-                    dash_coeff_name = f'{parent_func}-{disp_alias}'
-                    with self.db.get_session() as session:
-                    
+                        # Try to insert alias first
+                        self.db.add_dash_coeff_mapping(session,
+                                                        parent_func,
+                                                        disp_alias,
+                                                        dash_coeff_name)
+                        
                         self.db.insert_single_disp(
                             session,
-                            dash_coeff_name,
                             parent_func,
                             disp_alias,
                             disp_info.get("citation", "No Citation"),
                             disp_info.get("description", "No Description"),
-                            disp_info["disp_params"],
+                            disp_info["params"],
                             src,                            
                         )
                     
                         session.commit()
-                except Exception as e:
-                    error_list.append(e)
+                        
+                    except Exception as e:
+                        session.rollback()
+                        error_list.append(e)
                     
         if len(error_list) > 0:
             raise ExceptionGroup("Some errors were encountered:", error_list)            
@@ -201,12 +209,18 @@ class Psi4DbAdapter:
         
         for parent_func, avail_configs in disp_config_dict.items():
             for disp_config_name, config_args in avail_configs.items():
-                try:
-                    dash_coeff_name = f'{parent_func}-{disp_config_name}'
-                    with self.db.get_session() as session:
+                with self.db.get_session() as session:
+                    try:
+                        dash_coeff_name = f'{parent_func}-{disp_config_name}'
+
+                        # Try to insert alias first
+                        self.db.add_dash_coeff_mapping(session,
+                                                    parent_func,
+                                                    disp_config_name,
+                                                    dash_coeff_name)
+                        
                         self.db.insert_disp_config(
                             session,
-                            dash_coeff_name,
                             parent_func,
                             disp_config_name,
                             config_args.get("citation", "No Citation"),
@@ -216,8 +230,10 @@ class Psi4DbAdapter:
                         )
                     
                         session.commit()
-                except Exception as e:
-                    error_list.append(e)
+                        
+                    except Exception as e:
+                        session.rollback()
+                        error_list.append(e)
                     
         if len(error_list) > 0:
             raise ExceptionGroup("Some errors were encountered:", error_list)            
