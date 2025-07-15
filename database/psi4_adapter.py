@@ -252,8 +252,8 @@ class Psi4DbAdapter:
         func_dict["citation"] = par_functional.citation
         func_dict["description"] = par_functional.description
         
-        logger.warning(f"FUNC_COEFS {par_functional.fnctl_data  }")
-        if len(functional_coeffs) > 1:
+        logger.info(f"FUNC_COEFS {par_functional.fnctl_data  }")
+        if par_functional.is_lcom:
             lcom_functionals : dict[str, Any] = {}
             for (child_fnctl, coef) in functional_coeffs:
                 child_name = str(child_fnctl.fnctl_name)
@@ -261,9 +261,9 @@ class Psi4DbAdapter:
                 lcom_functionals[child_name] = child_data
                 lcom_functionals[child_name]["coef"] = coef    
             
-            logger.warning(f"RESULT: {func_dict}") 
+            logger.info(f"RESULT: {func_dict}") 
             func_dict["lcom_functionals"] = lcom_functionals
-            logger.warning(f"RESULT: {func_dict}") 
+            logger.info(f"RESULT: {func_dict}") 
                
         else:
             func_dict = par_functional.fnctl_data        

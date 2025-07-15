@@ -583,7 +583,7 @@ class FunctionalDatabase:
     
         # Query base functional 
         query_func = self.get_single_functional(session, functional_name, source)
-        logger.warning(f"QUERY_FUNC LCOM {query_func.is_lcom}")
+        logger.info(f"QUERY_FUNC LCOM? {query_func.is_lcom}")
     
         # If not lcom, we are done!
         if not query_func.is_lcom:

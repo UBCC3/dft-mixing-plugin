@@ -31,7 +31,7 @@ lcom_func_dataset = {
     "multifunc3": {
         "functionals": {
             "BP86": 0.25,
-            "PWPW": 0.75,
+            "PW91": 0.75,
         }
     },    
 }
@@ -95,9 +95,9 @@ func_dataset_ref = {
             },
             
             # Aliased name
-            "PWPW": {
+            "PW91": {
                 'coef': 0.75,
-                **functionals['pwpw']
+                **functionals['pw91']
             },
         }
     },    

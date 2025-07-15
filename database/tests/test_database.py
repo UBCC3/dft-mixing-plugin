@@ -2,6 +2,7 @@ import pytest
 import os
 import yaml
 import re
+import pprint
 
 import logging
 
@@ -33,21 +34,41 @@ def compare_psi_functionals(dict1, ref_dict):
             compare_psi_disp(disp_dict, ref_disp)        
             continue
         
+        if (type(ref_dict[attr]) == str):
+            assert dict1[attr].lower() == ref_dict[attr].lower(), f"Mismatch at attribute {attr}"
+            continue
+        
         assert dict1[attr] == ref_dict[attr], f"Mismatch at attribute {attr}"
 
-def compare_lcom_functionals(dict1, ref_dict):
+
+def normalize_name_dict(name_dict: dict):
+    '''
+        Returns a copy of name_dict with normalized 
+        keys (lowercase).
+    '''
+    norm_dict = {}
+    for name, val in name_dict.items():
+        assert type(name) == str
+        norm_dict[name.lower()] = val
+        
+    return norm_dict
+
+def compare_lcom_functionals(func_dict, ref_dict):
     for attr in ref_dict:
         if attr == 'dispersion':
             ref_disp = ref_dict[attr]
-            disp_dict = dict1[attr]
+            disp_dict = func_dict[attr]
             compare_psi_disp(disp_dict, ref_disp)        
             continue
     
-        if attr != {'lcom_functionals'}: continue
+        if attr == 'name':
+            assert ref_dict['name'].lower() == func_dict['name'].lower()
         
-        all_lcom_dict = dict1['lcom_functionals']
-        for ref_fname, ref_fdict in ref_dict['lcom_functionals']:
-            target_fdict = all_lcom_dict[ref_fname]
+        if attr != 'lcom_functionals': continue
+        
+        all_lcom_dict = normalize_name_dict(func_dict['lcom_functionals'])
+        for ref_fname, ref_fdict in ref_dict['lcom_functionals'].items():
+            target_fdict = all_lcom_dict[ref_fname.lower()]
             assert (target_fdict['coef'] == ref_fdict['coef'])
             compare_psi_functionals(target_fdict, ref_fdict)
         
@@ -143,6 +164,7 @@ class TestFunctional:
     )
     def test_queries(self, initialize_db, fname):
         ref_ans = func_dataset_ref[fname]
+        logger.warning(f'REF: {pprint.pformat(ref_ans)}')
         func_db : Psi4DbAdapter = initialize_db
         
         ans =  func_db.get_functional_dict(fname, None, 'test')
