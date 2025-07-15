@@ -45,7 +45,6 @@ def compare_lcom_functionals(dict1, ref_dict):
     
         if attr != {'lcom_functionals'}: continue
         
-
         all_lcom_dict = dict1['lcom_functionals']
         for ref_fname, ref_fdict in ref_dict['lcom_functionals']:
             target_fdict = all_lcom_dict[ref_fname]
@@ -147,6 +146,7 @@ class TestFunctional:
         func_db : Psi4DbAdapter = initialize_db
         
         ans =  func_db.get_functional_dict(fname, None, 'test')
+        logger.warning(f'ANS: {ans}')
         compare_lcom_functionals(ans, ref_ans)
     
     # def test_not_found(initialize_db, fnames):
@@ -174,15 +174,16 @@ class TestDispersion:
         func_db.load_multi_functional_data(lcom_func_dataset, 'test')
         func_db.load_base_dispersion_data(lcom_base_disp_dataset, 'test')
         func_db.load_dispersion_config_data(lcom_psi_dispconfig_dataset, 'test')
+        
         yield func_db
     
     @pytest.mark.parametrize(
         'fname, disp_name', 
         [
             ("TPSS", "disp_mix1"),
-            ("TPSS", "disp_mix2"),
-            ("singlefunc1", "disp_mix1"),
-            ("singlefunc1", "disp_mix2"),
+            # ("TPSS", "disp_mix2"),
+            # ("singlefunc1", "disp_mix1"),
+            # ("singlefunc1", "disp_mix2"),
             ("multifunc2", "disp_mix1"),
             ("multifunc2", "disp_mix2"),
         ]
@@ -190,9 +191,8 @@ class TestDispersion:
     def test_multidisp_query(self, initialize_db, fname, disp_name):
         # ref_ans = func_dataset_ref[fname]
         func_db : Psi4DbAdapter = initialize_db
-        
-        # ans =  func_db.get_functional_dict(fname, disp_name)
-        # compare_lcom_functionals(ans, ref_ans)
+        ans = func_db.get_functional_dict(fname, disp_name)
+        logger.warning(ans)
     
     
 

@@ -65,7 +65,7 @@ class FunctionalDatabase:
             config = yaml.safe_load(f)
 
         # Configure source resolution
-        DB_EXTERNAL_RESOL : list = config['external_resol']
+        DB_EXTERNAL_RESOL : list = config.get('external_resol', [])
         if (len(DB_EXTERNAL_RESOL) > 0):
             while len(DB_EXTERNAL_RESOL) != 0:
                 last_priority = DB_EXTERNAL_RESOL.pop(-1)
@@ -186,7 +186,7 @@ class FunctionalDatabase:
         # Create new functional entry for the multifunctional
         multi_id = self.insert_base_functional(
             session, multi_name, multi_citation, 
-            multi_desc, multi_coeffs, src
+            multi_desc, None, src
         )
     
         # Now, loop through the coefficients and lookup
@@ -287,7 +287,7 @@ class FunctionalDatabase:
         for subdisp_name, coef in disp_coeffs.items():
             
             subdisp_alias = f'{func_name}-{subdisp_name}'
-            logger.warning(subdisp_alias)
+            # logger.warning(subdisp_alias)
             
             # Assume dispersion part of the same configuration,
             # otherwise, fallback to existing dispersion.
@@ -583,6 +583,7 @@ class FunctionalDatabase:
     
         # Query base functional 
         query_func = self.get_single_functional(session, functional_name, source)
+        logger.warning(f"QUERY_FUNC LCOM {query_func.is_lcom}")
     
         # If not lcom, we are done!
         if not query_func.is_lcom:
@@ -594,7 +595,7 @@ class FunctionalDatabase:
                    
         func_coefs : list[tuple[Functional, float]] = (
                         session.query(Functional, FunctionalCoeffs.coef)
-                        .join(FunctionalCoeffs, FunctionalCoeffs.parent_fnctl_id == Functional.fnctl_id)
+                        .join(FunctionalCoeffs, FunctionalCoeffs.child_fnctl_id == Functional.fnctl_id)
                         .filter(
                             FunctionalCoeffs.parent_fnctl_id == parent_func_id,        
                         )  

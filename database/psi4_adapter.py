@@ -178,7 +178,7 @@ class Psi4DbAdapter:
                     try:
                         dash_coeff_name = f'{parent_func}-{disp_alias}'
                     
-                        # Try to insert alias first
+                        # logger.warning(dash_coeff_name)     # Try to insert alias first
                         self.db.add_dash_coeff_mapping(session,
                                                         parent_func,
                                                         disp_alias,
@@ -238,40 +238,7 @@ class Psi4DbAdapter:
         if len(error_list) > 0:
             raise ExceptionGroup("Some errors were encountered:", error_list)            
         return
-        
-    def get_functional_dict(self, 
-                              functional_name : str,
-                              dispersion_name : str|None = None,
-                              functional_source : str|None = None,
-                              dispersion_source : str|None = None):
-        '''
-            Queries for a functional and an optional dispersion
-            configuration for that functional, and formats it
-            to a PSI4 compatible dictionary. 
-            
-            Important Note:
-                For dispersions, the adapater queries for the 
-                dashcoeff pair "{functional_name}-{dispersion_name}".
-        ''' 
-        
-        dashcoeff_name = f"{functional_name}-{dispersion_name}"
 
-        # Query for functional and dispersion components
-        with self.db.get_session() as session:
-            func, func_coeffs = self.db.get_functional(
-                session, 
-                functional_name,
-                functional_source,
-            )
-            
-            disp_coeffs = self.db.get_multi_dispersion(
-                session, dashcoeff_name, functional_source,
-                dispersion_source
-            )
-            session.commit()
-    
-        return self._format_to_psi4(func, func_coeffs, disp_coeffs)
-    
     def _format_to_psi4(self, 
                         par_functional : Functional,
                         functional_coeffs: list[tuple[Functional, float]],
@@ -285,6 +252,7 @@ class Psi4DbAdapter:
         func_dict["citation"] = par_functional.citation
         func_dict["description"] = par_functional.description
         
+        logger.warning(f"FUNC_COEFS {par_functional.fnctl_data  }")
         if len(functional_coeffs) > 1:
             lcom_functionals : dict[str, Any] = {}
             for (child_fnctl, coef) in functional_coeffs:
@@ -293,13 +261,15 @@ class Psi4DbAdapter:
                 lcom_functionals[child_name] = child_data
                 lcom_functionals[child_name]["coef"] = coef    
             
+            logger.warning(f"RESULT: {func_dict}") 
             func_dict["lcom_functionals"] = lcom_functionals
-        
+            logger.warning(f"RESULT: {func_dict}") 
+               
         else:
             func_dict = par_functional.fnctl_data        
             
-            
-        logger.warning(f"Dipsersion Coeffs: {dispersion_coeffs}") 
+        
+        # logger.warning(f"Dipsersion Coeffs: {dispersion_coeffs}") 
             
         if len(dispersion_coeffs) > 0:
             lcom_disps = []
@@ -317,12 +287,12 @@ class Psi4DbAdapter:
             else:
                 func_dict["lcom_dispersion"] = lcom_disps
         
+        
         if func_dict is None:
             logger.error(f"FUNC DICT FORMATTING IS NONE {func_dict}")
         
         return func_dict        
         
-
     def get_functional_dict(self, 
                               functional_name : str,
                               dispersion_name : str|None = None,
