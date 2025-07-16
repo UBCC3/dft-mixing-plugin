@@ -125,17 +125,17 @@ lcom_psi_dispconfig_dataset : dict = {
     "singlefunc1": {
         "disp_mix1": {
             "coeffs": {
-                "disp2": 0.25,
-                "disp3": 0.25,
-                "disp4": 0.5,
+                "d2": 0.25,
+                "d3": 0.25,
+                "d4": 0.5,
             }   
         },
         
         "disp_mix2": {
             "coeffs": {
-                "disp2": 0.1,
-                "disp3": 0.2,
-                "disp4": 0.8,
+                "d2": 0.1,
+                "d3": 0.2,
+                "d4": 0.8,
             },
         }, 
     },  
@@ -143,17 +143,17 @@ lcom_psi_dispconfig_dataset : dict = {
     "multifunc2": {
         "disp_mix1": {
             "coeffs": {
-                "disp2": 0.25,
-                "disp3": 0.25,
-                "disp4": 0.5,
+                "d2": 0.25,
+                "d3": 0.25,
+                "d4": 0.5,
             },
         },
         
         "disp_mix2": {
             "coeffs": {
-                "disp2": 0.1,
-                "disp3": 0.2,
-                "disp4": 0.7,
+                "d2": 0.1,
+                "d3": 0.2,
+                "d4": 0.7,
             },
         }, 
     },  
@@ -162,21 +162,21 @@ lcom_psi_dispconfig_dataset : dict = {
 
 lcom_base_disp_dataset : dict = {
     "singlefunc1": {
-        "disp2": {
+        "d2": {
             "type": "d2",
             "params": {
                 "test_param": "test_param"
             }
         },
         
-        "disp3": {
+        "d3": {
             "type": "d3",
             "params": {
                 "test_param": "test_param"
             }
         },
         
-        "disp4": {
+        "d4": {
             "type": "d4",
             "params": {
                 "test_param": "test_param"
@@ -185,19 +185,19 @@ lcom_base_disp_dataset : dict = {
     },  
     
     "multifunc2": {
-        "disp2": {
+        "d2": {
             "type": "d2",
             "params": { "test_param": "test_param2" }
         },
         
-        "disp3": {
+        "d3": {
             "type": "d3",
             "params": {
                 "test_param": "test_param2"
             }
         },
         
-        "disp4": {
+        "d4": {
             "type": "d4",
             "params": {
                 "test_param": "test_param2"
@@ -208,7 +208,7 @@ lcom_base_disp_dataset : dict = {
 
 multi_disp_ans = {    
     ("multifunc2", "disp_mix1"): {
-        "name": "TPSS",
+        **func_dataset_ref['multifunc2'],
         "lcom_functionals": {
             "BLYP": {
                 'coef': 0.25,
@@ -241,8 +241,8 @@ multi_disp_ans = {
         ]
     },
     
-    ("multifunc2", "disp_mix1"): {
-        "name": "TPSS",
+    ("multifunc2", "disp_mix2"): {
+        **func_dataset_ref['multifunc2'],
         "lcom_functionals": {
             "BLYP": {
                 'coef': 0.25,
@@ -270,6 +270,61 @@ multi_disp_ans = {
                 "type": "d4",
                 "params": {"test_param": "test_param2"},
                 "lcom_coef": 0.7 # (1.0 by default)
+            },
+        
+        ]
+    },
+    
+    
+    ("singlefunc1", "disp_mix1"): {
+        **func_dataset_ref['singlefunc1'],
+        "lcom_functionals": {
+            "BLYP": {
+                'coef': 1.00,
+                **functionals['blyp']
+            },
+        },
+        "lcom_dispersion":[
+            {    
+                "type": "d2",
+                "params": {"test_param": "test_param"},
+                "lcom_coef": 0.25 # (1.0 by default)
+            },
+            
+            {    
+                "type": "d3",
+                "params": {"test_param": "test_param"},
+                "lcom_coef": 0.25 # (1.0 by default)
+            },
+            
+            {    
+                "type": "d4",
+                "params": {"test_param": "test_param"},
+                "lcom_coef": 0.5 # (1.0 by default)
+            },
+        
+        ]
+    },
+    
+    ("singlefunc1", "disp_mix2"): {
+        **func_dataset_ref['singlefunc1'],
+        "lcom_dispersion":[
+            {    
+                "type": "d2",
+                "params": {"test_param": "test_param"},
+                "lcom_coef": 0.1 # (1.0 by default)
+            },
+            
+            {    
+                "type": "d3",
+                "params": {"test_param": "test_param"},
+                "lcom_coef": 0.2 # (1.0 by default)
+            },
+            
+            {    
+                "type": "d4",
+                "params": {"test_param": "test_param"},
+                "lcom_coef": 0.8 # (1.0 by default)
             },
         
         ]

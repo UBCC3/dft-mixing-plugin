@@ -14,34 +14,54 @@ from db_sample_data import (
     lcom_func_dataset,
     func_dataset_ref,
     lcom_psi_dispconfig_dataset,
-    lcom_base_disp_dataset
+    lcom_base_disp_dataset,
+    multi_disp_ans
+    
 )
 
 logger = logging.getLogger(__name__)
 
 def compare_psi_disp(dict, ref_disp):
     for attr in ref_disp:
-        if attr in {'name', 'citation', 'description', 'type', 'alias'}: continue
+        if attr in {'citation', 'description', 'type', 'alias'}: continue
+        if attr == 'name':
+            assert dict[attr].lower() == ref_disp[attr].lower(), f"Mismatch at attribute {attr}"
+        
+        
         assert dict[attr] == ref_disp[attr], f"Mismatch at attribute {attr}"
     
-def compare_psi_functionals(dict1, ref_dict):
+
+def compare_lcom_dispersion(test_dict, ref_disp):
+    normalized_test = normalize_name_dict_lowercase(test_dict)
+    
+    for subdisp_name in ref_disp:
+        assert (subdisp_dict.lower() in normalized_test), f"Missing dispersion name {subdisp_name}"
+        subdisp_dict = normalized_test[subdisp_name.lower()]
+        compare_psi_disp(subdisp_dict, ref_disp[subdisp_name])
+    
+def compare_psi_functionals(test_dict, ref_dict):
     for attr in ref_dict:
         if attr in {'name', 'citation', 'description', 'alias'}: continue
         
         if attr == 'dispersion':
             ref_disp = ref_dict[attr]
-            disp_dict = dict1[attr]
+            disp_dict = test_dict[attr]
             compare_psi_disp(disp_dict, ref_disp)        
             continue
         
-        if (type(ref_dict[attr]) == str):
-            assert dict1[attr].lower() == ref_dict[attr].lower(), f"Mismatch at attribute {attr}"
+        if attr == 'lcom_dispersion':
+            ref_lcom_disp = ref_dict[attr]
+            lcom_disp_dict = test_dict[attr]
+            compare_lcom_dispersion(lcom_disp_dict, ref_lcom_disp)
             continue
         
-        assert dict1[attr] == ref_dict[attr], f"Mismatch at attribute {attr}"
+        if (type(ref_dict[attr]) == str):
+            assert test_dict[attr].lower() == ref_dict[attr].lower(), f"Mismatch at attribute {attr}"
+            continue
+        
+        assert test_dict[attr] == ref_dict[attr], f"Mismatch at attribute {attr}"
 
-
-def normalize_name_dict(name_dict: dict):
+def normalize_name_dict_lowercase(name_dict: dict):
     '''
         Returns a copy of name_dict with normalized 
         keys (lowercase).
@@ -66,7 +86,7 @@ def compare_lcom_functionals(func_dict, ref_dict):
         
         if attr != 'lcom_functionals': continue
         
-        all_lcom_dict = normalize_name_dict(func_dict['lcom_functionals'])
+        all_lcom_dict = normalize_name_dict_lowercase(func_dict['lcom_functionals'])
         for ref_fname, ref_fdict in ref_dict['lcom_functionals'].items():
             target_fdict = all_lcom_dict[ref_fname.lower()]
             assert (target_fdict['coef'] == ref_fdict['coef'])
@@ -202,19 +222,19 @@ class TestDispersion:
     @pytest.mark.parametrize(
         'fname, disp_name', 
         [
-            ("TPSS", "disp_mix1"),
+            # ("TPSS", "disp_mix1"),
             # ("TPSS", "disp_mix2"),
-            # ("singlefunc1", "disp_mix1"),
-            # ("singlefunc1", "disp_mix2"),
+            ("singlefunc1", "disp_mix1"),
+            ("singlefunc1", "disp_mix2"),
             ("multifunc2", "disp_mix1"),
             ("multifunc2", "disp_mix2"),
         ]
     )
     def test_multidisp_query(self, initialize_db, fname, disp_name):
-        # ref_ans = func_dataset_ref[fname]
+        ref_ans = multi_disp_ans[(fname, disp_name)]
         func_db : Psi4DbAdapter = initialize_db
-        ans = func_db.get_functional_dict(fname, disp_name)
-        logger.warning(ans)
-    
+        ans = func_db.get_functional_dict(fname, disp_name, 'test', 'test')
+        logger.warning(f'DISP DICT {pprint.pformat(ans)}')
+        compare_lcom_functionals(ans, ref_ans)
     
 

@@ -291,15 +291,15 @@ class FunctionalDatabase:
             
             # Assume dispersion part of the same configuration,
             # otherwise, fallback to existing dispersion.
-            subdisp_id = self.get_base_dispersion(session, subdisp_alias,
+            subdisp_id : str = self.get_base_dispersion(session, subdisp_alias,
                                           disp_source=disp_src,
-                                          func_source=func_src)
+                                          func_source=func_src).subdisp_id
             
             disp_coef_id = str(uuid.uuid4())
             disp_entry = DispersionConfig(
                 disp_id = str(disp_coef_id),
                 fnctl_id = str(func_id), 
-                disp_config_source = disp_src,
+                disp_config_source = src_id,
                 citation = disp_citation,
                 description = disp_desc,
                 disp_name = disp_name, 
@@ -477,11 +477,13 @@ class FunctionalDatabase:
         functional = self.get_single_functional(session, canon_fname,
                                       func_source)
         
+        logger.warning(f"QUERY DISP? f:{canon_fname} d:{canon_dname}")
         
         canon_func_source = str(functional.source)
         func_id = functional.fnctl_id
         
         if disp_source is None:
+            logger.warning(f"FIRST OPTION {self.source_fallback_stack[0]}")
             disp_source = self.source_fallback_stack[0]  
             
         source_id = self._query_source(session, disp_source)
@@ -494,17 +496,17 @@ class FunctionalDatabase:
             )
             .filter(
                 DispersionConfig.fnctl_id == func_id, 
-                DispersionConfig.disp_name == canon_dname,
+                sqlalchemy.func.lower(DispersionConfig.disp_name) == canon_dname.lower(),
                 DispersionConfig.disp_config_source == source_id
             )
             .all() 
         )
         
-        if disp_coeffs is None:
+        if len(disp_coeffs) == 0:
             try:
                 next_source = self._resolve_source(disp_source)
             except SourceResolutionError as e:
-                raise DBNotFoundError("Cannot find functional!") from e
+                raise DBNotFoundError("Cannot find dispersion coefficients!") from e
             
             return self.get_multi_dispersion(session,
                                             dashcoeff_name,

@@ -87,7 +87,7 @@ class Psi4DbAdapter:
         # Insert dispersion
         for func_dashcoeff, func_dict in dispersion_functionals.items():
             canon_fdashcoeff = func_dict["name"]
-            pattern = r"([-\d\w()]+)-([\w\d()]+)\)?$"
+            pattern = r"([-\d\w_()]+)-([\w\d_()]+)\)?$"
             match = re.match(pattern, canon_fdashcoeff)
             
             if not match: 
@@ -211,6 +211,9 @@ class Psi4DbAdapter:
             for disp_config_name, config_args in avail_configs.items():
                 with self.db.get_session() as session:
                     try:
+                        if '-' in disp_config_name:
+                            raise ValueError("Error: Invalid dispersion name, cannot contain '-'")
+                        
                         dash_coeff_name = f'{parent_func}-{disp_config_name}'
 
                         # Try to insert alias first
@@ -218,7 +221,7 @@ class Psi4DbAdapter:
                                                     parent_func,
                                                     disp_config_name,
                                                     dash_coeff_name)
-                        
+                        logger.warning(f"INSERTED {dash_coeff_name}")
                         self.db.insert_disp_config(
                             session,
                             parent_func,
@@ -228,6 +231,8 @@ class Psi4DbAdapter:
                             config_args["coeffs"],
                             src,                            
                         )
+                        
+                        logger.warning(f"INSERT {dash_coeff_name} successful")
                     
                         session.commit()
                         
@@ -310,11 +315,15 @@ class Psi4DbAdapter:
                 session, functional_name, functional_source
             )
             
+            logger.warning(f"QUERY DISP NAME {dispersion_name}")
             if dispersion_name is not None:
                 dashcoeff_name = f'{par_functional.fnctl_name}-{dispersion_name}'
                 dispersion_coeffs = self.db.get_multi_dispersion(
                     session, dashcoeff_name, functional_source, dispersion_source
                 )
+                
+                logger.warning(f"DASH COEFF QUERY {dashcoeff_name}")
+                logger.warning(f"DISP COEFFS {dispersion_coeffs}")
             else:
                 dispersion_coeffs = []
             
