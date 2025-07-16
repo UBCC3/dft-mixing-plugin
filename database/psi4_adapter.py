@@ -176,18 +176,19 @@ class Psi4DbAdapter:
             for disp_alias, disp_info in avail_disps.items():
                 with self.db.get_session() as session:
                     try:
+                        disp_canon_name = disp_info.get('type', disp_alias)
                         dash_coeff_name = f'{parent_func}-{disp_alias}'
                     
                         # logger.warning(dash_coeff_name)     # Try to insert alias first
                         self.db.add_dash_coeff_mapping(session,
                                                         parent_func,
-                                                        disp_alias,
+                                                        disp_canon_name,
                                                         dash_coeff_name)
                         
                         self.db.insert_single_disp(
                             session,
                             parent_func,
-                            disp_alias,
+                            disp_canon_name,
                             disp_info.get("citation", "No Citation"),
                             disp_info.get("description", "No Description"),
                             disp_info["params"],
@@ -231,8 +232,6 @@ class Psi4DbAdapter:
                             config_args["coeffs"],
                             src,                            
                         )
-                        
-                        logger.warning(f"INSERT {dash_coeff_name} successful")
                     
                         session.commit()
                         
