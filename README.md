@@ -81,6 +81,7 @@ energy('scf_lcom', dft_functional=..., decompose_xc=True)
 ### 2. Functional Database Interface
 
 This addon works independently from PSI4, since it relies on a precompiled database of functionals. The addon aims to streamline the interface to specifying functionals, and allows for flexible user defined functionals to be used, and adds another layer of infrastructure to the system. 
+See [Database](database/README.md) for more details on the interface.
 
 
 
