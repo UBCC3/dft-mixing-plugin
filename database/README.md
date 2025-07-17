@@ -39,43 +39,8 @@ How to use this module
 ---
 
 ### Populating the Database (Before Running PSI4)
-```python
-...
-import psi4
-from database import Psi4DbAdapter
+See example usages/format [here](../example_usage)
 
-# Construct configuration
-config = "path/to/config.yaml"
-
-db = Psi4DbAdapter(config)
-multifunc_dict = {
-    "multifunc1": {
-        "functionals": {
-            "blyp": 0.25,
-            "HCTH": 0.1,
-            "PBE": 0.65
-        }  
-    },
-
-    "multifunc2": {
-        "functionals": {
-            "blyp": 0.25,
-            "B3LYP": 0.75
-        },
-        "citation": "Citation",
-        "description": "description"
-    },
-
-    "multifunc3": {
-        "functionals": {
-            "BP86": 0.25,
-            "PW91": 0.75
-        }
-    }    
-}
-
-db.load_multi_functional_data(multifunc_dict, "src1")
-```
 ### Querying from the Database
 
 In Python/PSIthon:
