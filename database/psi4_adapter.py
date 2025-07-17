@@ -1,6 +1,6 @@
 
 from database import FunctionalDatabase
-from db_models import (
+from .db_models import (
     Sources,
     Functional,
     FunctionalAlias,
@@ -10,12 +10,13 @@ from db_models import (
     DispersionAlias
 )
 
-from db_errors import (
+from .db_errors import (
     DBDuplicateError,
     DBNotFoundError
 )
 
 import logging
+import tomllib, yaml
 from typing import Any
 
 import re
@@ -34,8 +35,49 @@ class Psi4DbAdapter:
     def __init__(self, config_path):
         self.db = FunctionalDatabase(config_path)
         
+        with open(config_path, "r") as f:
+            self.config = yaml.safe_load(f)
+        
         if (self.db.is_empty()):
             self._import_psi4_data()
+            self._import_dftd3_disps()
+    
+    def _import_dftd3_disps(self):
+        if not self.config.get("load_dftd3", False): 
+            return
+        
+        toml_path = self.config["dftd3_config"]
+        data = tomllib.load(open(toml_path, "rb"))
+        
+        # Only insert the parameter part, still 
+        # need to figure out how to import default parameter
+        param_dict = data["parameter"]
+        for fname, avail_disps in param_dict.items():
+            for dname, dparams in avail_disps:
+                # Remove dot 
+                dname = dname.replace('.', '')
+                dashcoeff = f'{fname}-{dname}'
+                
+                with self.db.get_session() as session:
+                    try:
+                        self.db.resolve_dash_coeff(session, dashcoeff)
+                    
+                    except DBNotFoundError as e:
+                        session.rollback()
+                        
+                        # Insert canonical alias
+                        self.db.add_dash_coeff_mapping(session, fname, dname, dashcoeff)
+                        self.db.insert_single_disp(
+                            session, 
+                            fname,
+                            dname,
+                            "No citation.",
+                            "No description.",
+                            dparams,
+                            "dftd3",
+                            "psi4",
+                        )
+
     
     def _import_psi4_data(self):
         

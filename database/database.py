@@ -11,13 +11,13 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from qcengine.programs.empirical_dispersion_resources import dashcoeff, get_dispersion_aliases, new_d4_api
 
 # Error types
-from db_errors import (
+from .db_errors import (
     SourceResolutionError,
     DBNotFoundError,
     DBDuplicateError
 )
 
-from db_models import (
+from .db_models import (
     get_base,
     Functional,
     FunctionalAlias,
