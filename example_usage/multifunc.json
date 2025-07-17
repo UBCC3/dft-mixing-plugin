@@ -1,4 +1,10 @@
 {
+    "singlefunc1": {
+        "functionals": {
+            "BLYP": 1.0
+        }   
+    },  
+    
     "multifunc1": {
         "functionals": {
             "blyp": 0.25,

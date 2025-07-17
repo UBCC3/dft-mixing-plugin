@@ -1,0 +1,34 @@
+{
+    
+    "singlefunc1": {
+        "disp_mix1": {
+            "coeffs": {
+                "d2": 0.25,
+                "d3": 0.25
+            }   
+        },
+        
+        "disp_mix2": {
+            "coeffs": {
+                "d2": 0.1,
+                "d3": 0.2
+            }
+        }
+    },  
+    
+    "multifunc1": {
+        "disp_mix1": {
+            "coeffs": {
+                "d2": 0.25,
+                "d3": 0.25
+            }
+        },
+        
+        "disp_mix2": {
+            "coeffs": {
+                "d2": 0.1,
+                "d3": 0.2
+            }
+        }
+    }
+}
