@@ -64,6 +64,9 @@ class FunctionalDatabase:
         with open(database_config) as f:
             config = yaml.safe_load(f)
 
+        if (config.get("load_dftd3", False)):
+            self.source_fallback_stack.insert(0, "dftd3")
+
         # Configure source resolution
         DB_EXTERNAL_RESOL : list = config.get('external_resol', [])
         if (len(DB_EXTERNAL_RESOL) > 0):
