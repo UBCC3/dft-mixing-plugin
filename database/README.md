@@ -39,7 +39,13 @@ How to use this module
 ---
 
 ### Populating the Database (Before Running PSI4)
-See example usages/format [here](../example_usage)
+The database supports three input files/formats:
+1. Multifunctional Data (contains composing functionals and coefficients)
+2. Base Dispersion Data (internal dispersion parameters)
+3. Multi Dispersion Data (coefficients for multidispersion)
+
+See example usages/format [here](../example_usage). The JSON files contain the structure
+that the database expects from the data.
 
 ### Querying from the Database
 
