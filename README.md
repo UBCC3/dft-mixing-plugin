@@ -4,11 +4,12 @@ PSI4 Plugin to Support Functional Mixing
 This repository consists of two independent plugins made for PSI4, the functional database management system (for better replication), and linear combination support for PSI4.
 
 ## Installation Instructions
+1. Clone this repository `git clone https://github.com/UBCC3/dft-mixing-plugin`.
+2. Source `install.sh` in the project root directory. 
+```
+source install.sh
+```
 
-Source `scf_lcom/pathconfig.sh` to apply the changes from the plugin to PSI4. To make this permanent, you would need to add this to your `~/.bashrc` file. 
-```
-source scf_lcom/pathconfig.sh
-```
 
 ## Plugins Overview
 
