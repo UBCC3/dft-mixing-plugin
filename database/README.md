@@ -76,9 +76,6 @@ multifunc_dict = {
 
 db.load_multi_functional_data(multifunc_dict, "src1")
 ```
-
-
-
 ### Querying from the Database
 
 In Python/PSIthon:
@@ -98,4 +95,7 @@ functional_dict = db.get_functional_dict('BLYP', 'dispersion_config', 'func_sour
 # To use within PSI4
 scf_energy = psi4.energy('scf_lcom', dft_functionals=functional_dict)
 ```
+This queries for both functional (with source func_source) and dispersion (disp_source), and if the database
+cannot find the respective sources, it will resort to the backup sources in order.
+(By default, the order is `dftd3`, then `psi4`)
 
