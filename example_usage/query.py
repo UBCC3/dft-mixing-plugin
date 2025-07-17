@@ -13,8 +13,8 @@ multifunc_file = os.path.join(file_dir, "multifunc.json")
 # Add funcitonal to database
 with open(multifunc_file, "r") as f: 
     multifunc_dict = json.load(f)
-    
-# psi_adapter.load_multi_functional_data(multifunc_dict, "src1")
+
+psi_adapter.load_multi_functional_data(multifunc_dict, "src1")
 
 
 # Multifunctional query

@@ -19,6 +19,8 @@ import logging
 import tomllib, yaml
 from typing import Any
 
+import os
+import pprint
 import re
 
 # PSI4 internal functionals
@@ -38,13 +40,22 @@ class Psi4DbAdapter:
         with open(config_path, "r") as f:
             self.config = yaml.safe_load(f)
         
-        if (self.db.is_empty()):
+        if (not self.db.is_empty()):
+            return
+        try:
             self._import_psi4_data()
             self._import_dftd3_disps()
+        except Exception as e:
+            # Remove database
+            db_path = self.config["db_path"]
+            os.remove(db_path)
+            raise e
     
-    def _import_dftd3_disps(self):
+    def _import_dftd3_disps(self):    
         if not self.config.get("load_dftd3", False): 
             return
+        
+        logger.warning("IMPORTING DFTD3 DISPERSIONS")
         
         toml_path = self.config["dftd3_config"]
         data = tomllib.load(open(toml_path, "rb"))
@@ -53,10 +64,20 @@ class Psi4DbAdapter:
         # need to figure out how to import default parameter
         param_dict = data["parameter"]
         for fname, avail_disps in param_dict.items():
-            for dname, dparams in avail_disps:
+            d3_disps = avail_disps["d3"]
+            for dname, dparams in d3_disps.items():
                 # Remove dot 
-                dname = dname.replace('.', '')
+                dname = "d3" + dname
                 dashcoeff = f'{fname}-{dname}'
+                       
+                # Check if parent functional exists or not
+                with self.db.get_session() as session:
+                    try:                   
+                        func_id = self.db.get_single_functional(session,
+                            functional_name= fname, source="psi4")
+                    except DBNotFoundError as e:
+                        logger.error(f"Dispersion {dashcoeff} does not have parent functional")
+                        continue      
                 
                 with self.db.get_session() as session:
                     try:

@@ -4,3 +4,5 @@ db_path: "/home/kenrickmh/CHEM/dft-mixing-plugin/example_usage/func_database.db"
 # Sources with lower index means higher priority.
 external_resol: ["src1"]
 
+dftd3_config: "/home/kenrickmh/CHEM/dft-mixing-plugin/database/sdftd3_ref_params.toml"
+load_dftd3: True
