@@ -1,14 +1,13 @@
 
-
-
-
 # Path to database
 db_path: "/home/kenrickmh/CHEM/dft-mixing-plugin/example_usage/func_database.db"
 
 # Flag to recreate databse from scratch. 
-recreate_db: False
+recreate_database: True
 
 # Sources with lower index means higher priority.
 external_resol: ["src1"]
 
-
+# Path to dftd3 toml file (temporary)
+dftd3_config: "/home/kenrickmh/CHEM/dft-mixing-plugin/database/sdftd3_ref_params.toml"
+load_dftd3: True

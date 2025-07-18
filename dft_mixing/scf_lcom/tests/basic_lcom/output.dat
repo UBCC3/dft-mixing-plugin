@@ -1,0 +1,108 @@
+
+    -----------------------------------------------------------------------
+          Psi4: An Open-Source Ab Initio Electronic Structure Package
+                               Psi4 1.10a1.dev76 
+
+                         Git: Rev {master} 2b9265a 
+
+
+    D. G. A. Smith, L. A. Burns, A. C. Simmonett, R. M. Parrish,
+    M. C. Schieber, R. Galvelis, P. Kraus, H. Kruse, R. Di Remigio,
+    A. Alenaizan, A. M. James, S. Lehtola, J. P. Misiewicz, M. Scheurer,
+    R. A. Shaw, J. B. Schriber, Y. Xie, Z. L. Glick, D. A. Sirianni,
+    J. S. O'Brien, J. M. Waldrop, A. Kumar, E. G. Hohenstein,
+    B. P. Pritchard, B. R. Brooks, H. F. Schaefer III, A. Yu. Sokolov,
+    K. Patkowski, A. E. DePrince III, U. Bozkaya, R. A. King,
+    F. A. Evangelista, J. M. Turney, T. D. Crawford, C. D. Sherrill,
+    J. Chem. Phys. 152(18) 184108 (2020). https://doi.org/10.1063/5.0006002
+
+                            Additional Code Authors
+    E. T. Seidl, C. L. Janssen, E. F. Valeev, M. L. Leininger,
+    J. F. Gonthier, R. M. Richard, H. R. McAlexander, M. Saitow, X. Wang,
+    P. Verma, M. H. Lechner, A. Jiang, S. Behnle, A. G. Heide,
+    M. F. Herbst, and D. L. Poole
+
+             Previous Authors, Complete List of Code Contributors,
+                       and Citations for Specific Modules
+    https://github.com/psi4/psi4/blob/master/codemeta.json
+    https://github.com/psi4/psi4/graphs/contributors
+    http://psicode.org/psi4manual/master/introduction.html#citing-psifour
+
+    -----------------------------------------------------------------------
+
+
+    Psi4 started on: Wednesday, 18 June 2025 12:56PM
+
+    Process ID: 38655
+    Host:       TUF
+    PSIDATADIR: /usr/local/psi4/share/psi4
+    Memory:     500.0 MiB
+    Threads:    1
+    
+  ==> Input File <==
+
+--------------------------------------------------------------------------
+# Any line starting with the # character is a comment line
+#! Sample HF/cc-pVDZ H2O computation
+
+memory 600 mb
+
+molecule h2o {
+  O 
+  H 1 0.96
+  H 1 0.96 2 104.5
+}
+
+set basis cc-pVDZ
+dft_functional = {
+  "lcom_functionals":{
+    "B3LYP": 0.2,
+    "B97-0": 0.8
+  }
+}
+
+energy('scf_lcom', dft_functional=dft_functional)
+--------------------------------------------------------------------------
+
+  Memory set to 572.205 MiB by Python driver.
+
+Scratch directory: /home/kenrickmh/CHEM/psi4-scratch/
+
+Traceback (most recent call last):
+  File "/usr/local/psi4/bin/psi4", line 390, in <module>
+    exec(content)
+  File "<string>", line 29, in <module>
+  File "/usr/local/psi4/lib/psi4/driver/driver.py", line 452, in energy
+    plan = task_planner.task_planner("energy", lowername, molecule, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/psi4/lib/psi4/driver/task_planner.py", line 281, in task_planner
+    dermode = negotiate_derivative_type(driver, method, kwargs.pop('dertype', None), verbose=1)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/psi4/lib/psi4/driver/driver_util.py", line 222, in negotiate_derivative_type
+    highest_analytic_dertype, proc_messages = highest_analytic_derivative_available(method, proc)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/psi4/lib/psi4/driver/driver_util.py", line 358, in highest_analytic_derivative_available
+    raise MissingMethodError(_alternative_methods_message(method, "any", messages=proc_messages, proc=proc))
+
+psi4.driver.p4util.exceptions.MissingMethodError: Method=scf_lcom is not available for any derivative level.
+
+
+Printing out the relevant lines from the Psithon --> Python processed input file:
+      "lcom_functionals":{
+        "B3LYP": 0.2,
+        "B97-0": 0.8
+      }
+    }
+--> energy('scf_lcom', dft_functional=dft_functional)
+
+!-------------------------------------------------------------!
+!                                                             !
+!  Method=scf_lcom is not available for any derivative level. !
+!                                                             !
+!-------------------------------------------------------------!
+
+    Psi4 stopped on: Wednesday, 18 June 2025 12:56PM
+    Psi4 wall time for execution: 0:00:00.13
+
+*** Psi4 encountered an error. Buy a developer more coffee!
+*** Resources and help at github.com/psi4/psi4.

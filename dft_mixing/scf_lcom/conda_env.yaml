@@ -1,0 +1,12 @@
+name: p4envplugin
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python=3.11
+  - pylibxc2
+  - conda-forge/label/libint_dev::libint
+  - dftd3-python
+
+
+

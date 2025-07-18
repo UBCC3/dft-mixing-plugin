@@ -2,13 +2,14 @@
 #! Sample HF/cc-pVDZ H2O computation
 
 memory 600 mb   
-import scf_lcom
+import dft_mixing.scf_lcom
+from dft_mixing.database import Psi4DbAdapter
 import psi4
-import database
 import os
 
-path = os.path.join('/home/kenrickmh/CHEM/dft-mixing-plugin/example_usage/db_query_config.yaml') 
-db = database.Psi4DbAdapter(path)
+config_path = os.path.join('/home/kenrickmh/CHEM/dft-mixing-plugin/example_usage/query_database/db_query_config.yaml') 
+db = Psi4DbAdapter()
+db.bind_database(config_path)
 
 molecule h2o {
   O 

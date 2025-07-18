@@ -31,9 +31,9 @@
     -----------------------------------------------------------------------
 
 
-    Psi4 started on: Friday, 18 July 2025 02:07PM
+    Psi4 started on: Friday, 18 July 2025 03:44PM
 
-    Process ID: 67086
+    Process ID: 79966
     Host:       TUF
     PSIDATADIR: /usr/local/psi4/share/psi4
     Memory:     500.0 MiB
@@ -46,13 +46,14 @@
 #! Sample HF/cc-pVDZ H2O computation
 
 memory 600 mb   
-import scf_lcom
+import dft_mixing.scf_lcom
+from dft_mixing.database import Psi4DbAdapter
 import psi4
-import database
 import os
 
-path = os.path.join('/home/kenrickmh/CHEM/dft-mixing-plugin/example_usage/db_query_config.yaml') 
-db = database.Psi4DbAdapter(path)
+config_path = os.path.join('/home/kenrickmh/CHEM/dft-mixing-plugin/example_usage/query_database/db_query_config.yaml') 
+db = Psi4DbAdapter()
+db.bind_database(config_path)
 
 molecule h2o {
   O 
@@ -81,7 +82,7 @@ Scratch directory: /home/kenrickmh/CHEM/psi4-scratch/
     Solid Harmonics ordering:            Gaussian
 
 *** tstart() called on TUF
-*** at Fri Jul 18 14:07:14 2025
+*** at Fri Jul 18 15:44:39 2025
 
    => Loading Basis Set <=
 
@@ -188,22 +189,22 @@ Scratch directory: /home/kenrickmh/CHEM/psi4-scratch/
 
    => Exchange Functionals <=
 
-    0.2500     XC_GGA_X_B88
     0.6500     XC_GGA_X_PBE
+    0.2500     XC_GGA_X_B88
 
    => Correlation Functionals <=
 
-    0.2500     XC_GGA_C_LYP
     0.6500     XC_GGA_C_PBE
+    0.2500     XC_GGA_C_LYP
     0.1000   XC_GGA_XC_HCTH_93
 
    => LibXC Density Thresholds  <==
 
-    XC_GGA_C_LYP:  1.00E-14 
     XC_GGA_C_PBE:  1.00E-12 
+    XC_GGA_C_LYP:  1.00E-14 
     XC_GGA_XC_HCTH_93:  1.00E-14 
-    XC_GGA_X_B88:  1.00E-15 
     XC_GGA_X_PBE:  1.00E-15 
+    XC_GGA_X_B88:  1.00E-15 
 
    => Molecular Quadrature <=
 
@@ -284,14 +285,14 @@ Scratch directory: /home/kenrickmh/CHEM/psi4-scratch/
                            Total Energy        Delta E     RMS |[F,P]|
 
    @DF-RKS iter SAD:   -76.51731574302212   -7.65173e+01   0.00000e+00 
-   @DF-RKS iter   1:   -76.31218507753367    2.05131e-01   2.12628e-02 ADIIS/DIIS
-   @DF-RKS iter   2:   -76.29968953445004    1.24955e-02   2.91379e-02 ADIIS/DIIS
-   @DF-RKS iter   3:   -76.35564863068753   -5.59591e-02   4.25266e-03 ADIIS/DIIS
-   @DF-RKS iter   4:   -76.35679779198610   -1.14916e-03   1.14947e-03 ADIIS/DIIS
-   @DF-RKS iter   5:   -76.35689149287874   -9.37009e-05   3.08474e-05 DIIS
-   @DF-RKS iter   6:   -76.35689156408984   -7.12111e-08   3.04890e-06 DIIS
-   @DF-RKS iter   7:   -76.35689156487815   -7.88319e-10   1.63670e-07 DIIS
-   @DF-RKS iter   8:   -76.35689156488061   -2.45848e-12   2.38356e-09 DIIS
+   @DF-RKS iter   1:   -76.31218507753363    2.05131e-01   2.12628e-02 ADIIS/DIIS
+   @DF-RKS iter   2:   -76.29968953445007    1.24955e-02   2.91379e-02 ADIIS/DIIS
+   @DF-RKS iter   3:   -76.35564863068751   -5.59591e-02   4.25266e-03 ADIIS/DIIS
+   @DF-RKS iter   4:   -76.35679779198611   -1.14916e-03   1.14947e-03 ADIIS/DIIS
+   @DF-RKS iter   5:   -76.35689149287879   -9.37009e-05   3.08474e-05 DIIS
+   @DF-RKS iter   6:   -76.35689156408985   -7.12111e-08   3.04890e-06 DIIS
+   @DF-RKS iter   7:   -76.35689156487817   -7.88319e-10   1.63670e-07 DIIS
+   @DF-RKS iter   8:   -76.35689156488058   -2.41585e-12   2.38356e-09 DIIS
   Energy and wave function converged.
 
 
@@ -324,17 +325,17 @@ Scratch directory: /home/kenrickmh/CHEM/psi4-scratch/
     NA   [     3,    0,    1,    1 ]
     NB   [     3,    0,    1,    1 ]
 
-  @DF-RKS Final Energy:   -76.35689156488061
+  @DF-RKS Final Energy:   -76.35689156488058
 
    => Energetics <=
 
     Nuclear Repulsion Energy =              9.1681932964243487
-    One-Electron Energy =                -123.1468284897683674
-    Two-Electron Energy =                  46.9250364432505194
-    DFT Exchange-Correlation Energy =      -9.3032888716645346
+    One-Electron Energy =                -123.1468284897683247
+    Two-Electron Energy =                  46.9250364432505052
+    DFT Exchange-Correlation Energy =      -9.3032888716645363
     Empirical Dispersion Energy =          -0.0000039431225759
     VV10 Nonlocal Energy =                  0.0000000000000000
-    Total Energy =                        -76.3568915648806126
+    Total Energy =                        -76.3568915648805842
 
 Computation Completed
 
@@ -358,17 +359,17 @@ Properties computed using the SCF density matrix
 
  ------------------------------------------------------------------------------------
 
-*** tstop() called on TUF at Fri Jul 18 14:07:16 2025
+*** tstop() called on TUF at Fri Jul 18 15:44:41 2025
 Module time:
-	user time   =       1.06 seconds =       0.02 minutes
-	system time =       0.09 seconds =       0.00 minutes
+	user time   =       1.05 seconds =       0.02 minutes
+	system time =       0.04 seconds =       0.00 minutes
 	total time  =          2 seconds =       0.03 minutes
 Total time:
-	user time   =       1.06 seconds =       0.02 minutes
-	system time =       0.09 seconds =       0.00 minutes
+	user time   =       1.05 seconds =       0.02 minutes
+	system time =       0.04 seconds =       0.00 minutes
 	total time  =          2 seconds =       0.03 minutes
 
-    Psi4 stopped on: Friday, 18 July 2025 02:07PM
-    Psi4 wall time for execution: 0:00:02.58
+    Psi4 stopped on: Friday, 18 July 2025 03:44PM
+    Psi4 wall time for execution: 0:00:02.46
 
 *** Psi4 exiting successfully. Buy a developer a beer!

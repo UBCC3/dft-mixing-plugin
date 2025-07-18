@@ -1,0 +1,708 @@
+{
+    "opbe-d2": {
+        "name": "OPBE-D",
+        "xc_functionals": {
+            "GGA_XC_OPBE_D": {}
+        },
+        "dispersion": {
+            "type": "d2",
+            "params": {
+                "s6": 1.0,
+                "alpha6": 20.0,
+                "sr6": 1.15
+            },
+            "citation": "    L. Goerigk, S. Grimme, J. Chem. Theory. Comput. 6, 107-126, 2010\n"
+        },
+        "alias": [
+            "OPBE-D2"
+        ]
+    },
+    "opbe-d": {
+        "name": "OPBE-D",
+        "xc_functionals": {
+            "GGA_XC_OPBE_D": {}
+        },
+        "dispersion": {
+            "type": "d2",
+            "params": {
+                "s6": 1.0,
+                "alpha6": 20.0,
+                "sr6": 1.15
+            },
+            "citation": "    L. Goerigk, S. Grimme, J. Chem. Theory. Comput. 6, 107-126, 2010\n"
+        },
+        "alias": [
+            "OPBE-D2"
+        ]
+    },
+    "opwlyp-d2": {
+        "name": "OPWLYP-D",
+        "xc_functionals": {
+            "GGA_XC_OPWLYP_D": {}
+        },
+        "dispersion": {
+            "type": "d2",
+            "params": {
+                "s6": 1.0,
+                "alpha6": 20.0,
+                "sr6": 1.15
+            },
+            "citation": "    L. Goerigk, S. Grimme, J. Chem. Theory. Comput. 6, 107-126, 2010\n"
+        },
+        "alias": [
+            "OPWLYP-D2"
+        ]
+    },
+    "opwlyp-d": {
+        "name": "OPWLYP-D",
+        "xc_functionals": {
+            "GGA_XC_OPWLYP_D": {}
+        },
+        "dispersion": {
+            "type": "d2",
+            "params": {
+                "s6": 1.0,
+                "alpha6": 20.0,
+                "sr6": 1.15
+            },
+            "citation": "    L. Goerigk, S. Grimme, J. Chem. Theory. Comput. 6, 107-126, 2010\n"
+        },
+        "alias": [
+            "OPWLYP-D2"
+        ]
+    },
+    "oblyp-d2": {
+        "name": "OBLYP-D",
+        "xc_functionals": {
+            "GGA_XC_OBLYP_D": {}
+        },
+        "dispersion": {
+            "type": "d2",
+            "params": {
+                "s6": 1.0,
+                "alpha6": 20.0,
+                "sr6": 1.15
+            },
+            "citation": "    L. Goerigk, S. Grimme, J. Chem. Theory. Comput. 6, 107-126, 2010\n"
+        },
+        "alias": [
+            "OBLYP-D2"
+        ]
+    },
+    "oblyp-d": {
+        "name": "OBLYP-D",
+        "xc_functionals": {
+            "GGA_XC_OBLYP_D": {}
+        },
+        "dispersion": {
+            "type": "d2",
+            "params": {
+                "s6": 1.0,
+                "alpha6": 20.0,
+                "sr6": 1.15
+            },
+            "citation": "    L. Goerigk, S. Grimme, J. Chem. Theory. Comput. 6, 107-126, 2010\n"
+        },
+        "alias": [
+            "OBLYP-D2"
+        ]
+    },
+    "b97-d2": {
+        "name": "B97-D2",
+        "xc_functionals": {
+            "GGA_XC_B97_D": {}
+        },
+        "dispersion": {
+            "type": "d2",
+            "params": {
+                "s6": 1.25,
+                "alpha6": 20.0,
+                "sr6": 1.1
+            },
+            "citation": false
+        }
+    },
+    "b97-d": {
+        "name": "B97-D",
+        "xc_functionals": {
+            "GGA_XC_B97_D": {}
+        },
+        "dispersion": {
+            "type": "d2",
+            "params": {
+                "s6": 1.25,
+                "alpha6": 20.0,
+                "sr6": 1.1
+            },
+            "citation": false
+        },
+        "alias": [
+            "B97-D2"
+        ]
+    },
+    "otpss-d2": {
+        "name": "OTPSS-D",
+        "xc_functionals": {
+            "MGGA_XC_OTPSS_D": {}
+        },
+        "dispersion": {
+            "type": "d2",
+            "params": {
+                "s6": 1.0,
+                "alpha6": 20.0,
+                "sr6": 1.15
+            },
+            "citation": "    L. Goerigk, S. Grimme, J. Chem. Theory. Comput. 6, 107-126, 2010\n"
+        },
+        "alias": [
+            "OTPSS-D2"
+        ]
+    },
+    "otpss-d": {
+        "name": "OTPSS-D",
+        "xc_functionals": {
+            "MGGA_XC_OTPSS_D": {}
+        },
+        "dispersion": {
+            "type": "d2",
+            "params": {
+                "s6": 1.0,
+                "alpha6": 20.0,
+                "sr6": 1.15
+            },
+            "citation": "    L. Goerigk, S. Grimme, J. Chem. Theory. Comput. 6, 107-126, 2010\n"
+        },
+        "alias": [
+            "OTPSS-D2"
+        ]
+    },
+    "b97-d3zero": {
+        "name": "B97-D3ZERO",
+        "xc_functionals": {
+            "GGA_XC_B97_D": {}
+        },
+        "dispersion": {
+            "type": "d3zero2b",
+            "params": {
+                "s6": 1.0,
+                "s8": 0.909,
+                "sr6": 0.892,
+                "sr8": 1.0,
+                "alpha6": 14.0
+            },
+            "citation": false
+        }
+    },
+    "b97-d3bj": {
+        "name": "B97-D3BJ",
+        "xc_functionals": {
+            "GGA_XC_B97_D": {}
+        },
+        "dispersion": {
+            "type": "d3bj2b",
+            "params": {
+                "s6": 1.0,
+                "s8": 2.2609,
+                "a1": 0.5545,
+                "a2": 3.2297
+            },
+            "citation": false
+        }
+    },
+    "b97-d3mzero": {
+        "name": "B97-D3MZERO",
+        "xc_functionals": {
+            "GGA_XC_B97_D": {}
+        },
+        "dispersion": {
+            "type": "d3mzero2b",
+            "params": {
+                "s6": 1.0,
+                "s8": 1.020078,
+                "sr6": 1.151808,
+                "beta": 0.035964
+            },
+            "citation": false
+        }
+    },
+    "b97-d3mbj": {
+        "name": "B97-D3MBJ",
+        "xc_functionals": {
+            "GGA_XC_B97_D": {}
+        },
+        "dispersion": {
+            "type": "d3mbj2b",
+            "params": {
+                "s6": 1.0,
+                "s8": 1.206988,
+                "a1": 0.240184,
+                "a2": 3.864426
+            },
+            "citation": false
+        }
+    },
+
+    "b973c": {
+        "name": "B973c",
+        "alias": [
+        "B97-3c"
+        ],
+        "xc_functionals": {
+        "GGA_XC_B97_3C": {}
+        },
+        "description": "    B97-3c GGA-based 3C composite method with a TZ basis set, D3 and short-range basis set correction.\n",
+        "citation": "     J. G. Brandenburg, C.Bannwarth, A. Hansen, S. Grimme J. Chem. Phys. 148, 064104, 2018\n",
+        "doi": "10.1063/1.5012601",
+        "dispersion": {
+        "type": "d3bjatm",
+        "params": {
+            "s6": 1.0,
+            "s8": 1.5,
+            "a1": 0.37,
+            "a2": 4.1,
+            "s9": 1.0
+        },
+        "citation": false
+        }
+    },
+    "b97-3c": {
+        "name": "B973c",
+        "alias": [
+            "B97-3c"
+        ],
+        "xc_functionals": {
+            "GGA_XC_B97_3C": {}
+        },
+        "description": "    B97-3c GGA-based 3C composite method with a TZ basis set, D3 and short-range basis set correction.\n",
+        "citation": "     J. G. Brandenburg, C.Bannwarth, A. Hansen, S. Grimme J. Chem. Phys. 148, 064104, 2018\n",
+        "doi": "10.1063/1.5012601",
+        "dispersion": {
+            "type": "d3bjatm",
+            "params": {
+                "s6": 1.0,
+                "s8": 1.5,
+                "a1": 0.37,
+                "a2": 4.1,
+                "s9": 1.0
+            },
+            "citation": false
+        }
+    },
+    "b97m-d3bj": {
+        "name": "B97M-D3BJ",
+        "xc_functionals": {
+            "MGGA_XC_B97M_V": {}
+        },
+        "dispersion": {
+            "type": "d3bj2b",
+            "nlc": false,
+            "params": {
+                "s6": 1.0,
+                "s8": 0.1384,
+                "a1": -0.078,
+                "a2": 5.5946
+            },
+            "citation": "    A. Najib, L. Goerigk J. Comput. Theory Chem., 14, 5725, 2018\n"
+        },
+        "description": "    B97M-V with D3(BJ) instead of VV10 dispersion \n",
+        "citation": "    A. Najib, L. Goerigk J. Comput. Theory Chem., 14, 5725, 2018\n    N. Mardirossian, M. Head-Gordon J. Chem. Phys. 142, 074111 (2015)\n"
+    },
+    "r2scan3c": {
+        "name": "R2SCAN3C",
+        "alias": [
+            "R2SCAN-3C"
+        ],
+        "x_functionals": {
+            "MGGA_X_R2SCAN": {}
+        },
+        "c_functionals": {
+            "MGGA_C_R2SCAN": {}
+        },
+        "description": "    r2SCAN Meta-GGA based 3C composite method with a TZ basis set, gCP and D4\n",
+        "citation": "     S. Grimme,  A. Hansen,  S. Ehlert, J.-M. Mewes J. Chem. Phys. 154, 064103, 2021\n",
+        "doi": "10.1063/5.0040021",
+        "dispersion": {
+            "type": "d4bjeeqatm",
+            "params": {
+                "a1": 0.42,
+                "a2": 5.65,
+                "s6": 1.0,
+                "s8": 0.0,
+                "s9": 2.0,
+                "ga": 2.0,
+                "gc": 1.0,
+                "alp": 16.0,
+                "wf": 6.0
+            },
+            "citation": false
+        }
+    },
+    "hf+d": {
+        "name": "HF+D",
+        "x_hf": {
+            "alpha": 1.0
+        },
+        "c_functionals": {},
+        "dispersion": {
+            "type": "das2010",
+            "params": {
+                "s6": 1.0
+            },
+            "citation": false
+        }
+    },
+    "hf3c": {
+        "name": "HF3c",
+        "alias": [
+            "HF-3C"
+        ],
+        "x_hf": {
+            "alpha": 1.0
+        },
+        "c_functionals": {},
+        "dispersion": {
+            "type": "d3bj2b",
+            "params": {
+                "s6": 1.0,
+                "s8": 0.8777,
+                "a1": 0.4171,
+                "a2": 2.9149
+            },
+            "citation": false
+        },
+        "description": "    Hartree Fock based 3C composite method with minimal basis set, gCP and D3(BJ)\n",
+        "citation": "    Sure et al., J. Comput. Chem., 34, 1672-1685, 2013\n"
+    },
+    "pbeh3c": {
+        "name": "PBEh3c",
+        "alias": [
+            "PBEH-3C"
+        ],
+        "x_functionals": {
+            "GGA_X_PBE": {
+                "tweak": {
+                    "_kappa": 1.0245,
+                    "_mu": 0.12345679
+                },
+                "alpha": 0.58
+            }
+        },
+        "x_hf": {
+            "alpha": 0.42
+        },
+        "c_functionals": {
+            "GGA_C_PBE": {
+                "tweak": {
+                    "_beta": 0.03
+                }
+            }
+        },
+        "dispersion": {
+            "type": "d3bj2b",
+            "params": {
+                "s6": 1.0,
+                "s8": 0.0,
+                "a1": 0.486,
+                "a2": 4.5
+            },
+            "citation": false
+        },
+        "description": "    PBE Hybrid based 3C composite method with a small basis set, gCP and D3(BJ)\n",
+        "citation": "    Grimme et. al., J. Chem. Phys., 143, 054107, 2015\n"
+    },
+    "wb97x3c": {
+        "name": "wB97X3c",
+        "alias": [
+            "wB97X-3C"
+        ],
+        "xc_functionals": {
+            "HYB_GGA_XC_WB97X_V": {}
+        },
+        "dispersion": {
+            "type": "d4bjeeqatm",
+            "nlc": false,
+            "params": {
+                "a1": 0.2464,
+                "a2": 4.737,
+                "s6": 1.0,
+                "s8": 0.0,
+                "s9": 1.0,
+                "alp": 16.0,
+                "ga": 3.0,
+                "gc": 2.0,
+                "wf": 6.0
+            },
+            "citation": false
+        },
+        "description": "    wB97X basied 3C composite method with a small basis set, gCP and D4\n",
+        "citation": "    M. Muller, A. Hansen, S. Grimme, J. Chem. Phys. 158, 014103 (2023)\n",
+        "doi": "10.1063/5.0133026"
+    },
+    "dldf+d09": {
+        "name": "dlDF+D09",
+        "alias": [
+            "DLDF-D09",
+            "DLDF-DAS2009"
+        ],
+        "x_functionals": {
+            "HYB_MGGA_X_DLDF": {
+                "use_libxc": true
+            }
+        },
+        "c_functionals": {
+            "MGGA_C_DLDF": {}
+        },
+        "dispersion": {
+            "type": "das2009",
+            "params": {
+                "s6": 1.0
+            },
+            "citation": false
+        },
+        "description": "    Dispersionless Hybrid Meta-GGA XC Functional\n",
+        "citation": "    Pernal et. al., Phys. Rev. Lett., 103, 263201, 2009\n"
+    },
+    "dldf+d": {
+        "name": "dlDF+D10",
+        "alias": [
+            "DLDF-D10",
+            "DLDF-DAS2010",
+            "DLDF+D"
+        ],
+        "x_functionals": {
+            "HYB_MGGA_X_DLDF": {
+                "use_libxc": true
+            }
+        },
+        "c_functionals": {
+            "MGGA_C_DLDF": {}
+        },
+        "dispersion": {
+            "type": "das2010",
+            "params": {
+                "s6": 1.0
+            },
+            "citation": false
+        },
+        "description": "    Dispersionless Hybrid Meta-GGA XC Functional\n",
+        "citation": "    Pernal et. al., Phys. Rev. Lett., 103, 263201, 2009\n"
+    },
+    "dldf+d10": {
+        "name": "dlDF+D10",
+        "alias": [
+            "DLDF-D10",
+            "DLDF-DAS2010",
+            "DLDF+D"
+        ],
+        "x_functionals": {
+            "HYB_MGGA_X_DLDF": {
+                "use_libxc": true
+            }
+        },
+        "c_functionals": {
+            "MGGA_C_DLDF": {}
+        },
+        "dispersion": {
+            "type": "das2010",
+            "params": {
+                "s6": 1.0
+            },
+            "citation": false
+        },
+        "description": "    Dispersionless Hybrid Meta-GGA XC Functional\n",
+        "citation": "    Pernal et. al., Phys. Rev. Lett., 103, 263201, 2009\n"
+    },
+    "wb97m-d3bj": {
+        "name": "wB97M-D3BJ",
+        "xc_functionals": {
+            "HYB_MGGA_XC_WB97M_V": {}
+        },
+        "dispersion": {
+            "nlc": false,
+            "type": "d3bj2b",
+            "citation": "    A. Najib, L. Goerigk, J. Comput. Theory Chem.,14, 5725, 2018\n",
+            "params": {
+                "s6": 1.0,
+                "s8": 0.3908,
+                "a1": 0.566,
+                "a2": 3.128
+            }
+        },
+        "description": "    wB97M-V with D3(BJ) instead of VV10 dispersion \n",
+        "citation": "    A. Najib, L. Goerigk, J. Comput. Theory Chem.,14, 5725, 2018\n    N. Mardirossian, M. Head-Gordon, J. Chem. Phys. 144, 214110, 2016\n"
+    },
+    "mp2-d": {
+        "name": "MP2D",
+        "description": "2nd-order MP perturbation theory plus dispersion",
+        "alias": [
+            "MP2-D"
+        ],
+        "x_hf": {
+            "alpha": 1.0
+        },
+        "c_functionals": {},
+        "c_mp2": {
+            "alpha": 1.0
+        },
+        "dispersion": {
+            "type": "dmp2",
+            "params": {
+                "s8": 1.187,
+                "a1": 0.944,
+                "a2": 0.48,
+                "rcut": 0.72,
+                "w": 0.2
+            },
+            "citation": "    Rezac, J.; Greenwell, C.; Beran, G. (2018), J. Chem. Theory Comput., 14: 4711-4721\n"
+        }
+    },
+    "mp2d": {
+        "name": "MP2D",
+        "description": "2nd-order MP perturbation theory plus dispersion",
+        "alias": [
+            "MP2-D"
+        ],
+        "x_hf": {
+            "alpha": 1.0
+        },
+        "c_functionals": {},
+        "c_mp2": {
+            "alpha": 1.0
+        },
+        "dispersion": {
+            "type": "dmp2",
+            "params": {
+                "s8": 1.187,
+                "a1": 0.944,
+                "a2": 0.48,
+                "rcut": 0.72,
+                "w": 0.2
+            },
+            "citation": "    Rezac, J.; Greenwell, C.; Beran, G. (2018), J. Chem. Theory Comput., 14: 4711-4721\n"
+        }
+    },
+    "dsd-bp86-d2": {
+        "name": "DSD-BP86-D2",
+        "x_functionals": {
+            "GGA_X_B88": {
+                "alpha": 0.33
+            }
+        },
+        "x_hf": {
+            "alpha": 0.67
+        },
+        "c_functionals": {
+            "GGA_C_P86": {
+                "alpha": 0.49
+            }
+        },
+        "c_mp2": {
+            "os": 0.49,
+            "ss": 0.24
+        },
+        "citation": "    S. Kozuch, J.M.L. Martin, J. Comp. Chem., 34, 2327-2344, 2013\n",
+        "description": "    DSD-BP86-D2 Dispersion-corrected SCS Double Hybrid XC Functional\n",
+        "dispersion": {
+            "type": "d2",
+            "params": {
+                "s6": 0.41,
+                "alpha6": 20.0,
+                "sr6": 1.1
+            },
+            "citation": "    S. Kozuch, J.M.L. Martin, J. Comp. Chem., 34, 2327-2344, 2013\n"
+        }
+    },
+    "dsd-bp86-d": {
+        "name": "DSD-BP86-D2",
+        "x_functionals": {
+            "GGA_X_B88": {
+                "alpha": 0.33
+            }
+        },
+        "x_hf": {
+            "alpha": 0.67
+        },
+        "c_functionals": {
+            "GGA_C_P86": {
+                "alpha": 0.49
+            }
+        },
+        "c_mp2": {
+            "os": 0.49,
+            "ss": 0.24
+        },
+        "citation": "    S. Kozuch, J.M.L. Martin, J. Comp. Chem., 34, 2327-2344, 2013\n",
+        "description": "    DSD-BP86-D2 Dispersion-corrected SCS Double Hybrid XC Functional\n",
+        "dispersion": {
+            "type": "d2",
+            "params": {
+                "s6": 0.41,
+                "alpha6": 20.0,
+                "sr6": 1.1
+            },
+            "citation": "    S. Kozuch, J.M.L. Martin, J. Comp. Chem., 34, 2327-2344, 2013\n"
+        }
+    },
+    "dsd-svwn-d2": {
+        "name": "DSD-SVWN-D2",
+        "x_functionals": {
+            "LDA_X": {
+                "alpha": 0.29
+            }
+        },
+        "x_hf": {
+            "alpha": 0.71
+        },
+        "c_functionals": {
+            "LDA_C_VWN": {
+                "alpha": 0.34
+            }
+        },
+        "c_mp2": {
+            "os": 0.58,
+            "ss": 0.11
+        },
+        "citation": "    S. Kozuch, J.M.L. Martin, J. Comp. Chem., 34, 2327-2344, 2013\n",
+        "description": "    DSD-SVWN5-D2 Dispersion-corrected SCS Double Hybrid XC Functional\n",
+        "dispersion": {
+            "type": "d2",
+            "params": {
+                "s6": 0.28,
+                "alpha6": 20.0,
+                "sr6": 1.1
+            },
+            "citation": "    S. Kozuch, J.M.L. Martin, J. Comp. Chem., 34, 2327-2344, 2013\n"
+        }
+    },
+    "dsd-svwn-d": {
+        "name": "DSD-SVWN-D2",
+        "x_functionals": {
+            "LDA_X": {
+                "alpha": 0.29
+            }
+        },
+        "x_hf": {
+            "alpha": 0.71
+        },
+        "c_functionals": {
+            "LDA_C_VWN": {
+                "alpha": 0.34
+            }
+        },
+        "c_mp2": {
+            "os": 0.58,
+            "ss": 0.11
+        },
+        "citation": "    S. Kozuch, J.M.L. Martin, J. Comp. Chem., 34, 2327-2344, 2013\n",
+        "description": "    DSD-SVWN5-D2 Dispersion-corrected SCS Double Hybrid XC Functional\n",
+        "dispersion": {
+            "type": "d2",
+            "params": {
+                "s6": 0.28,
+                "alpha6": 20.0,
+                "sr6": 1.1
+            },
+            "citation": "    S. Kozuch, J.M.L. Martin, J. Comp. Chem., 34, 2327-2344, 2013\n"
+        }
+    }
+}
