@@ -3,6 +3,7 @@ import pylibxc
 
 import logging
 logger = logging.getLogger(__name__)
+logging.disable(logging.WARNING)
 
 # Constants from pylibxc (as defined in the source)
 # (https://gitlab.com/libxc/libxc/-/blob/devel/src/xc.h#L37-40)
@@ -208,8 +209,6 @@ class LCOMSuperFunctionalBuilder:
             xc_decomp : list[tuple[str, float]] = libxc_func.aux_funcs()
             
             has_tweak = (child.name().upper(), xc_name.upper()) in self._tweak_mapper
-            
-            print(xc_decomp)
             # Do NOT decompose if cannot decompose, or HAS a tweak
             if xc_decomp is None or len(xc_decomp) == 0 or has_tweak:
                 c_funcs.append(xc_psi_func)

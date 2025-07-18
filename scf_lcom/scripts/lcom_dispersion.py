@@ -63,7 +63,7 @@ class LcomDispersion(EmpiricalDispersion):
                 
     def removeNlDisp(self):
         return LcomDispersion(
-            *filter(lambda p: p[0].engine != 'nl', self.parents_coefs)
+            list(filter(lambda p: p[0].engine != 'nl', self.parents_coefs))
         )
 
     def compute_energy(self, molecule: psi4.core.Molecule, wfn: psi4.core.Wavefunction = None) -> float:

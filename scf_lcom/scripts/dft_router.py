@@ -7,6 +7,7 @@ from psi4.driver.procrouting.dft import build_superfunctional
 from .lcom_dispersion import EmpiricalDispersion, LcomDispersion
 from psi4.driver.p4util.exceptions import ValidationError
 from qcengine.programs.empirical_dispersion_resources import dashcoeff, get_dispersion_aliases, new_d4_api
+from psi4.driver.procrouting.proc import _set_external_potentials_to_wavefunction
 
 from .lcom_superfunctional import LCOMSuperFunctionalBuilder
 # libxc for XC decomposition
@@ -152,13 +153,13 @@ def lcom_build_functional_and_disp(name, restricted, save_pairwise_disp=False, *
         coef = disp.pop('lcom_coef', 1.0)
         if isinstance(name, dict):
             emp_disp = EmpiricalDispersion(name_hint='',
-                                            level_hint=disp_type["type"],
-                                            param_tweaks=disp_type["params"],
+                                            level_hint=disp["type"],
+                                            param_tweaks=disp["params"],
                                             save_pairwise_disp=save_pairwise_disp,
                                             engine=kwargs.get('engine', None))
         else:
             emp_disp = EmpiricalDispersion(name_hint=superfunc.name(),
-                                            level_hint=disp_type["type"],
+                                            level_hint=disp["type"],
                                             param_tweaks=modified_disp_params,
                                             save_pairwise_disp=save_pairwise_disp,
                                             engine=kwargs.get('engine', None))
@@ -167,5 +168,89 @@ def lcom_build_functional_and_disp(name, restricted, save_pairwise_disp=False, *
 
     _disp_functor.print_out()
     return superfunc, _disp_functor    
+
+# PATCHED CODE TO CREATE A MODIFIED SCF WAVEFUNCTION
+# Replaces psi4.driver.procrouting.proc.scf_wavefunction_factory
+def lcom_scf_wavefunction_factory(name, ref_wfn, reference, **kwargs):
+    """Builds the correct (R/U/RO/CU HF/KS) wavefunction from the
+    provided information, sets relevant auxiliary basis sets on it,
+    and prepares any empirical dispersion.
+
+    """
+    # Figure out functional and dispersion
+    superfunc, _disp_functor = lcom_build_functional_and_disp(name, restricted=(reference in ["RKS", "RHF"]), **kwargs)
+
+    # Build the wavefunction
+    psi4.core.prepare_options_for_module("SCF")
+    if reference in ["RHF", "RKS"]:
+        wfn = psi4.core.RHF(ref_wfn, superfunc)
+    elif reference == "ROHF":
+        wfn = psi4.core.ROHF(ref_wfn, superfunc)
+    elif reference in ["UHF", "UKS"]:
+        wfn = psi4.core.UHF(ref_wfn, superfunc)
+    elif reference == "CUHF":
+        wfn = psi4.core.CUHF(ref_wfn, superfunc)
+    else:
+        raise ValidationError("SCF: Unknown reference (%s) when building the Wavefunction." % reference)
+
+    if _disp_functor:
+        wfn._disp_functor = _disp_functor.removeNlDisp()
+
+    # Set the DF basis sets
+    df_needed = psi4.core.get_global_option("SCF_TYPE") in ["DF", "MEM_DF", "DISK_DF" ]
+    df_needed |= "DFDIRJ" in psi4.core.get_global_option("SCF_TYPE")
+    df_needed |= (psi4.core.get_global_option("SCF_TYPE") == "DIRECT" and core.get_option("SCF", "DF_SCF_GUESS"))
+    if df_needed:
+        aux_basis = psi4.core.BasisSet.build(wfn.molecule(), "DF_BASIS_SCF",
+                                        psi4.core.get_option("SCF", "DF_BASIS_SCF"),
+                                        "JKFIT", psi4.core.get_global_option('BASIS'),
+                                        puream=wfn.basisset().has_puream())
+        wfn.set_basisset("DF_BASIS_SCF", aux_basis)
+    else:
+        wfn.set_basisset("DF_BASIS_SCF", psi4.core.BasisSet.zero_ao_basis_set())
+
+    # Set the relativistic basis sets
+    if psi4.core.get_global_option("RELATIVISTIC") in ["X2C", "DKH"]:
+        decon_basis = psi4.core.BasisSet.build(wfn.molecule(), "BASIS_RELATIVISTIC",
+                                        psi4.core.get_option("SCF", "BASIS_RELATIVISTIC"),
+                                        "DECON", psi4.core.get_global_option('BASIS'),
+                                        puream=wfn.basisset().has_puream())
+        wfn.set_basisset("BASIS_RELATIVISTIC", decon_basis)
+
+    # Set the multitude of SAD basis sets
+    if (psi4.core.get_option("SCF", "GUESS") in ["SAD", "SADNO", "HUCKEL", "MODHUCKEL"]):
+        sad_basis_list = psi4.core.BasisSet.build(wfn.molecule(), "ORBITAL",
+                                             psi4.core.get_global_option("BASIS"),
+                                             puream=wfn.basisset().has_puream(),
+                                             return_atomlist=True)
+        wfn.set_sad_basissets(sad_basis_list)
+
+        if ("DF" in psi4.core.get_option("SCF", "SAD_SCF_TYPE")):
+            # We need to force this to spherical regardless of any user or other demands.
+            optstash = psi4.p4util.OptionsState(['PUREAM'])
+            psi4.core.set_global_option('PUREAM', True)
+            sad_fitting_list = psi4.core.BasisSet.build(wfn.molecule(), "DF_BASIS_SAD",
+                                                   psi4.core.get_option("SCF", "DF_BASIS_SAD"),
+                                                   puream=True,
+                                                   return_atomlist=True)
+            wfn.set_sad_fitting_basissets(sad_fitting_list)
+            optstash.restore()
+
+    if psi4.core.get_option("SCF", "GUESS") == "SAPGAU":
+        # Populate sapgau basis
+        sapgau = psi4.core.BasisSet.build(wfn.molecule(), "SAPGAU_BASIS", core.get_global_option("SAPGAU_BASIS"))
+        wfn.set_basisset("SAPGAU", sapgau)
+
+    if hasattr(psi4.core, "EXTERN") and 'external_potentials' in kwargs:
+        psi4.core.print_out("\n  Warning! Both an external potential EXTERN object and the external_potential" +
+                       " keyword argument are specified. The external_potentials keyword argument will be ignored.\n")
+        raise ValidationError("double extern")
+
+    ep = kwargs.get("external_potentials", None)
+    if ep is not None:
+        _set_external_potentials_to_wavefunction(ep, wfn)
+
+    return wfn
+
     
 

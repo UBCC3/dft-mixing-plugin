@@ -79,7 +79,11 @@ class FunctionalDatabase:
         # Check if db exists
         db_exists = os.path.exists(DB_PATH)
         if (db_exists): 
-            self._is_empty = False
+            if (not config["recreate_db"]):
+                self._is_empty = False
+            else: 
+                self._is_empty = True
+                os.remove(DB_PATH)
         
         # Configure base        
         db_uri = f'sqlite:///{DB_PATH}'

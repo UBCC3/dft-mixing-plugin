@@ -35,7 +35,8 @@ from psi4.driver.procrouting import proc
 from psi4.driver.procrouting import proc_util
 from .scripts.dft_router import (
     build_lcom_from_dict,
-    lcom_build_functional_and_disp
+    lcom_build_functional_and_disp,
+    lcom_scf_wavefunction_factory
 )
 
 run_scf = psi4.driver.procedures['energy']['scf']
@@ -57,11 +58,13 @@ def run_scf_lcom(name, **kwargs):
     # everything for scf energy calculation
     original_dict_builder = dft_builder.build_superfunctional_from_dictionary
     original_func_disp_builder = proc.build_functional_and_disp
+    original_wfn_factory = proc.scf_wavefunction_factory
     
     try:
         # replace the psi4 builder with our implementation
         dft_builder.build_superfunctional_from_dictionary = build_lcom_from_dict
         proc.build_functional_and_disp = lcom_build_functional_and_disp
+        proc.scf_wavefunction_factory = lcom_scf_wavefunction_factory
         
         print("OK?")
         print(name)
@@ -76,7 +79,7 @@ def run_scf_lcom(name, **kwargs):
         # Regardless, restore the original function
         dft_builder.build_superfunctional_from_dictionary = original_dict_builder
         proc.build_functional_and_disp = original_func_disp_builder
-
+        proc.scf_wavefunction_factory = original_wfn_factory
 
 # Integration with driver routines
 psi4.driver.procedures['energy']['scf_lcom'] = run_scf_lcom

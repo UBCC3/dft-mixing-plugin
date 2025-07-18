@@ -7,7 +7,7 @@ import psi4
 import database
 import os
 
-path = os.path.join('/home/kenrickmh/CHEM/dft-mixing-plugin/example_usage/database_config.yaml') 
+path = os.path.join('/home/kenrickmh/CHEM/dft-mixing-plugin/example_usage/db_query_config.yaml') 
 db = database.Psi4DbAdapter(path)
 
 molecule h2o {
@@ -21,6 +21,6 @@ set scf_lcom {
   print 1
 }
 
-dft = db.get_functional_dict("multifunc1") 
+dft = db.get_functional_dict("multifunc1", "disp_mix1") 
 print(dft)
 E1 = energy('scf_lcom', dft_functional=dft, decompose_xc=True)
