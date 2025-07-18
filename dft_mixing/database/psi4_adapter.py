@@ -60,7 +60,9 @@ class Psi4DbAdapter:
         try: 
             # Insert the default sources first.
             self._import_psi4_data()
-            self._import_dftd3_disps(init_config["dftd3_config"])
+            
+            if init_config["load_dftd3"]:
+                self._import_dftd3_disps(init_config["dftd3_config"])
             
             # Insert additional sources
             preload_items = init_config["preload"]

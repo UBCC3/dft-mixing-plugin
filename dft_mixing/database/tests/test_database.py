@@ -8,15 +8,13 @@ import logging
 
 from psi4.driver.procrouting.dft.dft_builder import functionals
 
-from database import FunctionalDatabase
-from psi4_adapter import Psi4DbAdapter
+from dft_mixing.database import Psi4DbAdapter
 from db_sample_data import (
     lcom_func_dataset,
     func_dataset_ref,
     lcom_psi_dispconfig_dataset,
     lcom_base_disp_dataset,
     multi_disp_ans
-    
 )
 
 logger = logging.getLogger(__name__)
@@ -89,9 +87,12 @@ def compare_lcom_functionals(func_dict, ref_dict):
         all_lcom_dict = normalize_name_dict_lowercase(func_dict['lcom_functionals'])
         for ref_fname, ref_fdict in ref_dict['lcom_functionals'].items():
             target_fdict = all_lcom_dict[ref_fname.lower()]
-            assert (target_fdict['coef'] == ref_fdict['coef'])
-            compare_psi_functionals(target_fdict, ref_fdict)
-        
+            if type(ref_fdict) == dict:
+                assert (target_fdict['coef'] == pytest.approx(ref_fdict['coef']))
+                compare_psi_functionals(target_fdict, ref_fdict)
+            else:
+                # Raw coeff
+                assert(target_fdict == pytest.approx(ref_fdict))
     
 class TestBase:
     @pytest.fixture(scope="class")
@@ -102,13 +103,19 @@ class TestBase:
         config_path = tmp_path / 'test_data_config.yaml'
         db_path = tmp_path / 'test.db'        
 
-        config = {"db_path": str(db_path)}
+        config = {
+            "db_path": str(db_path),
+            "load_dftd3": False,
+            "external_resol": [],
+            "preload": []
+        }
         
         # Load in database path
         with open(config_path, 'w') as f:
             config = yaml.safe_dump(config, f)
         
-        func_db = Psi4DbAdapter(config_path)
+        func_db = Psi4DbAdapter()
+        func_db.initialize_database(config_path)
 
         yield func_db
     
@@ -168,13 +175,19 @@ class TestFunctional:
         config_path = tmp_path / 'test_data_config.yaml'
         db_path = tmp_path / 'test.db'        
 
-        config = {"db_path": str(db_path)}
+        config = {
+            "db_path": str(db_path),
+            "load_dftd3": False,
+            "external_resol": [],
+            "preload": []
+        }
         
         # Load in database path
         with open(config_path, 'w') as f:
             config = yaml.safe_dump(config, f)
         
-        func_db = Psi4DbAdapter(config_path)
+        func_db = Psi4DbAdapter()
+        func_db.initialize_database(config_path)
     
         func_db.load_multi_functional_data(lcom_func_dataset, 'test')
         yield func_db
@@ -204,14 +217,20 @@ class TestDispersion:
         config_path = tmp_path / 'test_data_config.yaml'
         db_path = tmp_path / 'test.db'        
 
-        config = {"db_path": str(db_path),
-                  "external_resol": ["test"]}
+        
+        config = {
+            "db_path": str(db_path),
+            "load_dftd3": False,
+            "external_resol": ["test"],
+            "preload": []
+        }
         
         # Load in database path
         with open(config_path, 'w') as f:
             config = yaml.safe_dump(config, f)
         
-        func_db = Psi4DbAdapter(config_path)
+        func_db = Psi4DbAdapter()
+        func_db.initialize_database(config_path)
 
         func_db.load_multi_functional_data(lcom_func_dataset, 'test')
         func_db.load_base_dispersion_data(lcom_base_disp_dataset, 'test')

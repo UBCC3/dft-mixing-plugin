@@ -55,50 +55,32 @@ func_dataset_ref = {
     "singlefunc1": {
         "name": "singlefunc1",
         "lcom_functionals": {
-            "BLYP": {
-                'coef': 1.0,
-                **functionals['blyp']
-            }
+            "BLYP": 1.0
         }
     },  
     
     "singlefunc2": {
         "name": "singlefunc2",
         "lcom_functionals": {
-            "pbe0": {
-                'coef': 1.0,
-                **functionals['pbe0']
-            }
+            "pbe0": 1.0
         }   
     },  
     
     "multifunc2": {
         "name": "multifunc2",
         "lcom_functionals": {
-            "BLYP": {
-                'coef': 0.25,
-                **functionals['blyp']
-            },
-            "B3LYP": {
-                'coef': 0.75,
-                **functionals['b3lyp']
-            }
+            "BLYP": 0.25,
+            "B3LYP": 0.75,
         },
     },
 
     "multifunc3": {
         "name": "multifunc3",
         "lcom_functionals": {
-            "BP86": {
-                'coef': 0.25,
-                **functionals['bp86']
-            },
+            "BP86": 0.25,
             
             # Aliased name
-            "PW91": {
-                'coef': 0.75,
-                **functionals['pw91']
-            },
+            "PW91": 0.75
         }
     },    
 }
@@ -208,16 +190,6 @@ lcom_base_disp_dataset : dict = {
 multi_disp_ans = {    
     ("multifunc2", "disp_mix1"): {
         **func_dataset_ref['multifunc2'],
-        "lcom_functionals": {
-            "BLYP": {
-                'coef': 0.25,
-                **functionals['blyp']
-            },
-            "B3LYP": {
-                'coef': 0.75,
-                **functionals['b3lyp']
-            }
-        },
         "lcom_dispersion":[
             {    
                 "type": "d2",
@@ -242,16 +214,6 @@ multi_disp_ans = {
     
     ("multifunc2", "disp_mix2"): {
         **func_dataset_ref['multifunc2'],
-        "lcom_functionals": {
-            "BLYP": {
-                'coef': 0.25,
-                **functionals['blyp']
-            },
-            "B3LYP": {
-                'coef': 0.75,
-                **functionals['b3lyp']
-            }
-        },
         "lcom_dispersion":[
             {    
                 "type": "d2",
@@ -277,12 +239,6 @@ multi_disp_ans = {
     
     ("singlefunc1", "disp_mix1"): {
         **func_dataset_ref['singlefunc1'],
-        "lcom_functionals": {
-            "BLYP": {
-                'coef': 1.00,
-                **functionals['blyp']
-            },
-        },
         "lcom_dispersion":[
             {    
                 "type": "d2",
@@ -327,8 +283,5 @@ multi_disp_ans = {
             },
         
         ]
-    },
-    
-    
-    
+    },   
 }
