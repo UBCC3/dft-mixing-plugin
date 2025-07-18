@@ -2,7 +2,14 @@
 
 echo "========= DFT Mixing Environment Setup ========"
 
-prev_path="${PWD}"
+
+echo "========= Installing Prerequisites ========"
+conda install -c conda-forge \
+    sqlalchemy \
+    sqlite3 \
+    pylibxc \
+    psi4 \
+
 PSIPATH="/usr/local/psi4/lib"
 
 # In case user runs this from else where
@@ -36,7 +43,6 @@ EOF
 else
     echo "Skipped making changes permanent."
 fi
-
 
 echo "Installation finished."
 
