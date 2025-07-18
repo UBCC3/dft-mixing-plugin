@@ -1,3 +1,0 @@
-/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/scf_lcom.dir
-/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/edit_cache.dir
-/home/kenrickmh/CHEM/dft-mixing-plugin/scf_lcom/CMakeFiles/rebuild_cache.dir
