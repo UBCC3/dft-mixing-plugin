@@ -32,12 +32,19 @@ logger = logging.getLogger(__name__)
 
 class Psi4DbAdapter:
     '''
-        PSI4 database wrapper for a Database handler
+        PSI4 database wrapper for a Database Handler.
     '''
     def __init__(self):
         self.initialzied = False
 
-    def initialize_database(self, init_config_path):    
+    def initialize_database(self, init_config_path): 
+        '''
+            Initializes database from a configuration.
+            This will recreate the database from scratch.
+            Params:
+            - init_config_path: path to yaml configuration
+            file.
+        '''   
         if self.initialzied:
             raise RuntimeError("ERROR: Trying to rewrite initialzied database!")
         
@@ -88,6 +95,16 @@ class Psi4DbAdapter:
         self.initialzied = True
     
     def bind_database(self, query_config_path: str):
+        '''
+            Binds instannce to the database path.
+            Note that this only works if the database
+            already exists.
+            
+            Params:
+            - `query_config_path`: yaml configuration file
+                for the database.
+        '''   
+        
         with open(query_config_path, "r") as f:
             query_config = yaml.safe_load(f)
             

@@ -3,7 +3,6 @@
 #
 ###############################################
 
-
 # Path to database
 db_path: "/home/kenrickmh/CHEM/dft-mixing-plugin/example_usage/database/func_database.db"
 
