@@ -248,6 +248,7 @@ class Psi4DbAdapter:
                                                         disp_canon_name,
                                                         dash_coeff_name)
                         
+                        logger.warning(disp_info)
                         self.db.insert_single_disp(
                             session,
                             parent_func,
@@ -324,6 +325,12 @@ class Psi4DbAdapter:
             lcom_functionals : dict[str, Any] = {}
             for (child_fnctl, coef) in functional_coeffs:
                 child_name = str(child_fnctl.fnctl_name)
+                source_name = self.db.get_source_atomic(child_fnctl.source)
+                print(source_name)
+                if self.db.get_source_atomic(child_fnctl.source) == "psi4":
+                    lcom_functionals[child_name] = coef
+                    continue
+                    
                 child_data = child_fnctl.fnctl_data.copy()
                 lcom_functionals[child_name] = child_data
                 lcom_functionals[child_name]["coef"] = coef    

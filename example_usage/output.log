@@ -1,0 +1,3 @@
+2025-07-17:17:52:11,824 INFO     [psi4.driver.task_planner:285] PLANNING Atomic:  keywords={'function_kwargs': {}}
+2025-07-17:17:52:11,826 INFO     [psi4.driver.driver:522] Compute energy(): method=scf_lcom, basis=cc-pvdz, molecule=h2o, nre=9.168193296424349
+2025-07-17:17:52:12,656 INFO     [psi4.driver.driver:525] Return energy(): -76.356887621758

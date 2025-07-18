@@ -108,15 +108,14 @@ lcom_psi_dispconfig_dataset : dict = {
         "disp_mix1": {
             "coeffs": {
                 "d2": 0.25,
-                "d3": 0.25,
-                "d3bj": 0.5,
+                "d3zero": 0.25,
             }
         },
         
         "disp_mix2": {
             "coeffs": {
                 "d2": 0.55,
-                "d3": 0.25,
+                "d3zero": 0.25,
                 "d3bj": 0.15,
             }   
         },

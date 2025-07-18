@@ -8,7 +8,7 @@ from .lcom_dispersion import EmpiricalDispersion, LcomDispersion
 from psi4.driver.p4util.exceptions import ValidationError
 from qcengine.programs.empirical_dispersion_resources import dashcoeff, get_dispersion_aliases, new_d4_api
 
-from lcom_superfunctional import LCOMSuperFunctionalBuilder
+from .lcom_superfunctional import LCOMSuperFunctionalBuilder
 # libxc for XC decomposition
 import pylibxc as xc
 import re
@@ -139,7 +139,6 @@ def lcom_build_functional_and_disp(name, restricted, save_pairwise_disp=False, *
 
     # Figure out functional
     # Returns with a list of dispersion_type, or None at all.
-    _check_consistency(name)
     superfunc, disp_type = build_superfunctional(name, restricted)
 
     if len(disp_type) == 0:

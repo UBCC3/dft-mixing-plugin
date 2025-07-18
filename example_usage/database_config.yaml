@@ -1,6 +1,7 @@
 
 db_path: "/home/kenrickmh/CHEM/dft-mixing-plugin/example_usage/func_database.db"
 
+
 # Sources with lower index means higher priority.
 external_resol: ["src1"]
 

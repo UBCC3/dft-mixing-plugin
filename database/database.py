@@ -94,6 +94,22 @@ class FunctionalDatabase:
     def is_empty(self):
         return self._is_empty
 
+    def get_source_name(self, session: sqlalchemy.orm.Session,
+                        source_id):
+        src_name = (session.query(Sources.name)
+                    .filter(Sources.id == source_id)
+                    .first())
+        
+        if src_name is None:
+            raise DBNotFoundError("Cannot find source")
+
+        return src_name[0]
+    
+    def get_source_atomic(self, source_id):
+        with self.get_session() as session:
+            return self.get_source_name(session, source_id)
+
+
     def get_session(self) -> sqlalchemy.orm.Session:
         return self.Session()
     
