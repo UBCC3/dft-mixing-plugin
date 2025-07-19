@@ -130,11 +130,15 @@ The database supports three input files/formats:
 3. Multi Dispersion Data (coefficients for multidispersion)
 
 See example usages/format JSON files [here](../example_usage). The JSON files contain the structure
-that the database expects from the data.
+that the database expects from the data. Note that you may need to change some paths in the 
+yaml configuration files to match the files. 
 
 Populating the database is in `compile_database`,
 database is stored in `database`, and a query
 example is in `query_database`
+
+To run the example, run `python3 init_db.py` from within `compile_database`  for populating the database (this should put the database
+in the `database` folder. Then to run a query example, run `psi4 input.dat` in the `query_database` folder.
 
 ### Querying from the Database
 
