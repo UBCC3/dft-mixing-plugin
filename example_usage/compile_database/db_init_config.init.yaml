@@ -4,13 +4,13 @@
 ###############################################
 
 # Path to database
-db_path: "/home/kenrickmh/CHEM/dft-mixing-plugin/example_usage/database/func_database.db"
+db_path: "<repository_root>/dft-mixing-plugin/example_usage/database/func_database.db"
 
 # Sources with lower index means higher priority.
 external_resol: ["src1"]
 
 # Path to dftd3 toml file (temporary)
-dftd3_config: "/home/kenrickmh/CHEM/dft-mixing-plugin/example_usage/compile_database/sdftd3_ref_params.toml"
+dftd3_config: "/<repository_root>/dft-mixing-plugin/example_usage/compile_database/sdftd3_ref_params.toml"
 load_dftd3: True
 
 # Database Preloading Data (IN ORDER from TOP to BOTTOM)
@@ -24,10 +24,10 @@ load_dftd3: True
 preload:
   - source: 'src1'
     type: 'MF'
-    json_path:  /home/kenrickmh/CHEM/dft-mixing-plugin/example_usage/compile_database/multifunc.json
+    json_path:  /<repository_root>/dft-mixing-plugin/example_usage/compile_database/multifunc.json
   - source: 'src1'
     type: 'BD'
-    json_path:  /home/kenrickmh/CHEM/dft-mixing-plugin/example_usage/compile_database/base_disp.json
+    json_path:  /<repository_root>/dft-mixing-plugin/example_usage/compile_database/base_disp.json
   - source: 'src1'
     type: 'DC'
-    json_path:  /home/kenrickmh/CHEM/dft-mixing-plugin/example_usage/compile_database/disp_config.json
+    json_path:  /<repository_root>/dft-mixing-plugin/example_usage/compile_database/disp_config.json
