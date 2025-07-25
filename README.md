@@ -129,7 +129,7 @@ The database supports three input files/formats:
 2. Base Dispersion Data (internal dispersion parameters)
 3. Multi Dispersion Data (coefficients for multidispersion)
 
-See example usages/format JSON files [here](../example_usage). The JSON files contain the structure
+See example usages/format JSON files [here](./example_usage). The JSON files contain the structure
 that the database expects from the data. Note that you may need to change some paths in the 
 yaml configuration files to match the files. 
 
