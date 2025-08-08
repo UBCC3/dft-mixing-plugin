@@ -3,7 +3,8 @@
 #############################################
 
 # Path to database
-db_path: "/<repository_root>/dft-mixing-plugin/example_usage/database/func_database.db"
+db_path: "/home/kenrickmh/CHEM/dft-mixing-plugin/example_usage/database/func_database.db"
+
 
 # Sources with lower index means higher priority.
 external_resol: ["src1"]

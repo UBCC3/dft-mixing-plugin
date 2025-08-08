@@ -7,7 +7,7 @@ from dft_mixing.database import Psi4DbAdapter
 import psi4
 import os
 
-config_path = os.path.join(os.path.dirname(__file__), "db_query_config.yaml") 
+config_path = os.path.join('/home/kenrickmh/CHEM/dft-mixing-plugin/example_usage/query_database', "db_query_config.yaml") 
 db = Psi4DbAdapter()
 db.bind_database(config_path)
 
@@ -26,5 +26,13 @@ set scf_lcom {
 # But for clarity, please specify the sources
 # Also see Psi4DbAdapter for the function declarations.
 dft = db.get_functional_dict("multifunc1", "disp_mix1") 
-print(dft)
 E1 = energy('scf_lcom', dft_functional=dft, decompose_xc=True)
+print(dft)
+
+dft = db.get_functional_dict("multifunc1", "d2")
+print(dft) 
+E2 = energy('scf_lcom', dft_functional=dft, decompose_xc=True)
+
+dft = db.get_functional_dict("multifunc1", "d3") 
+print(dft)
+E2 = energy('scf_lcom', dft_functional=dft, decompose_xc=True)

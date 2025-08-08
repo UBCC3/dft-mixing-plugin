@@ -43,10 +43,11 @@ class LCOMSuperFunctionalBuilder:
         self._restricted = restricted
 
         self._master_sup = psi4.core.SuperFunctional.blank()
-        self._disps = []
+        self._disps : list[dict] = []
         self.decomp_xc = decomp_xc
         
         # Maps (parent_func, xc_func) -> tweak
+
         self._tweak_mapper : dict[tuple[str, str], dict] = {}
         self._xc_func_map: dict[tuple[str, float, frozenset], psi4.core.LibXCFunctional] = {}
         
@@ -88,10 +89,16 @@ class LCOMSuperFunctionalBuilder:
         self._master_sup.set_xclib_description(psi4.core.LibXCFunctional.xclib_description())
 
         dispersions = []
+        
         # Now handle dispersions (only read top level), 
         # Assume the format of a list of dicts with a coef field inside them.
+        # LCOM Dispersions will override normal dispersion
         if "lcom_dispersion" in func_dict:
-            dispersions = func_dict["lcom_dispersion"]
+            if "dispersion" in func_dict:
+                logger.warning(f"WARNING: both \"lcom_dispersion\" and \"dispersion\" are present for functional {func_dict.get('name')}, lcom_dispersion will take presedence")
+                psi4.core.print_out(f"WARNING: both \"lcom_dispersion\" and \"dispersion\" are present for functional {func_dict.get('name')}, lcom_dispersion will take presedence")
+            
+            dispersions.extend(func_dict["lcom_dispersion"])
             
             # Separate coefficients from dictionary
             for dispersion in dispersions:
@@ -110,7 +117,11 @@ class LCOMSuperFunctionalBuilder:
             n_disp_vv10 = sum("nlc" in d or d["type"] == 'nl' for d in dispersions)
             if n_disp_vv10 > 1:
                 raise RuntimeError('Multiple dispersion coefficients with VV10. Cannot combine VV10')
-
+        
+        elif "dispersion" in func_dict:
+            dispersions.append(func_dict["dispersion"])
+        
+        
 
         logger.warning(f"{self._xc_func_map}")
         logger.warning(f"{self._tweak_mapper}")

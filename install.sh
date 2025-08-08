@@ -8,9 +8,12 @@ conda install -c conda-forge \
     sqlalchemy \
     sqlite3 \
     pylibxc \
-    psi4 \
+    psi4 \ 
+    simple-dftd3 \
+    python-dftd3 \
 
 PSIPATH="/usr/local/psi4/lib"
+export PYTHONPATH=${PSI_AND_MODULE_PATH}:${PYTHONPATH}
 
 # In case user runs this from else where
 cd "$(dirname "$0")"

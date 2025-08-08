@@ -65,10 +65,7 @@ def run_scf_lcom(name, **kwargs):
         dft_builder.build_superfunctional_from_dictionary = build_lcom_from_dict
         proc.build_functional_and_disp = lcom_build_functional_and_disp
         proc.scf_wavefunction_factory = lcom_scf_wavefunction_factory
-        
-        print("OK?")
-        print(name)
-        
+                
         # Now just run scf normally
         return run_scf("scf", **kwargs)
 
