@@ -30,7 +30,9 @@
 
 import psi4
 from psi4.driver.procrouting.empirical_dispersion import EmpiricalDispersion
-
+import logging
+logger = logging.getLogger(__name__)
+logging.disable(logging.WARNING)
 class LcomDispersion(EmpiricalDispersion):
     """
     A type of dispersion that implements a linear combination of parent empirical dispersion algorithms.
@@ -43,7 +45,7 @@ class LcomDispersion(EmpiricalDispersion):
         Each tuple represents a parent dispersion scheme, which is
         linearly combined using the coefficient contained in the last float.
     """
-    def __init__(self, parents_coefs: list[tuple[EmpiricalDispersion, float]] = []):
+    def __init__(self, parents_coefs: list[tuple[EmpiricalDispersion, float]]):
         self.parents_coefs = parents_coefs
         for (parent, coef) in parents_coefs:
             if not (isinstance(coef, float) or isinstance(coef, int)):

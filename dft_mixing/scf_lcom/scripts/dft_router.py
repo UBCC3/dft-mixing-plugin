@@ -14,6 +14,8 @@ from .lcom_superfunctional import LCOMSuperFunctionalBuilder
 import pylibxc as xc
 import re
 
+
+
 # Legacy build_from_dict
 legacy_build_superfunc_from_dict = build_superfunctional_from_dictionary
 
@@ -145,7 +147,7 @@ def lcom_build_functional_and_disp(name, restricted, save_pairwise_disp=False, *
     if len(disp_type) == 0:
         return superfunc, None
     
-    _disp_functor = LcomDispersion()
+    _disp_functor = LcomDispersion([])
     
     # Handle dispersion
     for disp in disp_type:

@@ -31,9 +31,9 @@
     -----------------------------------------------------------------------
 
 
-    Psi4 started on: Friday, 08 August 2025 04:13PM
+    Psi4 started on: Friday, 08 August 2025 04:28PM
 
-    Process ID: 78828
+    Process ID: 81121
     Host:       TUF
     PSIDATADIR: /usr/local/psi4/share/psi4
     Memory:     500.0 MiB
@@ -72,14 +72,17 @@ set scf_lcom {
 dft = db.get_functional_dict("multifunc1", "disp_mix1") 
 E1 = energy('scf_lcom', dft_functional=dft, decompose_xc=True)
 print(dft)
+print("E0 DONE")
 
 dft = db.get_functional_dict("multifunc1", "d2")
 print(dft) 
 E2 = energy('scf_lcom', dft_functional=dft, decompose_xc=True)
+print("E1 DONE")
 
 dft = db.get_functional_dict("multifunc1", "d3") 
 print(dft)
-E2 = energy('scf_lcom', dft_functional=dft, decompose_xc=True)--------------------------------------------------------------------------
+E2 = energy('scf_lcom', dft_functional=dft, decompose_xc=True)
+print("E2 DONE")--------------------------------------------------------------------------
 
   Memory set to 572.205 MiB by Python driver.
 
@@ -92,7 +95,7 @@ Scratch directory: /home/kenrickmh/CHEM/psi4-scratch/
     Solid Harmonics ordering:            Gaussian
 
 *** tstart() called on TUF
-*** at Fri Aug  8 16:13:13 2025
+*** at Fri Aug  8 16:28:50 2025
 
    => Loading Basis Set <=
 
@@ -295,10 +298,10 @@ Scratch directory: /home/kenrickmh/CHEM/psi4-scratch/
                            Total Energy        Delta E     RMS |[F,P]|
 
    @DF-RKS iter SAD:   -76.51732757238985   -7.65173e+01   0.00000e+00 
-   @DF-RKS iter   1:   -76.31219690690135    2.05131e-01   2.12628e-02 ADIIS/DIIS
-   @DF-RKS iter   2:   -76.29970136381777    1.24955e-02   2.91379e-02 ADIIS/DIIS
-   @DF-RKS iter   3:   -76.35566046005523   -5.59591e-02   4.25266e-03 ADIIS/DIIS
-   @DF-RKS iter   4:   -76.35680962135378   -1.14916e-03   1.14947e-03 ADIIS/DIIS
+   @DF-RKS iter   1:   -76.31219690690135    2.05131e-01   2.12628e-02 DIIS/ADIIS
+   @DF-RKS iter   2:   -76.29970136381777    1.24955e-02   2.91379e-02 DIIS/ADIIS
+   @DF-RKS iter   3:   -76.35566046005523   -5.59591e-02   4.25266e-03 DIIS/ADIIS
+   @DF-RKS iter   4:   -76.35680962135378   -1.14916e-03   1.14947e-03 DIIS/ADIIS
    @DF-RKS iter   5:   -76.35690332224654   -9.37009e-05   3.08474e-05 DIIS
    @DF-RKS iter   6:   -76.35690339345754   -7.12110e-08   3.04890e-06 DIIS
    @DF-RKS iter   7:   -76.35690339424592   -7.88376e-10   1.63670e-07 DIIS
@@ -369,14 +372,14 @@ Properties computed using the SCF density matrix
 
  ------------------------------------------------------------------------------------
 
-*** tstop() called on TUF at Fri Aug  8 16:13:16 2025
+*** tstop() called on TUF at Fri Aug  8 16:28:53 2025
 Module time:
-	user time   =       1.81 seconds =       0.03 minutes
-	system time =       0.09 seconds =       0.00 minutes
+	user time   =       1.89 seconds =       0.03 minutes
+	system time =       0.08 seconds =       0.00 minutes
 	total time  =          3 seconds =       0.05 minutes
 Total time:
-	user time   =       1.81 seconds =       0.03 minutes
-	system time =       0.09 seconds =       0.00 minutes
+	user time   =       1.89 seconds =       0.03 minutes
+	system time =       0.08 seconds =       0.00 minutes
 	total time  =          3 seconds =       0.05 minutes
 
 Scratch directory: /home/kenrickmh/CHEM/psi4-scratch/
@@ -388,7 +391,7 @@ Scratch directory: /home/kenrickmh/CHEM/psi4-scratch/
     Solid Harmonics ordering:            Gaussian
 
 *** tstart() called on TUF
-*** at Fri Aug  8 16:13:16 2025
+*** at Fri Aug  8 16:28:53 2025
 
    => Loading Basis Set <=
 
@@ -398,29 +401,6 @@ Scratch directory: /home/kenrickmh/CHEM/psi4-scratch/
     atoms 1   entry O          line   198 file /usr/local/psi4/share/psi4/basis/cc-pvdz.gbs 
     atoms 2-3 entry H          line    22 file /usr/local/psi4/share/psi4/basis/cc-pvdz.gbs 
 
-    With a coefficient of 1.00000...
-   => Custom: Empirical Dispersion <=
-
-    Grimme's -D2 Dispersion Correction
-    Grimme, S. (2006), J. Comp. Chem., 27: 1787-1799
-
-        s6 =       0.100000
-    alpha6 =      18.000000
-       sr6 =       1.100000
-
-    With a coefficient of 1.00000...
-   => BLYP-D3: Empirical Dispersion <=
-
-    Grimme's -D3 (zero-damping) Dispersion Correction
-    Grimme S.; Antony J.; Ehrlich S.; Krieg H. (2010), J. Chem. Phys., 132: 154104
-
-        s6 =       1.000000
-        s8 =       1.682000
-       sr6 =       1.094000
-    alpha6 =      14.000000
-       sr8 =       1.000000
-
-    With a coefficient of 1.00000...
    => Custom: Empirical Dispersion <=
 
     Grimme's -D2 Dispersion Correction
@@ -600,15 +580,15 @@ Scratch directory: /home/kenrickmh/CHEM/psi4-scratch/
 
                            Total Energy        Delta E     RMS |[F,P]|
 
-   @DF-RKS iter SAD:   -76.51733386026565   -7.65173e+01   0.00000e+00 
-   @DF-RKS iter   1:   -76.31220319477715    2.05131e-01   2.12628e-02 ADIIS/DIIS
-   @DF-RKS iter   2:   -76.29970765169358    1.24955e-02   2.91379e-02 ADIIS/DIIS
-   @DF-RKS iter   3:   -76.35566674793104   -5.59591e-02   4.25266e-03 ADIIS/DIIS
-   @DF-RKS iter   4:   -76.35681590922958   -1.14916e-03   1.14947e-03 ADIIS/DIIS
-   @DF-RKS iter   5:   -76.35690961012234   -9.37009e-05   3.08474e-05 DIIS
-   @DF-RKS iter   6:   -76.35690968133335   -7.12110e-08   3.04890e-06 DIIS
-   @DF-RKS iter   7:   -76.35690968212172   -7.88376e-10   1.63670e-07 DIIS
-   @DF-RKS iter   8:   -76.35690968212417   -2.44427e-12   2.38356e-09 DIIS
+   @DF-RKS iter SAD:   -76.51731808777535   -7.65173e+01   0.00000e+00 
+   @DF-RKS iter   1:   -76.31218742228685    2.05131e-01   2.12628e-02 DIIS/ADIIS
+   @DF-RKS iter   2:   -76.29969187920328    1.24955e-02   2.91379e-02 DIIS/ADIIS
+   @DF-RKS iter   3:   -76.35565097544074   -5.59591e-02   4.25266e-03 DIIS/ADIIS
+   @DF-RKS iter   4:   -76.35680013673928   -1.14916e-03   1.14947e-03 DIIS/ADIIS
+   @DF-RKS iter   5:   -76.35689383763204   -9.37009e-05   3.08474e-05 DIIS
+   @DF-RKS iter   6:   -76.35689390884305   -7.12110e-08   3.04890e-06 DIIS
+   @DF-RKS iter   7:   -76.35689390963142   -7.88376e-10   1.63670e-07 DIIS
+   @DF-RKS iter   8:   -76.35689390963387   -2.44427e-12   2.38356e-09 DIIS
   Energy and wave function converged.
 
 
@@ -641,7 +621,7 @@ Scratch directory: /home/kenrickmh/CHEM/psi4-scratch/
     NA   [     3,    0,    1,    1 ]
     NB   [     3,    0,    1,    1 ]
 
-  @DF-RKS Final Energy:   -76.35690968212417
+  @DF-RKS Final Energy:   -76.35689390963387
 
    => Energetics <=
 
@@ -649,9 +629,9 @@ Scratch directory: /home/kenrickmh/CHEM/psi4-scratch/
     One-Electron Energy =                -123.1468284897684669
     Two-Electron Energy =                  46.9250364432506046
     DFT Exchange-Correlation Energy =      -9.3032888716645452
-    Empirical Dispersion Energy =          -0.0000220603661064
+    Empirical Dispersion Energy =          -0.0000062878758029
     VV10 Nonlocal Energy =                  0.0000000000000000
-    Total Energy =                        -76.3569096821241686
+    Total Energy =                        -76.3568939096338681
 
 Computation Completed
 
@@ -675,15 +655,15 @@ Properties computed using the SCF density matrix
 
  ------------------------------------------------------------------------------------
 
-*** tstop() called on TUF at Fri Aug  8 16:13:17 2025
+*** tstop() called on TUF at Fri Aug  8 16:28:55 2025
 Module time:
 	user time   =       1.30 seconds =       0.02 minutes
 	system time =       0.02 seconds =       0.00 minutes
-	total time  =          1 seconds =       0.02 minutes
+	total time  =          2 seconds =       0.03 minutes
 Total time:
-	user time   =       3.15 seconds =       0.05 minutes
-	system time =       0.11 seconds =       0.00 minutes
-	total time  =          4 seconds =       0.07 minutes
+	user time   =       3.24 seconds =       0.05 minutes
+	system time =       0.10 seconds =       0.00 minutes
+	total time  =          5 seconds =       0.08 minutes
 
 Scratch directory: /home/kenrickmh/CHEM/psi4-scratch/
    => Libint2 <=
@@ -694,7 +674,7 @@ Scratch directory: /home/kenrickmh/CHEM/psi4-scratch/
     Solid Harmonics ordering:            Gaussian
 
 *** tstart() called on TUF
-*** at Fri Aug  8 16:13:17 2025
+*** at Fri Aug  8 16:28:55 2025
 
    => Loading Basis Set <=
 
@@ -704,39 +684,6 @@ Scratch directory: /home/kenrickmh/CHEM/psi4-scratch/
     atoms 1   entry O          line   198 file /usr/local/psi4/share/psi4/basis/cc-pvdz.gbs 
     atoms 2-3 entry H          line    22 file /usr/local/psi4/share/psi4/basis/cc-pvdz.gbs 
 
-    With a coefficient of 1.00000...
-   => Custom: Empirical Dispersion <=
-
-    Grimme's -D2 Dispersion Correction
-    Grimme, S. (2006), J. Comp. Chem., 27: 1787-1799
-
-        s6 =       0.100000
-    alpha6 =      18.000000
-       sr6 =       1.100000
-
-    With a coefficient of 1.00000...
-   => BLYP-D3: Empirical Dispersion <=
-
-    Grimme's -D3 (zero-damping) Dispersion Correction
-    Grimme S.; Antony J.; Ehrlich S.; Krieg H. (2010), J. Chem. Phys., 132: 154104
-
-        s6 =       1.000000
-        s8 =       1.682000
-       sr6 =       1.094000
-    alpha6 =      14.000000
-       sr8 =       1.000000
-
-    With a coefficient of 1.00000...
-   => Custom: Empirical Dispersion <=
-
-    Grimme's -D2 Dispersion Correction
-    Grimme, S. (2006), J. Comp. Chem., 27: 1787-1799
-
-        s6 =       0.100000
-    alpha6 =      18.000000
-       sr6 =       1.100000
-
-    With a coefficient of 1.00000...
    => BLYP-D3: Empirical Dispersion <=
 
     Grimme's -D3 (zero-damping) Dispersion Correction
@@ -918,15 +865,15 @@ Scratch directory: /home/kenrickmh/CHEM/psi4-scratch/
 
                            Total Energy        Delta E     RMS |[F,P]|
 
-   @DF-RKS iter SAD:   -76.51734334488015   -7.65173e+01   0.00000e+00 
-   @DF-RKS iter   1:   -76.31221267939165    2.05131e-01   2.12628e-02 ADIIS/DIIS
-   @DF-RKS iter   2:   -76.29971713630808    1.24955e-02   2.91379e-02 ADIIS/DIIS
-   @DF-RKS iter   3:   -76.35567623254553   -5.59591e-02   4.25266e-03 ADIIS/DIIS
-   @DF-RKS iter   4:   -76.35682539384408   -1.14916e-03   1.14947e-03 ADIIS/DIIS
-   @DF-RKS iter   5:   -76.35691909473684   -9.37009e-05   3.08474e-05 DIIS
-   @DF-RKS iter   6:   -76.35691916594784   -7.12110e-08   3.04890e-06 DIIS
-   @DF-RKS iter   7:   -76.35691916673622   -7.88376e-10   1.63670e-07 DIIS
-   @DF-RKS iter   8:   -76.35691916673866   -2.44427e-12   2.38356e-09 DIIS
+   @DF-RKS iter SAD:   -76.51732128451404   -7.65173e+01   0.00000e+00 
+   @DF-RKS iter   1:   -76.31219061902554    2.05131e-01   2.12628e-02 DIIS/ADIIS
+   @DF-RKS iter   2:   -76.29969507594197    1.24955e-02   2.91379e-02 DIIS/ADIIS
+   @DF-RKS iter   3:   -76.35565417217943   -5.59591e-02   4.25266e-03 DIIS/ADIIS
+   @DF-RKS iter   4:   -76.35680333347797   -1.14916e-03   1.14947e-03 DIIS/ADIIS
+   @DF-RKS iter   5:   -76.35689703437073   -9.37009e-05   3.08474e-05 DIIS
+   @DF-RKS iter   6:   -76.35689710558174   -7.12110e-08   3.04890e-06 DIIS
+   @DF-RKS iter   7:   -76.35689710637011   -7.88376e-10   1.63670e-07 DIIS
+   @DF-RKS iter   8:   -76.35689710637256   -2.44427e-12   2.38356e-09 DIIS
   Energy and wave function converged.
 
 
@@ -959,7 +906,7 @@ Scratch directory: /home/kenrickmh/CHEM/psi4-scratch/
     NA   [     3,    0,    1,    1 ]
     NB   [     3,    0,    1,    1 ]
 
-  @DF-RKS Final Energy:   -76.35691916673866
+  @DF-RKS Final Energy:   -76.35689710637256
 
    => Energetics <=
 
@@ -967,9 +914,9 @@ Scratch directory: /home/kenrickmh/CHEM/psi4-scratch/
     One-Electron Energy =                -123.1468284897684669
     Two-Electron Energy =                  46.9250364432506046
     DFT Exchange-Correlation Energy =      -9.3032888716645452
-    Empirical Dispersion Energy =          -0.0000315449806069
+    Empirical Dispersion Energy =          -0.0000094846145005
     VV10 Nonlocal Energy =                  0.0000000000000000
-    Total Energy =                        -76.3569191667386633
+    Total Energy =                        -76.3568971063725570
 
 Computation Completed
 
@@ -993,17 +940,17 @@ Properties computed using the SCF density matrix
 
  ------------------------------------------------------------------------------------
 
-*** tstop() called on TUF at Fri Aug  8 16:13:19 2025
+*** tstop() called on TUF at Fri Aug  8 16:28:56 2025
 Module time:
-	user time   =       1.29 seconds =       0.02 minutes
-	system time =       0.04 seconds =       0.00 minutes
-	total time  =          2 seconds =       0.03 minutes
+	user time   =       1.32 seconds =       0.02 minutes
+	system time =       0.02 seconds =       0.00 minutes
+	total time  =          1 seconds =       0.02 minutes
 Total time:
-	user time   =       4.48 seconds =       0.07 minutes
-	system time =       0.15 seconds =       0.00 minutes
+	user time   =       4.62 seconds =       0.08 minutes
+	system time =       0.12 seconds =       0.00 minutes
 	total time  =          6 seconds =       0.10 minutes
 
-    Psi4 stopped on: Friday, 08 August 2025 04:13PM
-    Psi4 wall time for execution: 0:00:06.30
+    Psi4 stopped on: Friday, 08 August 2025 04:28PM
+    Psi4 wall time for execution: 0:00:06.51
 
 *** Psi4 exiting successfully. Buy a developer a beer!

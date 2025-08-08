@@ -28,11 +28,14 @@ set scf_lcom {
 dft = db.get_functional_dict("multifunc1", "disp_mix1") 
 E1 = energy('scf_lcom', dft_functional=dft, decompose_xc=True)
 print(dft)
+print("E0 DONE")
 
 dft = db.get_functional_dict("multifunc1", "d2")
 print(dft) 
 E2 = energy('scf_lcom', dft_functional=dft, decompose_xc=True)
+print("E1 DONE")
 
 dft = db.get_functional_dict("multifunc1", "d3") 
 print(dft)
 E2 = energy('scf_lcom', dft_functional=dft, decompose_xc=True)
+print("E2 DONE")
