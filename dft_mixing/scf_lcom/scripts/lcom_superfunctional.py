@@ -172,6 +172,28 @@ class LCOMSuperFunctionalBuilder:
             child_coef = lcom_coef * sup_coef
             self._build_lcom_helper(lcom_func, child_coef)
 
+
+    def _print_verbose(self):
+        for ((base_fn_name, omega, tweak), func_info) in self._base_functionals_coefs.items():
+            psi4.core.print_out(f"- FUNCTIONAL NAME: {base_fn_name}\n")
+            psi4.core.print_out(f"\t Omega: {omega}\n")
+            psi4.core.print_out(f"\t {func_info['description']}\n")
+            psi4.core.print_out(f"\t {func_info['citation']}\n")
+            psi4.core.print_out(f"\t WITH COEFFICIENT OF (RELATIVE TO MULTIFUNCTIONAL): {func_info['coef']}\n")
+            
+            if (len(tweak) > 0): 
+                psi4.core.print_out(f"\tTWEAKS:\n")
+                for attr, val in tweak.items():
+                    psi4.core.print_out(f"\t\t - {attr} : {tweak}\n")   
+                    
+            psi4.core.print_out("\n") 
+            
+    def _print_concise(self):
+        psi4.core.print_out(f"{'FUNCTIONAL NAME':<30} {'COEFFICIENT':>15}\n")
+        psi4.core.print_out(f"{'-'*30} {'-'*15}\n")
+
+        for ((base_fn_name, omega, tweak), func_info) in self._base_functionals_coefs.items():
+            psi4.core.print_out(f"{base_fn_name:<30} {func_info['coef']:>15}\n")
     
     def print_info(self):
         '''
@@ -187,21 +209,13 @@ class LCOMSuperFunctionalBuilder:
         psi4.core.print_out(f"\t {self._master_sup.citation()}\n")
         psi4.core.print_out(f"Functional Components: \n")
         
-        for ((base_fn_name, omega, tweak), func_info) in self._base_functionals_coefs.items():
-            psi4.core.print_out(f"- FUNCTIONAL NAME: {base_fn_name}\n")
-            psi4.core.print_out(f"\t Omega: {omega}\n")
-            psi4.core.print_out(f"\t {func_info['description']}\n")
-            psi4.core.print_out(f"\t {func_info['citation']}\n")
-            psi4.core.print_out(f"\t WITH COEFFICIENT OF (RELATIVE TO MULTIFUNCTIONAL): {func_info['coef']}\n")
+        if (psi4.core.get_global_option("PRINT") > 1):
+            self._print_verbose()
+        else:
+            self._print_concise()
             
-            if (len(tweak) > 0): 
-                psi4.core.print_out(f"\tTWEAKS:\n")
-                for attr, val in tweak.items():
-                    psi4.core.print_out(f"\t\t - {attr} : {tweak}\n")   
-                    
-            psi4.core.print_out("\n") 
+        psi4.core.print_out("\n")
         
-    
 
     def _merge_superfunctionals(self, child: psi4.core.SuperFunctional, coef: float):
         parent = self._master_sup

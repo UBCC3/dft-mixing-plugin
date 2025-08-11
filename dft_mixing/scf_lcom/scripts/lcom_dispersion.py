@@ -57,6 +57,7 @@ class LcomDispersion(EmpiricalDispersion):
         self.parents_coefs.append((disp, coef))
 
     def print_out(self):
+        psi4.core.print_out("=" * 15 + " Empirical Dispersion Mixing" + "=" * 15 + '\n')
         should_add_coef = len(self.parents_coefs) != 1 or self.parents_coefs[0][1] != 1.0
         for (p, c) in self.parents_coefs:
             # TODO: Make this less hack
