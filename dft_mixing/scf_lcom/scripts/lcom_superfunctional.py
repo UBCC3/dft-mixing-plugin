@@ -49,9 +49,13 @@ class LCOMSuperFunctionalBuilder:
         # Maps (parent_func, xc_func) -> tweak
 
         self._tweak_mapper : dict[tuple[str, str], dict] = {}
+        
+        # Alpha, Omega, Tweaks.
         self._xc_func_map: dict[tuple[str, float, frozenset], psi4.core.LibXCFunctional] = {}
+        self._base_functionals_coefs : dict[tuple[str, float, frozenset], dict] = {}
         
         self._build(func_dict)
+        self.print_info()
 
     def get_psi_func_dispersion(self) -> tuple[psi4.core.SuperFunctional, list[dict]]:
         return self._master_sup, self._disps
@@ -96,7 +100,7 @@ class LCOMSuperFunctionalBuilder:
         if "lcom_dispersion" in func_dict:
             if "dispersion" in func_dict:
                 logger.warning(f"WARNING: both \"lcom_dispersion\" and \"dispersion\" are present for functional {func_dict.get('name')}, lcom_dispersion will take presedence")
-                psi4.core.print_out(f"WARNING: both \"lcom_dispersion\" and \"dispersion\" are present for functional {func_dict.get('name')}, lcom_dispersion will take presedence")
+                psi4.core.print_out(f"WARNING: both \"lcom_dispersion\" and \"dispersion\" are present for functional {func_dict.get('name')}, lcom_dispersion will take presedence\n")
             
             dispersions.extend(func_dict["lcom_dispersion"])
             
@@ -121,8 +125,6 @@ class LCOMSuperFunctionalBuilder:
         elif "dispersion" in func_dict:
             dispersions.append(func_dict["dispersion"])
         
-        
-
         logger.warning(f"{self._xc_func_map}")
         logger.warning(f"{self._tweak_mapper}")
 
@@ -130,8 +132,7 @@ class LCOMSuperFunctionalBuilder:
         self._disps = dispersions
 
     def _build_lcom_helper(self, func_dict: dict, sup_coef: float):
-        if "lcom_functionals" not in func_dict:
-            
+        if "lcom_functionals" not in func_dict:    
             leaf_sup, _ = legacy_build_superfunc_from_dict(func_dict, self._npoints, self._deriv, self._restricted)
             
             master_xc_funcs = {}
@@ -144,6 +145,14 @@ class LCOMSuperFunctionalBuilder:
                 if "tweak" in args:
                     tweak = args['tweak']
                     self._tweak_mapper[(leaf_sup.name(), ("XC_"+func_name).upper())] = tweak
+                else:
+                    tweak = {}
+                
+            self._base_functionals_coefs[(leaf_sup.name(), leaf_sup.x_omega(), frozenset(tweak))] = {
+                "coef": sup_coef,
+                "description": leaf_sup.description(),
+                "citation": leaf_sup.citation()
+            }        
             
             self._merge_superfunctionals(leaf_sup, sup_coef)
             return
@@ -170,7 +179,29 @@ class LCOMSuperFunctionalBuilder:
             (resolved mixing).
             which includes the final exchange params.
         '''    
-        pass
+        
+        # Print multifunctional part
+        psi4.core.print_out("=" * 10 +  " PSI4 MULTIFUNCTIONAL " + "=" * 10 + '\n')
+        psi4.core.print_out(f"NAME: {self._master_sup.name()}\n")
+        psi4.core.print_out(f"\t {self._master_sup.description()}\n")
+        psi4.core.print_out(f"\t {self._master_sup.citation()}\n")
+        psi4.core.print_out(f"Functional Components: \n")
+        
+        for ((base_fn_name, omega, tweak), func_info) in self._base_functionals_coefs.items():
+            psi4.core.print_out(f"- FUNCTIONAL NAME: {base_fn_name}\n")
+            psi4.core.print_out(f"\t Omega: {omega}\n")
+            psi4.core.print_out(f"\t {func_info['description']}\n")
+            psi4.core.print_out(f"\t {func_info['citation']}\n")
+            psi4.core.print_out(f"\t WITH COEFFICIENT OF (RELATIVE TO MULTIFUNCTIONAL): {func_info['coef']}\n")
+            
+            if (len(tweak) > 0): 
+                psi4.core.print_out(f"\tTWEAKS:\n")
+                for attr, val in tweak.items():
+                    psi4.core.print_out(f"\t\t - {attr} : {tweak}\n")   
+                    
+            psi4.core.print_out("\n") 
+        
+    
 
     def _merge_superfunctionals(self, child: psi4.core.SuperFunctional, coef: float):
         parent = self._master_sup
