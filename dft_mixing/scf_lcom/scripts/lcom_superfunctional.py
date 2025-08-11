@@ -209,7 +209,7 @@ class LCOMSuperFunctionalBuilder:
         psi4.core.print_out(f"\t {self._master_sup.citation()}\n")
         psi4.core.print_out(f"Functional Components: \n")
         
-        if (psi4.core.get_global_option("PRINT") > 1):
+        if (psi4.core.get_local_option("SCF_LCOM", "PRINT") > 1):
             self._print_verbose()
         else:
             self._print_concise()
