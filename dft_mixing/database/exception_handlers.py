@@ -119,31 +119,21 @@ additional_aliases = {
 dashcoeff_mapping = {
     "b97-3c": ("b97_3c", "d3bjatm"),
     "b973c": ("b97_3c", "d3bjatm"),
+    
+    # PSI4, Names whose canonical names cannot be broken to dash_coeffs
+    # For this, only need the name of the canonical parent functional name.
+    # But also need to add the alternate dispersion name as well.
     "r2scan3c": ("r2scan", "d4bjeeqatm"), 
+    "r2scan-3c":  ("r2scan", "d4bjeeqatm"),
     "hf+d": ("hf", "das2010"),
+    "hf-d": ("hf", "das2010"),
     "hf3c": ("hf", "d3bj2b"),
+    "hf-3c": ("hf", "d3bj2b"),
     "pbeh3c": ("pbe0", "d3bj2b"),
+    "pbeh-3c": ("pbe0", "d3bj2b"),
     "dldf+d09": ("dldf", "das2009"),
+    "dldf-d09": ("dldf", "das2009"),
     "dldf+d10": ("dldf", "das2010"),
+    "dldf-d10": ("dldf", "das2010"),
     "mp2d": ("mp2", "dmp2")
 }
-
-
-def insert_missing_functionals():
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

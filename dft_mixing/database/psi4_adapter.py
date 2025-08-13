@@ -24,6 +24,8 @@ import pprint
 import re
 import json
 
+from . import exception_handlers
+
 # PSI4 internal functionals
 from psi4.driver.procrouting.dft.dft_builder import functionals
 
@@ -211,15 +213,19 @@ class Psi4DbAdapter:
                 
         # Insert dispersion
         for func_dashcoeff, func_dict in dispersion_functionals.items():
-            canon_fdashcoeff = func_dict["name"]
+            canon_fdashcoeff = func_dict["name"].lower()
             pattern = r"([-\d\w_()]+)-([\w\d_()]+)\)?$"
             match = re.match(pattern, canon_fdashcoeff)
             
-            if not match: 
-                logger.error(f"Dispersion causing error, Skipping functional {func_dashcoeff}:{func_dict} ")
-                continue
+            if not match:
+                if canon_fdashcoeff not in exception_handlers.dashcoeff_mapping:
+                    logger.error(f"Dispersion causing error, Skipping functional {func_dashcoeff}:{func_dict} ")         
+                    continue
                 
-            parent_func, _ = match.groups()
+                parent_func, _ = exception_handlers.dashcoeff_mapping[canon_fdashcoeff]
+            else:
+                parent_func, _ = match.groups()    
+            
             disp_dict = func_dict["dispersion"]
             canon_dname = disp_dict["type"]
             
